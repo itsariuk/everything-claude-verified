@@ -1,6 +1,7 @@
 ---
 name: project-guidelines-example
 description: "Example project-specific skill template based on a real production application."
+origin: ECC
 ---
 
 # Project Guidelines Skill (Example)
@@ -26,7 +27,7 @@ Reference this skill when working on the specific project it's designed for. Pro
 - **Frontend**: Next.js 15 (App Router), TypeScript, React
 - **Backend**: FastAPI (Python), Pydantic models
 - **Database**: Supabase (PostgreSQL)
-- **AI**: Codex API with tool calling and structured output
+- **AI**: Claude API with tool calling and structured output
 - **Deployment**: Google Cloud Run
 - **Testing**: Playwright (E2E), pytest (backend), React Testing Library
 
@@ -48,7 +49,7 @@ Reference this skill when working on the specific project it's designed for. Pro
               ┌───────────────┼───────────────┐
               ▼               ▼               ▼
         ┌──────────┐   ┌──────────┐   ┌──────────┐
-        │ Supabase │   │  Codex  │   │  Redis   │
+        │ Supabase │   │  Claude  │   │  Redis   │
         │ Database │   │   API    │   │  Cache   │
         └──────────┘   └──────────┘   └──────────┘
 ```
@@ -147,7 +148,7 @@ async function fetchApi<T>(
 }
 ```
 
-### Codex AI Integration (Structured Output)
+### Claude AI Integration (Structured Output)
 
 ```python
 from anthropic import Anthropic

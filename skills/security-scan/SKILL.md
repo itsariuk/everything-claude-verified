@@ -1,6 +1,7 @@
 ---
 name: security-scan
-description: Scan your Codex configuration (.codex/ directory) for security vulnerabilities, misconfigurations, and injection risks using AgentShield. Checks AGENTS.md, settings.json, MCP servers, hooks, and agent definitions.
+description: Scan your Codex configuration (.codex/ directory) for security vulnerabilities, misconfigurations, and injection risks using AgentShield. Checks CLAUDE.md, settings.json, MCP servers, hooks, and agent definitions.
+origin: ECC
 ---
 
 # Security Scan Skill
@@ -10,7 +11,7 @@ Audit your Codex configuration for security issues using [AgentShield](https://g
 ## When to Activate
 
 - Setting up a new Codex project
-- After modifying `.codex/settings.json`, `AGENTS.md`, or MCP configs
+- After modifying `.codex/settings.json`, `CLAUDE.md`, or MCP configs
 - Before committing configuration changes
 - When onboarding to a new repository with existing Codex configs
 - Periodic security hygiene checks
@@ -19,7 +20,7 @@ Audit your Codex configuration for security issues using [AgentShield](https://g
 
 | File | Checks |
 |------|--------|
-| `AGENTS.md` | Hardcoded secrets, auto-run instructions, prompt injection patterns |
+| `CLAUDE.md` | Hardcoded secrets, auto-run instructions, prompt injection patterns |
 | `settings.json` | Overly permissive allow lists, missing deny lists, dangerous bypass flags |
 | `mcp.json` | Risky MCP servers, hardcoded env secrets, npx supply chain risks |
 | `hooks/` | Command injection via interpolation, data exfiltration, silent error suppression |
@@ -111,7 +112,7 @@ npx ecc-agentshield init
 
 Creates:
 - `settings.json` with scoped permissions and deny list
-- `AGENTS.md` with security best practices
+- `CLAUDE.md` with security best practices
 - `mcp.json` placeholder
 
 ### GitHub Action
@@ -145,7 +146,7 @@ Add to your CI pipeline:
 - Shell-running MCP servers
 
 ### High Findings (fix before production)
-- Auto-run instructions in AGENTS.md (prompt injection vector)
+- Auto-run instructions in CLAUDE.md (prompt injection vector)
 - Missing deny lists in permissions
 - Agents with unnecessary Bash access
 

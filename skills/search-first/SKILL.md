@@ -1,6 +1,7 @@
 ---
 name: search-first
 description: Research-before-coding workflow. Search for existing tools, libraries, and patterns before writing custom code. Invokes the researcher agent.
+origin: ECC
 ---
 
 # /search-first — Research Before You Code
@@ -89,7 +90,7 @@ Task(subagent_type="general-purpose", prompt="
 - Pre-commit → `husky`, `lint-staged`, `pre-commit`
 
 ### AI/LLM Integration
-- Codex SDK → Context7 for latest docs
+- Claude SDK → Context7 for latest docs
 - Prompt management → Check MCP servers
 - Document processing → `unstructured`, `pdfplumber`, `mammoth`
 

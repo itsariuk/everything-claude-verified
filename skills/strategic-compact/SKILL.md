@@ -1,6 +1,7 @@
 ---
 name: strategic-compact
 description: Suggests manual context compaction at logical intervals to preserve context through task phases rather than arbitrary auto-compaction.
+origin: ECC
 ---
 
 # Strategic Compact Skill
@@ -80,7 +81,7 @@ Understanding what persists helps you compact with confidence:
 
 | Persists | Lost |
 |----------|------|
-| AGENTS.md instructions | Intermediate reasoning and analysis |
+| CLAUDE.md instructions | Intermediate reasoning and analysis |
 | TodoWrite task list | File contents you previously read |
 | Memory files (`~/.codex/memory/`) | Multi-step conversation context |
 | Git state (commits, branches) | Tool call history and counts |

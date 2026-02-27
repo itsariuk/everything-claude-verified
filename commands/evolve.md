@@ -11,10 +11,10 @@ command: true
 Run the instinct CLI using the plugin root path:
 
 ```bash
-python3 "${CODEX_ROOT}/skills/continuous-learning-v2/scripts/instinct-cli.py" evolve [--generate]
+python3 "${CODEX_PLUGIN_ROOT}/skills/continuous-learning-v2/scripts/instinct-cli.py" evolve [--generate]
 ```
 
-Or if `CODEX_ROOT` is not set (manual installation):
+Or if `CODEX_PLUGIN_ROOT` is not set (manual installation):
 
 ```bash
 python3 ~/.codex/skills/continuous-learning-v2/scripts/instinct-cli.py evolve [--generate]

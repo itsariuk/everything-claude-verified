@@ -13,10 +13,10 @@ Shows all learned instincts with their confidence scores, grouped by domain.
 Run the instinct CLI using the plugin root path:
 
 ```bash
-python3 "${CODEX_ROOT}/skills/continuous-learning-v2/scripts/instinct-cli.py" status
+python3 "${CODEX_PLUGIN_ROOT}/skills/continuous-learning-v2/scripts/instinct-cli.py" status
 ```
 
-Or if `CODEX_ROOT` is not set (manual installation), use:
+Or if `CODEX_PLUGIN_ROOT` is not set (manual installation), use:
 
 ```bash
 python3 ~/.codex/skills/continuous-learning-v2/scripts/instinct-cli.py status

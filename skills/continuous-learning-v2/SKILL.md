@@ -1,12 +1,15 @@
 ---
 name: continuous-learning-v2
 description: Instinct-based learning system that observes sessions via hooks, creates atomic instincts with confidence scoring, and evolves them into skills/commands/agents.
+origin: ECC
 version: 2.0.0
 ---
 
 # Continuous Learning v2 - Instinct-Based Architecture
 
 An advanced learning system that turns your Codex sessions into reusable knowledge through atomic "instincts" - small learned behaviors with confidence scoring.
+
+Inspired in part by the Homunculus work from [humanplane](https://github.com/humanplane).
 
 ## When to Activate
 
@@ -111,14 +114,14 @@ Add to your `~/.codex/settings.json`.
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "${CODEX_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre"
+        "command": "${CODEX_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre"
       }]
     }],
     "PostToolUse": [{
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "${CODEX_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post"
+        "command": "${CODEX_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post"
       }]
     }]
   }
@@ -260,7 +263,7 @@ Confidence evolves over time:
 
 ## Why Hooks vs Skills for Observation?
 
-> "v1 relied on skills to observe. Skills are probabilistic—they fire ~50-80% of the time based on Codex's judgment."
+> "v1 relied on skills to observe. Skills are probabilistic—they fire ~50-80% of the time based on Claude's judgment."
 
 Hooks fire **100% of the time**, deterministically. This means:
 - Every tool call is observed
@@ -284,9 +287,9 @@ v2 is fully compatible with v1:
 ## Related
 
 - [Skill Creator](https://skill-creator.app) - Generate instincts from repo history
-- [Homunculus](https://github.com/humanplane/homunculus) - Inspiration for v2 architecture
+- Homunculus - Community project that inspired the v2 instinct-based architecture (atomic observations, confidence scoring, instinct evolution pipeline)
 - [The Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) - Continuous learning section
 
 ---
 
-*Instinct-based learning: teaching Codex your patterns, one observation at a time.*
+*Instinct-based learning: teaching Claude your patterns, one observation at a time.*

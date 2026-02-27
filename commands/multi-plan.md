@@ -10,7 +10,7 @@ $ARGUMENTS
 
 - **Language Protocol**: Use **English** when interacting with tools/models, communicate with user in their language
 - **Mandatory Parallel**: Codex/Gemini calls MUST use `run_in_background: true` (including single model calls, to avoid blocking main thread)
-- **Code Sovereignty**: External models have **zero filesystem write access**, all modifications by Codex
+- **Code Sovereignty**: External models have **zero filesystem write access**, all modifications by Claude
 - **Stop-Loss Mechanism**: Do not proceed to next phase until current phase output is validated
 - **Planning Only**: This command allows reading context and writing to `.codex/plan/*` plan files, but **NEVER modify production code**
 
@@ -142,7 +142,7 @@ Integrate perspectives and iterate for optimization:
 
 #### 2.3 (Optional but Recommended) Dual-Model Plan Draft
 
-To reduce risk of omissions in Codex's synthesized plan, can parallel have both models output "plan drafts" (still **NOT allowed** to modify files):
+To reduce risk of omissions in Claude's synthesized plan, can parallel have both models output "plan drafts" (still **NOT allowed** to modify files):
 
 1. **Codex Plan Draft** (Backend authority):
    - ROLE_FILE: `~/.codex/.ccg/prompts/codex/architect.md`
@@ -154,7 +154,7 @@ To reduce risk of omissions in Codex's synthesized plan, can parallel have both 
 
 Wait for both models' complete results with `TaskOutput`, record key differences in their suggestions.
 
-#### 2.4 Generate Implementation Plan (Codex Final Version)
+#### 2.4 Generate Implementation Plan (Claude Final Version)
 
 Synthesize both analyses, generate **Step-by-step Implementation Plan**:
 

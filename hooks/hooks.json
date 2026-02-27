@@ -36,10 +36,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"const fs=require('fs');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const i=JSON.parse(d);const p=i.tool_input?.file_path||'';if(/\\.(md|txt)$/.test(p)&&!/(README|AGENTS|CONTRIBUTING)\\.md$/.test(p)&&!/\\.codex\\/plans\\//.test(p)){console.error('[Hook] BLOCKED: Unnecessary documentation file creation');console.error('[Hook] File: '+p);console.error('[Hook] Use README.md for documentation instead');process.exit(2)}}catch{}console.log(d)})\""
+            "command": "node \"${CODEX_ROOT:-$PWD}/scripts/hooks/pre-write-doc-warn.js\""
           }
         ],
-        "description": "Block creation of random .md files - keeps docs consolidated"
+        "description": "Warn when creating non-standard documentation files"
       },
       {
         "matcher": "Edit|Write",

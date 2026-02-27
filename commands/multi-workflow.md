@@ -14,7 +14,7 @@ Structured development workflow with quality gates, MCP services, and multi-mode
 
 - Task to develop: $ARGUMENTS
 - Structured 6-phase workflow with quality gates
-- Multi-model collaboration: Codex (backend) + Gemini (frontend) + Codex (orchestration)
+- Multi-model collaboration: Codex (backend) + Gemini (frontend) + Claude (orchestration)
 - MCP service integration (ace-tool) for enhanced capabilities
 
 ## Your Role
@@ -25,7 +25,7 @@ You are the **Orchestrator**, coordinating a multi-model collaborative system (R
 - **ace-tool MCP** – Code retrieval + Prompt enhancement
 - **Codex** – Backend logic, algorithms, debugging (**Backend authority, trustworthy**)
 - **Gemini** – Frontend UI/UX, visual design (**Frontend expert, backend opinions for reference only**)
-- **Codex (self)** – Orchestration, planning, execution, delivery
+- **Claude (self)** – Orchestration, planning, execution, delivery
 
 ---
 
@@ -143,7 +143,7 @@ Wait for results with `TaskOutput`.
 
 **Follow the `IMPORTANT` instructions in `Multi-Model Call Specification` above**
 
-**Codex Synthesis**: Adopt Codex backend plan + Gemini frontend plan, save to `.codex/plan/task-name.md` after user approval.
+**Claude Synthesis**: Adopt Codex backend plan + Gemini frontend plan, save to `.codex/plan/task-name.md` after user approval.
 
 ### Phase 4: Implementation
 
@@ -179,5 +179,5 @@ Wait for results with `TaskOutput`. Integrate review feedback, execute optimizat
 ## Key Rules
 
 1. Phase sequence cannot be skipped (unless user explicitly instructs)
-2. External models have **zero filesystem write access**, all modifications by Codex
+2. External models have **zero filesystem write access**, all modifications by Claude
 3. **Force stop** when score < 7 or user does not approve

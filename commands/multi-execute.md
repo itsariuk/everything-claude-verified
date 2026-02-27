@@ -1,6 +1,6 @@
 # Execute - Multi-Model Collaborative Execution
 
-Multi-model collaborative execution - Get prototype from plan → Codex refactors and implements → Multi-model audit and delivery.
+Multi-model collaborative execution - Get prototype from plan → Claude refactors and implements → Multi-model audit and delivery.
 
 $ARGUMENTS
 
@@ -9,7 +9,7 @@ $ARGUMENTS
 ## Core Protocols
 
 - **Language Protocol**: Use **English** when interacting with tools/models, communicate with user in their language
-- **Code Sovereignty**: External models have **zero filesystem write access**, all modifications by Codex
+- **Code Sovereignty**: External models have **zero filesystem write access**, all modifications by Claude
 - **Dirty Prototype Refactoring**: Treat Codex/Gemini Unified Diff as "dirty prototype", must refactor to production-grade code
 - **Stop-Loss Mechanism**: Do not proceed to next phase until current phase output is validated
 - **Prerequisite**: Only execute after user explicitly replies "Y" to `/ccg:plan` output (if missing, must confirm first)
@@ -201,7 +201,7 @@ mcp__ace-tool__search_context({
 
 `[Mode: Implement]`
 
-**Codex as Code Sovereign executes the following steps**:
+**Claude as Code Sovereign executes the following steps**:
 
 1. **Read Diff**: Parse Unified Diff Patch returned by Codex/Gemini
 
@@ -283,7 +283,7 @@ After audit passes, report to user:
 
 ## Key Rules
 
-1. **Code Sovereignty** – All file modifications by Codex, external models have zero write access
+1. **Code Sovereignty** – All file modifications by Claude, external models have zero write access
 2. **Dirty Prototype Refactoring** – Codex/Gemini output treated as draft, must refactor
 3. **Trust Rules** – Backend follows Codex, Frontend follows Gemini
 4. **Minimal Changes** – Only modify necessary code, no side effects

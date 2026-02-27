@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Codex Plugin Configuration",
+  "title": "Claude Plugin Configuration",
   "type": "object",
   "required": ["name"],
   "properties": {

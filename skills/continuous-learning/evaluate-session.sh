@@ -64,6 +64,6 @@ if [ "$message_count" -lt "$MIN_SESSION_LENGTH" ]; then
   exit 0
 fi
 
-# Signal to Codex that session should be evaluated for extractable patterns
+# Signal to Claude that session should be evaluated for extractable patterns
 echo "[ContinuousLearning] Session has $message_count messages - evaluate for extractable patterns" >&2
 echo "[ContinuousLearning] Save learned skills to: $LEARNED_SKILLS_PATH" >&2

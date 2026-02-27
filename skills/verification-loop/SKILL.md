@@ -1,6 +1,7 @@
 ---
 name: verification-loop
 description: "A comprehensive verification system for Codex sessions."
+origin: ECC
 ---
 
 # Verification Loop Skill

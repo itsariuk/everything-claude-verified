@@ -204,14 +204,14 @@ Based on `$ARGUMENTS`, execute init:
 3. Generate `{backend}/start.cjs` for Python services (if applicable)
 4. Generate command files in `.codex/commands/`
 5. Generate script files in `.codex/scripts/`
-6. **Update project AGENTS.md** with PM2 info (see below)
+6. **Update project CLAUDE.md** with PM2 info (see below)
 7. **Display completion summary** with terminal commands
 
 ---
 
-## Post-Init: Update AGENTS.md
+## Post-Init: Update CLAUDE.md
 
-After generating files, append PM2 section to project's `AGENTS.md` (create if not exists):
+After generating files, append PM2 section to project's `CLAUDE.md` (create if not exists):
 
 ````markdown
 ## PM2 Services
@@ -232,7 +232,7 @@ pm2 resurrect                    # Restore saved list
 ```
 ````
 
-**Rules for AGENTS.md update:**
+**Rules for CLAUDE.md update:**
 - If PM2 section exists, replace it
 - If not exists, append to end
 - Keep content minimal and essential
@@ -252,7 +252,7 @@ After all files generated, output:
 |------|------|------|
 | {port} | {name} | {type} |
 
-**Codex Commands:** /pm2-all, /pm2-all-stop, /pm2-{port}, /pm2-{port}-stop, /pm2-logs, /pm2-status
+**Claude Commands:** /pm2-all, /pm2-all-stop, /pm2-{port}, /pm2-{port}-stop, /pm2-logs, /pm2-status
 
 **Terminal Commands:**
 ## First time (with config file)

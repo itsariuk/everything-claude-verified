@@ -32,7 +32,7 @@ Reads observations from `~/.codex/homunculus/observations.jsonl`:
 Look for these patterns in observations:
 
 ### 1. User Corrections
-When a user's follow-up message corrects Codex's previous action:
+When a user's follow-up message corrects Claude's previous action:
 - "No, use X instead of Y"
 - "Actually, I meant..."
 - Immediate undo/redo patterns
