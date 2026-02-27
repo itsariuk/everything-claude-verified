@@ -7,7 +7,7 @@ run_mode: background
 
 # Observer Agent
 
-一个后台代理，用于分析 Claude Code 会话中的观察结果，以检测模式并创建本能。
+一个后台代理，用于分析 Codex 会话中的观察结果，以检测模式并创建本能。
 
 ## 何时运行
 
@@ -18,7 +18,7 @@ run_mode: background
 
 ## 输入
 
-从 `~/.claude/homunculus/observations.jsonl` 读取观察结果：
+从 `~/.codex/homunculus/observations.jsonl` 读取观察结果：
 
 ```jsonl
 {"timestamp":"2025-01-22T10:30:00Z","event":"tool_start","session":"abc123","tool":"Edit","input":"..."}
@@ -33,7 +33,7 @@ run_mode: background
 
 ### 1. 用户更正
 
-当用户的后续消息纠正了 Claude 之前的操作时：
+当用户的后续消息纠正了 Codex 之前的操作时：
 
 * "不，使用 X 而不是 Y"
 * "实际上，我的意思是……"
@@ -73,7 +73,7 @@ run_mode: background
 
 ## 输出
 
-在 `~/.claude/homunculus/instincts/personal/` 中创建/更新本能：
+在 `~/.codex/homunculus/instincts/personal/` 中创建/更新本能：
 
 ```yaml
 ---

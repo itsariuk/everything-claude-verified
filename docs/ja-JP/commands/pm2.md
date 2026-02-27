@@ -36,7 +36,7 @@
 project/
 ├── ecosystem.config.cjs              # PM2設定
 ├── {backend}/start.cjs               # Pythonラッパー(該当する場合)
-└── .claude/
+└── .codex/
     ├── commands/
     │   ├── pm2-all.md                # すべて起動 + monit
     │   ├── pm2-all-stop.md           # すべて停止
@@ -202,16 +202,16 @@ pm2 monit
 1. プロジェクトのサービスをスキャン
 2. `ecosystem.config.cjs`を生成
 3. Pythonサービス用の`{backend}/start.cjs`を生成(該当する場合)
-4. `.claude/commands/`にコマンドファイルを生成
-5. `.claude/scripts/`にスクリプトファイルを生成
-6. **プロジェクトのCLAUDE.md**をPM2情報で更新(下記参照)
+4. `.codex/commands/`にコマンドファイルを生成
+5. `.codex/scripts/`にスクリプトファイルを生成
+6. **プロジェクトのAGENTS.md**をPM2情報で更新(下記参照)
 7. ターミナルコマンドを含む**完了サマリーを表示**
 
 ---
 
-## 初期化後: CLAUDE.mdの更新
+## 初期化後: AGENTS.mdの更新
 
-ファイル生成後、プロジェクトの`CLAUDE.md`にPM2セクションを追加(存在しない場合は作成):
+ファイル生成後、プロジェクトの`AGENTS.md`にPM2セクションを追加(存在しない場合は作成):
 
 ````markdown
 ## PM2サービス
@@ -232,7 +232,7 @@ pm2 resurrect                    # 保存したリストを復元
 ```
 ````
 
-**CLAUDE.md更新のルール:**
+**AGENTS.md更新のルール:**
 - PM2セクションが存在する場合、置き換える
 - 存在しない場合、末尾に追加
 - 内容は最小限かつ必須のもののみ

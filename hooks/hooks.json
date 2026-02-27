@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "hooks": {
     "PreToolUse": [
       {
@@ -37,7 +36,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"const fs=require('fs');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const i=JSON.parse(d);const p=i.tool_input?.file_path||'';if(/\\.(md|txt)$/.test(p)&&!/(README|CLAUDE|AGENTS|CONTRIBUTING)\\.md$/.test(p)&&!/\\.claude\\/plans\\//.test(p)){console.error('[Hook] BLOCKED: Unnecessary documentation file creation');console.error('[Hook] File: '+p);console.error('[Hook] Use README.md for documentation instead');process.exit(2)}}catch{}console.log(d)})\""
+            "command": "node -e \"const fs=require('fs');let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const i=JSON.parse(d);const p=i.tool_input?.file_path||'';if(/\\.(md|txt)$/.test(p)&&!/(README|AGENTS|CONTRIBUTING)\\.md$/.test(p)&&!/\\.codex\\/plans\\//.test(p)){console.error('[Hook] BLOCKED: Unnecessary documentation file creation');console.error('[Hook] File: '+p);console.error('[Hook] Use README.md for documentation instead');process.exit(2)}}catch{}console.log(d)})\""
           }
         ],
         "description": "Block creation of random .md files - keeps docs consolidated"
@@ -47,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/suggest-compact.js\""
+            "command": "node \"${CODEX_ROOT:-$PWD}/scripts/hooks/suggest-compact.js\""
           }
         ],
         "description": "Suggest manual compaction at logical intervals"
@@ -59,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/pre-compact.js\""
+            "command": "node \"${CODEX_ROOT:-$PWD}/scripts/hooks/pre-compact.js\""
           }
         ],
         "description": "Save state before context compaction"
@@ -71,7 +70,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-start.js\""
+            "command": "node \"${CODEX_ROOT:-$PWD}/scripts/hooks/session-start.js\""
           }
         ],
         "description": "Load previous context and detect package manager on new session"
@@ -105,7 +104,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-edit-format.js\""
+            "command": "node \"${CODEX_ROOT:-$PWD}/scripts/hooks/post-edit-format.js\""
           }
         ],
         "description": "Auto-format JS/TS files with Prettier after edits"
@@ -115,7 +114,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-edit-typecheck.js\""
+            "command": "node \"${CODEX_ROOT:-$PWD}/scripts/hooks/post-edit-typecheck.js\""
           }
         ],
         "description": "TypeScript check after editing .ts/.tsx files"
@@ -125,7 +124,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/post-edit-console-warn.js\""
+            "command": "node \"${CODEX_ROOT:-$PWD}/scripts/hooks/post-edit-console-warn.js\""
           }
         ],
         "description": "Warn about console.log statements after edits"
@@ -137,7 +136,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/check-console-log.js\""
+            "command": "node \"${CODEX_ROOT:-$PWD}/scripts/hooks/check-console-log.js\""
           }
         ],
         "description": "Check for console.log in modified files after each response"
@@ -149,7 +148,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session-end.js\""
+            "command": "node \"${CODEX_ROOT:-$PWD}/scripts/hooks/session-end.js\""
           }
         ],
         "description": "Persist session state on end"
@@ -159,7 +158,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/evaluate-session.js\""
+            "command": "node \"${CODEX_ROOT:-$PWD}/scripts/hooks/evaluate-session.js\""
           }
         ],
         "description": "Evaluate session for extractable patterns"

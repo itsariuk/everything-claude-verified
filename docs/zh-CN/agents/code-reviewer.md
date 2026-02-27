@@ -106,4 +106,4 @@ const apiKey = process.env.API_KEY;  // ✓ Good
 * 检查 AI 集成错误处理
 * 验证缓存回退行为
 
-根据您的项目的 `CLAUDE.md` 或技能文件进行自定义。
+根据您的项目的 `AGENTS.md` 或技能文件进行自定义。

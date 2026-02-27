@@ -12,7 +12,7 @@
 
 建立新的 eval 定義：
 
-1. 使用範本建立 `.claude/evals/feature-name.md`：
+1. 使用範本建立 `.codex/evals/feature-name.md`：
 
 ```markdown
 ## EVAL: feature-name
@@ -39,11 +39,11 @@
 
 執行功能的 evals：
 
-1. 從 `.claude/evals/feature-name.md` 讀取 eval 定義
+1. 從 `.codex/evals/feature-name.md` 讀取 eval 定義
 2. 對每個能力 eval：
    - 嘗試驗證標準
    - 記錄通過/失敗
-   - 記錄嘗試到 `.claude/evals/feature-name.log`
+   - 記錄嘗試到 `.codex/evals/feature-name.log`
 3. 對每個回歸 eval：
    - 執行相關測試
    - 與基準比較

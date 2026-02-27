@@ -1,12 +1,12 @@
 ---
 name: eval-harness
-description: Formal evaluation framework for Claude Code sessions implementing eval-driven development (EDD) principles
+description: Formal evaluation framework for Codex sessions implementing eval-driven development (EDD) principles
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 # Eval Harness 技能
 
-Claude Code 工作階段的正式評估框架，實作 eval 驅動開發（EDD）原則。
+Codex 工作階段的正式評估框架，實作 eval 驅動開發（EDD）原則。
 
 ## 理念
 
@@ -19,10 +19,10 @@ Eval 驅動開發將 evals 視為「AI 開發的單元測試」：
 ## Eval 類型
 
 ### 能力 Evals
-測試 Claude 是否能做到以前做不到的事：
+測試 Codex 是否能做到以前做不到的事：
 ```markdown
 [CAPABILITY EVAL: feature-name]
-任務：Claude 應完成什麼的描述
+任務：Codex 應完成什麼的描述
 成功標準：
   - [ ] 標準 1
   - [ ] 標準 2
@@ -58,7 +58,7 @@ npm run build && echo "PASS" || echo "FAIL"
 ```
 
 ### 2. 基於模型的評分器
-使用 Claude 評估開放式輸出：
+使用 Codex 評估開放式輸出：
 ```markdown
 [MODEL GRADER PROMPT]
 評估以下程式碼變更：
@@ -159,7 +159,7 @@ EVAL 報告：feature-xyz
 ```
 /eval define feature-name
 ```
-在 `.claude/evals/feature-name.md` 建立 eval 定義檔案
+在 `.codex/evals/feature-name.md` 建立 eval 定義檔案
 
 ### 實作期間
 ```
@@ -177,7 +177,7 @@ EVAL 報告：feature-xyz
 
 在專案中儲存 evals：
 ```
-.claude/
+.codex/
   evals/
     feature-xyz.md      # Eval 定義
     feature-xyz.log     # Eval 執行歷史

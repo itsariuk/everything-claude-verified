@@ -9,7 +9,7 @@ Patterns for controlling LLM API costs while maintaining quality. Combines model
 
 ## When to Activate
 
-- Building applications that call LLM APIs (Claude, GPT, etc.)
+- Building applications that call LLM APIs (Codex, GPT, etc.)
 - Processing batches of items with varying complexity
 - Need to stay within a budget for API spend
 - Optimizing cost without sacrificing quality on complex tasks
@@ -176,7 +176,7 @@ def process(text: str, config: Config, tracker: CostTracker) -> tuple[Result, Co
 
 ## When to Use
 
-- Any application calling Claude, OpenAI, or similar LLM APIs
+- Any application calling Codex, OpenAI, or similar LLM APIs
 - Batch processing pipelines where cost adds up quickly
 - Multi-model architectures that need intelligent routing
 - Production systems that need budget guardrails

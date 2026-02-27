@@ -6,7 +6,7 @@ version: 2.0.0
 
 # 持續學習 v2 - 基於本能的架構
 
-進階學習系統，透過原子「本能」（帶信心評分的小型學習行為）將你的 Claude Code 工作階段轉化為可重用知識。
+進階學習系統，透過原子「本能」（帶信心評分的小型學習行為）將你的 Codex 工作階段轉化為可重用知識。
 
 ## v2 的新功能
 
@@ -92,7 +92,7 @@ source: "session-observation"
 
 ### 1. 啟用觀察 Hooks
 
-新增到你的 `~/.claude/settings.json`：
+新增到你的 `~/.codex/settings.json`：
 
 ```json
 {
@@ -101,14 +101,14 @@ source: "session-observation"
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh pre"
+        "command": "~/.codex/skills/continuous-learning-v2/hooks/observe.sh pre"
       }]
     }],
     "PostToolUse": [{
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh post"
+        "command": "~/.codex/skills/continuous-learning-v2/hooks/observe.sh post"
       }]
     }]
   }
@@ -118,8 +118,8 @@ source: "session-observation"
 ### 2. 初始化目錄結構
 
 ```bash
-mkdir -p ~/.claude/homunculus/{instincts/{personal,inherited},evolved/{agents,skills,commands}}
-touch ~/.claude/homunculus/observations.jsonl
+mkdir -p ~/.codex/homunculus/{instincts/{personal,inherited},evolved/{agents,skills,commands}}
+touch ~/.codex/homunculus/observations.jsonl
 ```
 
 ### 3. 執行 Observer Agent（可選）
@@ -128,7 +128,7 @@ touch ~/.claude/homunculus/observations.jsonl
 
 ```bash
 # 啟動背景觀察者
-~/.claude/skills/continuous-learning-v2/agents/start-observer.sh
+~/.codex/skills/continuous-learning-v2/agents/start-observer.sh
 ```
 
 ## 指令
@@ -149,13 +149,13 @@ touch ~/.claude/homunculus/observations.jsonl
   "version": "2.0",
   "observation": {
     "enabled": true,
-    "store_path": "~/.claude/homunculus/observations.jsonl",
+    "store_path": "~/.codex/homunculus/observations.jsonl",
     "max_file_size_mb": 10,
     "archive_after_days": 7
   },
   "instincts": {
-    "personal_path": "~/.claude/homunculus/instincts/personal/",
-    "inherited_path": "~/.claude/homunculus/instincts/inherited/",
+    "personal_path": "~/.codex/homunculus/instincts/personal/",
+    "inherited_path": "~/.codex/homunculus/instincts/inherited/",
     "min_confidence": 0.3,
     "auto_approve_threshold": 0.7,
     "confidence_decay_rate": 0.05
@@ -173,7 +173,7 @@ touch ~/.claude/homunculus/observations.jsonl
   },
   "evolution": {
     "cluster_threshold": 3,
-    "evolved_path": "~/.claude/homunculus/evolved/"
+    "evolved_path": "~/.codex/homunculus/evolved/"
   }
 }
 ```
@@ -181,7 +181,7 @@ touch ~/.claude/homunculus/observations.jsonl
 ## 檔案結構
 
 ```
-~/.claude/homunculus/
+~/.codex/homunculus/
 ├── identity.json           # 你的個人資料、技術水平
 ├── observations.jsonl      # 當前工作階段觀察
 ├── observations.archive/   # 已處理觀察
@@ -225,7 +225,7 @@ touch ~/.claude/homunculus/observations.jsonl
 
 ## 為何 Hooks vs Skills 用於觀察？
 
-> "v1 依賴技能進行觀察。技能是機率性的——它們根據 Claude 的判斷觸發約 50-80% 的時間。"
+> "v1 依賴技能進行觀察。技能是機率性的——它們根據 Codex 的判斷觸發約 50-80% 的時間。"
 
 Hooks **100% 的時間**確定性地觸發。這意味著：
 - 每個工具呼叫都被觀察
@@ -235,7 +235,7 @@ Hooks **100% 的時間**確定性地觸發。這意味著：
 ## 向後相容性
 
 v2 完全相容 v1：
-- 現有 `~/.claude/skills/learned/` 技能仍可運作
+- 現有 `~/.codex/skills/learned/` 技能仍可運作
 - Stop hook 仍執行（但現在也餵入 v2）
 - 漸進遷移路徑：兩者並行執行
 
@@ -254,4 +254,4 @@ v2 完全相容 v1：
 
 ---
 
-*基於本能的學習：一次一個觀察，教導 Claude 你的模式。*
+*基於本能的學習：一次一個觀察，教導 Codex 你的模式。*

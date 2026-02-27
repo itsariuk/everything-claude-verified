@@ -37,7 +37,7 @@ The `suggest-compact.js` script runs on PreToolUse (Edit/Write) and:
 
 ## Hook Setup
 
-Add to your `~/.claude/settings.json`:
+Add to your `~/.codex/settings.json`:
 
 ```json
 {
@@ -45,11 +45,11 @@ Add to your `~/.claude/settings.json`:
     "PreToolUse": [
       {
         "matcher": "Edit",
-        "hooks": [{ "type": "command", "command": "node ~/.claude/skills/strategic-compact/suggest-compact.js" }]
+        "hooks": [{ "type": "command", "command": "node ~/.codex/skills/strategic-compact/suggest-compact.js" }]
       },
       {
         "matcher": "Write",
-        "hooks": [{ "type": "command", "command": "node ~/.claude/skills/strategic-compact/suggest-compact.js" }]
+        "hooks": [{ "type": "command", "command": "node ~/.codex/skills/strategic-compact/suggest-compact.js" }]
       }
     ]
   }
@@ -80,9 +80,9 @@ Understanding what persists helps you compact with confidence:
 
 | Persists | Lost |
 |----------|------|
-| CLAUDE.md instructions | Intermediate reasoning and analysis |
+| AGENTS.md instructions | Intermediate reasoning and analysis |
 | TodoWrite task list | File contents you previously read |
-| Memory files (`~/.claude/memory/`) | Multi-step conversation context |
+| Memory files (`~/.codex/memory/`) | Multi-step conversation context |
 | Git state (commits, branches) | Tool call history and counts |
 | Files on disk | Nuanced user preferences stated verbally |
 

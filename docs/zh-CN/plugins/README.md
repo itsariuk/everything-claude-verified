@@ -1,6 +1,6 @@
 # 插件与市场
 
-插件扩展了 Claude Code 的功能，为其添加新工具和能力。本指南仅涵盖安装部分 - 关于何时以及为何使用插件，请参阅[完整文章](https://x.com/affaanmustafa/status/2012378465664745795)。
+插件扩展了 Codex 的功能，为其添加新工具和能力。本指南仅涵盖安装部分 - 关于何时以及为何使用插件，请参阅[完整文章](https://x.com/affaanmustafa/status/2012378465664745795)。
 
 ***
 
@@ -81,7 +81,7 @@ claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 ## 插件文件位置
 
 ```
-~/.claude/plugins/
+~/.codex/plugins/
 |-- cache/                    # Downloaded plugins
 |-- installed_plugins.json    # Installed list
 |-- known_marketplaces.json   # Added marketplaces

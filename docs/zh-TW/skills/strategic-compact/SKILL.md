@@ -29,7 +29,7 @@ description: Suggests manual context compaction at logical intervals to preserve
 
 ## Hook 設定
 
-新增到你的 `~/.claude/settings.json`：
+新增到你的 `~/.codex/settings.json`：
 
 ```json
 {
@@ -38,7 +38,7 @@ description: Suggests manual context compaction at logical intervals to preserve
       "matcher": "tool == \"Edit\" || tool == \"Write\"",
       "hooks": [{
         "type": "command",
-        "command": "~/.claude/skills/strategic-compact/suggest-compact.sh"
+        "command": "~/.codex/skills/strategic-compact/suggest-compact.sh"
       }]
     }]
   }

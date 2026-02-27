@@ -6,7 +6,7 @@ version: 2.0.0
 
 # 持续学习 v2 - 基于本能的架构
 
-一个高级学习系统，通过原子化的“本能”——带有置信度评分的小型习得行为——将你的 Claude Code 会话转化为可重用的知识。
+一个高级学习系统，通过原子化的“本能”——带有置信度评分的小型习得行为——将你的 Codex 会话转化为可重用的知识。
 
 ## v2 的新特性
 
@@ -93,7 +93,7 @@ Session Activity
 
 ### 1. 启用观察钩子
 
-添加到你的 `~/.claude/settings.json` 中。
+添加到你的 `~/.codex/settings.json` 中。
 
 **如果作为插件安装**（推荐）：
 
@@ -104,21 +104,21 @@ Session Activity
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre"
+        "command": "${CODEX_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre"
       }]
     }],
     "PostToolUse": [{
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post"
+        "command": "${CODEX_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post"
       }]
     }]
   }
 }
 ```
 
-**如果手动安装**到 `~/.claude/skills`：
+**如果手动安装**到 `~/.codex/skills`：
 
 ```json
 {
@@ -127,14 +127,14 @@ Session Activity
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh pre"
+        "command": "~/.codex/skills/continuous-learning-v2/hooks/observe.sh pre"
       }]
     }],
     "PostToolUse": [{
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh post"
+        "command": "~/.codex/skills/continuous-learning-v2/hooks/observe.sh post"
       }]
     }]
   }
@@ -146,8 +146,8 @@ Session Activity
 Python CLI 会自动创建这些目录，但你也可以手动创建：
 
 ```bash
-mkdir -p ~/.claude/homunculus/{instincts/{personal,inherited},evolved/{agents,skills,commands}}
-touch ~/.claude/homunculus/observations.jsonl
+mkdir -p ~/.codex/homunculus/{instincts/{personal,inherited},evolved/{agents,skills,commands}}
+touch ~/.codex/homunculus/observations.jsonl
 ```
 
 ### 3. 使用本能命令
@@ -177,13 +177,13 @@ touch ~/.claude/homunculus/observations.jsonl
   "version": "2.0",
   "observation": {
     "enabled": true,
-    "store_path": "~/.claude/homunculus/observations.jsonl",
+    "store_path": "~/.codex/homunculus/observations.jsonl",
     "max_file_size_mb": 10,
     "archive_after_days": 7
   },
   "instincts": {
-    "personal_path": "~/.claude/homunculus/instincts/personal/",
-    "inherited_path": "~/.claude/homunculus/instincts/inherited/",
+    "personal_path": "~/.codex/homunculus/instincts/personal/",
+    "inherited_path": "~/.codex/homunculus/instincts/inherited/",
     "min_confidence": 0.3,
     "auto_approve_threshold": 0.7,
     "confidence_decay_rate": 0.05
@@ -201,7 +201,7 @@ touch ~/.claude/homunculus/observations.jsonl
   },
   "evolution": {
     "cluster_threshold": 3,
-    "evolved_path": "~/.claude/homunculus/evolved/"
+    "evolved_path": "~/.codex/homunculus/evolved/"
   }
 }
 ```
@@ -209,7 +209,7 @@ touch ~/.claude/homunculus/observations.jsonl
 ## 文件结构
 
 ```
-~/.claude/homunculus/
+~/.codex/homunculus/
 ├── identity.json           # Your profile, technical level
 ├── observations.jsonl      # Current session observations
 ├── observations.archive/   # Processed observations
@@ -256,7 +256,7 @@ touch ~/.claude/homunculus/observations.jsonl
 
 ## 为什么用钩子而非技能进行观察？
 
-> “v1 依赖技能进行观察。技能是概率性的——它们基于 Claude 的判断，大约有 50-80% 的概率触发。”
+> “v1 依赖技能进行观察。技能是概率性的——它们基于 Codex 的判断，大约有 50-80% 的概率触发。”
 
 钩子**100% 触发**，是确定性的。这意味着：
 
@@ -268,7 +268,7 @@ touch ~/.claude/homunculus/observations.jsonl
 
 v2 与 v1 完全兼容：
 
-* 现有的 `~/.claude/skills/learned/` 技能仍然有效
+* 现有的 `~/.codex/skills/learned/` 技能仍然有效
 * 停止钩子仍然运行（但现在也输入到 v2）
 * 渐进式迁移路径：并行运行两者
 
@@ -287,4 +287,4 @@ v2 与 v1 完全兼容：
 
 ***
 
-*基于本能的学习：一次一个观察，教会 Claude 你的模式。*
+*基于本能的学习：一次一个观察，教会 Codex 你的模式。*

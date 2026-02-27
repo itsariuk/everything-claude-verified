@@ -12,10 +12,10 @@
 
 1. 运行 `/verify quick` 以确保当前状态是干净的
 2. 使用检查点名称创建一个 git stash 或提交
-3. 将检查点记录到 `.claude/checkpoints.log`：
+3. 将检查点记录到 `.codex/checkpoints.log`：
 
 ```bash
-echo "$(date +%Y-%m-%d-%H:%M) | $CHECKPOINT_NAME | $(git rev-parse --short HEAD)" >> .claude/checkpoints.log
+echo "$(date +%Y-%m-%d-%H:%M) | $CHECKPOINT_NAME | $(git rev-parse --short HEAD)" >> .codex/checkpoints.log
 ```
 
 4. 报告检查点已创建

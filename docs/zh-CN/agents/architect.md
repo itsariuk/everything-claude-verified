@@ -211,7 +211,7 @@ AI 驱动的 SaaS 平台示例架构：
 * **后端**：FastAPI 或 Express (Cloud Run/Railway)
 * **数据库**：PostgreSQL (Supabase)
 * **缓存**：Redis (Upstash/Railway)
-* **AI**：Claude API 带结构化输出
+* **AI**：Codex API 带结构化输出
 * **实时**：Supabase 订阅
 
 ### 关键设计决策

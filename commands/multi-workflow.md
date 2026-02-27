@@ -14,7 +14,7 @@ Structured development workflow with quality gates, MCP services, and multi-mode
 
 - Task to develop: $ARGUMENTS
 - Structured 6-phase workflow with quality gates
-- Multi-model collaboration: Codex (backend) + Gemini (frontend) + Claude (orchestration)
+- Multi-model collaboration: Codex (backend) + Gemini (frontend) + Codex (orchestration)
 - MCP service integration (ace-tool) for enhanced capabilities
 
 ## Your Role
@@ -25,7 +25,7 @@ You are the **Orchestrator**, coordinating a multi-model collaborative system (R
 - **ace-tool MCP** – Code retrieval + Prompt enhancement
 - **Codex** – Backend logic, algorithms, debugging (**Backend authority, trustworthy**)
 - **Gemini** – Frontend UI/UX, visual design (**Frontend expert, backend opinions for reference only**)
-- **Claude (self)** – Orchestration, planning, execution, delivery
+- **Codex (self)** – Orchestration, planning, execution, delivery
 
 ---
 
@@ -36,7 +36,7 @@ You are the **Orchestrator**, coordinating a multi-model collaborative system (R
 ```
 # New session call
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
 ROLE_FILE: <role prompt path>
 <TASK>
 Requirement: <enhanced requirement (or $ARGUMENTS if not enhanced)>
@@ -51,7 +51,7 @@ EOF",
 
 # Resume session call
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
 ROLE_FILE: <role prompt path>
 <TASK>
 Requirement: <enhanced requirement (or $ARGUMENTS if not enhanced)>
@@ -72,9 +72,9 @@ EOF",
 
 | Phase | Codex | Gemini |
 |-------|-------|--------|
-| Analysis | `~/.claude/.ccg/prompts/codex/analyzer.md` | `~/.claude/.ccg/prompts/gemini/analyzer.md` |
-| Planning | `~/.claude/.ccg/prompts/codex/architect.md` | `~/.claude/.ccg/prompts/gemini/architect.md` |
-| Review | `~/.claude/.ccg/prompts/codex/reviewer.md` | `~/.claude/.ccg/prompts/gemini/reviewer.md` |
+| Analysis | `~/.codex/.ccg/prompts/codex/analyzer.md` | `~/.codex/.ccg/prompts/gemini/analyzer.md` |
+| Planning | `~/.codex/.ccg/prompts/codex/architect.md` | `~/.codex/.ccg/prompts/gemini/architect.md` |
+| Review | `~/.codex/.ccg/prompts/codex/reviewer.md` | `~/.codex/.ccg/prompts/gemini/reviewer.md` |
 
 **Session Reuse**: Each call returns `SESSION_ID: xxx`, use `resume xxx` subcommand for subsequent phases (note: `resume`, not `--resume`).
 
@@ -143,7 +143,7 @@ Wait for results with `TaskOutput`.
 
 **Follow the `IMPORTANT` instructions in `Multi-Model Call Specification` above**
 
-**Claude Synthesis**: Adopt Codex backend plan + Gemini frontend plan, save to `.claude/plan/task-name.md` after user approval.
+**Codex Synthesis**: Adopt Codex backend plan + Gemini frontend plan, save to `.codex/plan/task-name.md` after user approval.
 
 ### Phase 4: Implementation
 
@@ -179,5 +179,5 @@ Wait for results with `TaskOutput`. Integrate review feedback, execute optimizat
 ## Key Rules
 
 1. Phase sequence cannot be skipped (unless user explicitly instructs)
-2. External models have **zero filesystem write access**, all modifications by Claude
+2. External models have **zero filesystem write access**, all modifications by Codex
 3. **Force stop** when score < 7 or user does not approve

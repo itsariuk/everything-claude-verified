@@ -101,4 +101,4 @@ const apiKey = process.env.API_KEY;  // ✓ 正確
 - 檢查 AI 整合錯誤處理
 - 驗證快取備援行為
 
-根據您專案的 `CLAUDE.md` 或技能檔案進行自訂。
+根據您專案的 `AGENTS.md` 或技能檔案進行自訂。

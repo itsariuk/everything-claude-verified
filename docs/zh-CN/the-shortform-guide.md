@@ -1,10 +1,10 @@
-# Claude Code 简明指南
+# Codex 简明指南
 
-![Header: Anthropic Hackathon Winner - Tips & Tricks for Claude Code](../../assets/images/shortform/00-header.png)
+![Header: Anthropic Hackathon Winner - Tips & Tricks for Codex](../../assets/images/shortform/00-header.png)
 
 ***
 
-**自 2 月实验性推出以来，我一直是 Claude Code 的忠实用户，并凭借 [zenith.chat](https://zenith.chat) 与 [@DRodriguezFX](https://x.com/DRodriguezFX) 一起赢得了 Anthropic x Forum Ventures 的黑客马拉松——完全使用 Claude Code。**
+**自 2 月实验性推出以来，我一直是 Codex 的忠实用户，并凭借 [zenith.chat](https://zenith.chat) 与 [@DRodriguezFX](https://x.com/DRodriguezFX) 一起赢得了 Anthropic x Forum Ventures 的黑客马拉松——完全使用 Codex。**
 
 经过 10 个月的日常使用，以下是我的完整设置：技能、钩子、子代理、MCP、插件以及实际有效的方法。
 
@@ -14,19 +14,19 @@
 
 技能就像规则，受限于特定的范围和流程。当你需要执行特定工作流时，它们是提示词的简写。
 
-在使用 Opus 4.5 长时间编码后，你想清理死代码和松散的 .md 文件吗？运行 `/refactor-clean`。需要测试吗？`/tdd`、`/e2e`、`/test-coverage`。技能也可以包含代码地图——一种让 Claude 快速浏览你的代码库而无需消耗上下文进行探索的方式。
+在使用 Opus 4.5 长时间编码后，你想清理死代码和松散的 .md 文件吗？运行 `/refactor-clean`。需要测试吗？`/tdd`、`/e2e`、`/test-coverage`。技能也可以包含代码地图——一种让 Codex 快速浏览你的代码库而无需消耗上下文进行探索的方式。
 
 ![显示链式命令的终端](../../assets/images/shortform/02-chaining-commands.jpeg)
 *将命令链接在一起*
 
 命令是通过斜杠命令执行的技能。它们有重叠但存储方式不同：
 
-* **技能**: `~/.claude/skills/` - 更广泛的工作流定义
-* **命令**: `~/.claude/commands/` - 快速可执行的提示词
+* **技能**: `~/.codex/skills/` - 更广泛的工作流定义
+* **命令**: `~/.codex/commands/` - 快速可执行的提示词
 
 ```bash
 # Example skill structure
-~/.claude/skills/
+~/.codex/skills/
   pmx-guidelines.md      # Project-specific patterns
   coding-standards.md    # Language best practices
   tdd-workflow/          # Multi-file skill with README.md
@@ -44,7 +44,7 @@
 1. **PreToolUse** - 工具执行前（验证、提醒）
 2. **PostToolUse** - 工具完成后（格式化、反馈循环）
 3. **UserPromptSubmit** - 当你发送消息时
-4. **Stop** - 当 Claude 完成响应时
+4. **Stop** - 当 Codex 完成响应时
 5. **PreCompact** - 上下文压缩前
 6. **Notification** - 权限请求
 
@@ -67,7 +67,7 @@
 ```
 
 ![PostToolUse 钩子反馈](../../assets/images/shortform/03-posttooluse-hook.png)
-*在 Claude Code 中运行 PostToolUse 钩子时获得的反馈示例*
+*在 Codex 中运行 PostToolUse 钩子时获得的反馈示例*
 
 **专业提示：** 使用 `hookify` 插件以对话方式创建钩子，而不是手动编写 JSON。运行 `/hookify` 并描述你想要什么。
 
@@ -75,13 +75,13 @@
 
 ## 子代理
 
-子代理是你的编排器（主 Claude）可以委托任务给它的、具有有限范围的进程。它们可以在后台或前台运行，为主代理释放上下文。
+子代理是你的编排器（主 Codex）可以委托任务给它的、具有有限范围的进程。它们可以在后台或前台运行，为主代理释放上下文。
 
 子代理与技能配合得很好——一个能够执行你技能子集的子代理可以被委托任务并自主使用这些技能。它们也可以用特定的工具权限进行沙盒化。
 
 ```bash
 # Example subagent structure
-~/.claude/agents/
+~/.codex/agents/
   planner.md           # Feature implementation planning
   architect.md         # System design decisions
   tdd-guide.md         # Test-driven development
@@ -98,13 +98,13 @@
 
 ## 规则和记忆
 
-你的 `.rules` 文件夹包含 `.md` 文件，其中是 Claude 应始终遵循的最佳实践。有两种方法：
+你的 `.rules` 文件夹包含 `.md` 文件，其中是 Codex 应始终遵循的最佳实践。有两种方法：
 
-1. **单一 CLAUDE.md** - 所有内容在一个文件中（用户或项目级别）
+1. **单一 AGENTS.md** - 所有内容在一个文件中（用户或项目级别）
 2. **规则文件夹** - 按关注点分组的模块化 `.md` 文件
 
 ```bash
-~/.claude/rules/
+~/.codex/rules/
   security.md      # No hardcoded secrets, validate inputs
   coding-style.md  # Immutability, file organization
   testing.md       # TDD workflow, 80% coverage
@@ -125,14 +125,14 @@
 
 ## MCP（模型上下文协议）
 
-MCP 将 Claude 直接连接到外部服务。它不是 API 的替代品——而是围绕 API 的提示驱动包装器，允许在导航信息时具有更大的灵活性。
+MCP 将 Codex 直接连接到外部服务。它不是 API 的替代品——而是围绕 API 的提示驱动包装器，允许在导航信息时具有更大的灵活性。
 
-**示例：** Supabase MCP 允许 Claude 提取特定数据，直接在上游运行 SQL 而无需复制粘贴。数据库、部署平台等也是如此。
+**示例：** Supabase MCP 允许 Codex 提取特定数据，直接在上游运行 SQL 而无需复制粘贴。数据库、部署平台等也是如此。
 
 ![Supabase MCP 列出表格](../../assets/images/shortform/04-supabase-mcp.jpeg)
 *Supabase MCP 列出公共模式内表格的示例*
 
-**Claude 中的 Chrome：** 是一个内置的插件 MCP，允许 Claude 自主控制你的浏览器——点击查看事物如何工作。
+**Codex 中的 Chrome：** 是一个内置的插件 MCP，允许 Codex 自主控制你的浏览器——点击查看事物如何工作。
 
 **关键：上下文窗口管理**
 
@@ -149,7 +149,7 @@ MCP 将 Claude 直接连接到外部服务。它不是 API 的替代品——而
 # Check enabled MCPs
 /mcp
 
-# Disable unused ones in ~/.claude.json under projects.disabledMcpServers
+# Disable unused ones in ~/.codex.json under projects.disabledMcpServers
 ```
 
 ***
@@ -164,13 +164,13 @@ MCP 将 Claude 直接连接到外部服务。它不是 API 的替代品——而
 # Add a marketplace
 claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 
-# Open Claude, run /plugins, find new marketplace, install from there
+# Open Codex, run /plugins, find new marketplace, install from there
 ```
 
 ![显示 mgrep 的市场标签页](../../assets/images/shortform/06-marketplaces-mgrep.jpeg)
 *显示新安装的 Mixedbread-Grep 市场*
 
-**LSP 插件** 如果你经常在编辑器之外运行 Claude Code，则特别有用。语言服务器协议为 Claude 提供实时类型检查、跳转到定义和智能补全，而无需打开 IDE。
+**LSP 插件** 如果你经常在编辑器之外运行 Codex，则特别有用。语言服务器协议为 Codex 提供实时类型检查、跳转到定义和智能补全，而无需打开 IDE。
 
 ```bash
 # Enabled plugins example
@@ -194,27 +194,27 @@ mgrep@Mixedbread-Grep                   # Better search than ripgrep
 * `/` - 发起斜杠命令
 * `Shift+Enter` - 多行输入
 * `Tab` - 切换思考显示
-* `Esc Esc` - 中断 Claude / 恢复代码
+* `Esc Esc` - 中断 Codex / 恢复代码
 
 ### 并行工作流
 
 * **分叉** (`/fork`) - 分叉对话以并行执行不重叠的任务，而不是在队列中堆积消息
-* **Git Worktrees** - 用于重叠的并行 Claude 而不产生冲突。每个工作树都是一个独立的检出
+* **Git Worktrees** - 用于重叠的并行 Codex 而不产生冲突。每个工作树都是一个独立的检出
 
 ```bash
 git worktree add ../feature-branch feature-branch
-# Now run separate Claude instances in each worktree
+# Now run separate Codex instances in each worktree
 ```
 
 ### 用于长时间运行命令的 tmux
 
-流式传输和监视 Claude 运行的日志/bash 进程：
+流式传输和监视 Codex 运行的日志/bash 进程：
 
 https://github.com/user-attachments/assets/shortform/07-tmux-video.mp4
 
 ```bash
 tmux new -s dev
-# Claude runs commands here, you can detach and reattach
+# Codex runs commands here, you can detach and reattach
 tmux attach -t dev
 ```
 
@@ -236,31 +236,31 @@ mgrep --web "Next.js 15 app router changes"  # Web search
 
 ### GitHub Actions CI/CD
 
-使用 GitHub Actions 在你的 PR 上设置代码审查。配置后，Claude 可以自动审查 PR。
+使用 GitHub Actions 在你的 PR 上设置代码审查。配置后，Codex 可以自动审查 PR。
 
-![Claude 机器人批准 PR](../../assets/images/shortform/08-github-pr-review.jpeg)
-*Claude 批准一个错误修复 PR*
+![Codex 机器人批准 PR](../../assets/images/shortform/08-github-pr-review.jpeg)
+*Codex 批准一个错误修复 PR*
 
 ### 沙盒化
 
-对风险操作使用沙盒模式——Claude 在受限环境中运行，不影响你的实际系统。
+对风险操作使用沙盒模式——Codex 在受限环境中运行，不影响你的实际系统。
 
 ***
 
 ## 关于编辑器
 
-你的编辑器选择显著影响 Claude Code 的工作流。虽然 Claude Code 可以在任何终端中工作，但将其与功能强大的编辑器配对可以解锁实时文件跟踪、快速导航和集成命令执行。
+你的编辑器选择显著影响 Codex 的工作流。虽然 Codex 可以在任何终端中工作，但将其与功能强大的编辑器配对可以解锁实时文件跟踪、快速导航和集成命令执行。
 
 ### Zed（我的偏好）
 
 我使用 [Zed](https://zed.dev) —— 用 Rust 编写，所以它真的很快。立即打开，轻松处理大型代码库，几乎不占用系统资源。
 
-**为什么 Zed + Claude Code 是绝佳组合：**
+**为什么 Zed + Codex 是绝佳组合：**
 
-* **速度** - 基于 Rust 的性能意味着当 Claude 快速编辑文件时没有延迟。你的编辑器能跟上
-* **代理面板集成** - Zed 的 Claude 集成允许你在 Claude 编辑时实时跟踪文件变化。无需离开编辑器即可跳转到 Claude 引用的文件
+* **速度** - 基于 Rust 的性能意味着当 Codex 快速编辑文件时没有延迟。你的编辑器能跟上
+* **代理面板集成** - Zed 的 Codex 集成允许你在 Codex 编辑时实时跟踪文件变化。无需离开编辑器即可跳转到 Codex 引用的文件
 * **CMD+Shift+R 命令面板** - 快速访问所有自定义斜杠命令、调试器、构建脚本，在可搜索的 UI 中
-* **最小的资源使用** - 在繁重操作期间不会与 Claude 竞争 RAM/CPU。运行 Opus 时很重要
+* **最小的资源使用** - 在繁重操作期间不会与 Codex 竞争 RAM/CPU。运行 Opus 时很重要
 * **Vim 模式** - 完整的 vim 键绑定，如果你喜欢的话
 
 ![带有自定义命令的 Zed 编辑器](../../assets/images/shortform/09-zed-editor.jpeg)
@@ -268,18 +268,18 @@ mgrep --web "Next.js 15 app router changes"  # Web search
 
 **编辑器无关提示：**
 
-1. **分割你的屏幕** - 一侧是带 Claude Code 的终端，另一侧是编辑器
-2. **Ctrl + G** - 在 Zed 中快速打开 Claude 当前正在处理的文件
-3. **自动保存** - 启用自动保存，以便 Claude 的文件读取始终是最新的
-4. **Git 集成** - 使用编辑器的 git 功能在提交前审查 Claude 的更改
+1. **分割你的屏幕** - 一侧是带 Codex 的终端，另一侧是编辑器
+2. **Ctrl + G** - 在 Zed 中快速打开 Codex 当前正在处理的文件
+3. **自动保存** - 启用自动保存，以便 Codex 的文件读取始终是最新的
+4. **Git 集成** - 使用编辑器的 git 功能在提交前审查 Codex 的更改
 5. **文件监视器** - 大多数编辑器自动重新加载更改的文件，请验证是否已启用
 
 ### VSCode / Cursor
 
-这也是一个可行的选择，并且与 Claude Code 配合良好。你可以使用终端格式，通过 `\ide` 与你的编辑器自动同步以启用 LSP 功能（现在与插件有些冗余）。或者你可以选择扩展，它更集成于编辑器并具有匹配的 UI。
+这也是一个可行的选择，并且与 Codex 配合良好。你可以使用终端格式，通过 `\ide` 与你的编辑器自动同步以启用 LSP 功能（现在与插件有些冗余）。或者你可以选择扩展，它更集成于编辑器并具有匹配的 UI。
 
-![VS Code Claude Code 扩展](../../assets/images/shortform/10-vscode-extension.jpeg)
-*VS Code 扩展为 Claude Code 提供了原生图形界面，直接集成到您的 IDE 中。*
+![VS Code Codex 扩展](../../assets/images/shortform/10-vscode-extension.jpeg)
+*VS Code 扩展为 Codex 提供了原生图形界面，直接集成到您的 IDE 中。*
 
 ***
 
@@ -374,7 +374,7 @@ affoon:~ ctx:65% Opus 4.5 19:52
 ### 规则结构
 
 ```
-~/.claude/rules/
+~/.codex/rules/
   security.md      # Mandatory security checks
   coding-style.md  # Immutability, file size limits
   testing.md       # TDD, 80% coverage
@@ -388,7 +388,7 @@ affoon:~ ctx:65% Opus 4.5 19:52
 ### 子代理
 
 ```
-~/.claude/agents/
+~/.codex/agents/
   planner.md           # Break down features
   architect.md         # System design
   tdd-guide.md         # Write tests first
@@ -414,13 +414,13 @@ affoon:~ ctx:65% Opus 4.5 19:52
 
 ## 参考资料
 
-* [插件参考](https://code.claude.com/docs/en/plugins-reference)
-* [钩子文档](https://code.claude.com/docs/en/hooks)
-* [检查点](https://code.claude.com/docs/en/checkpointing)
-* [交互模式](https://code.claude.com/docs/en/interactive-mode)
-* [记忆系统](https://code.claude.com/docs/en/memory)
-* [子代理](https://code.claude.com/docs/en/sub-agents)
-* [MCP 概述](https://code.claude.com/docs/en/mcp-overview)
+* [插件参考](https://platform.openai.com/docs/codex)
+* [钩子文档](https://platform.openai.com/docs/codex)
+* [检查点](https://platform.openai.com/docs/codex)
+* [交互模式](https://platform.openai.com/docs/codex)
+* [记忆系统](https://platform.openai.com/docs/codex)
+* [子代理](https://platform.openai.com/docs/codex)
+* [MCP 概述](https://platform.openai.com/docs/codex)
 
 ***
 

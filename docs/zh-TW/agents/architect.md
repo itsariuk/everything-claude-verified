@@ -192,7 +192,7 @@ AI 驅動 SaaS 平台的架構範例：
 - **後端**：FastAPI 或 Express（Cloud Run/Railway）
 - **資料庫**：PostgreSQL（Supabase）
 - **快取**：Redis（Upstash/Railway）
-- **AI**：Claude API 搭配結構化輸出
+- **AI**：Codex API 搭配結構化輸出
 - **即時**：Supabase 訂閱
 
 ### 關鍵設計決策

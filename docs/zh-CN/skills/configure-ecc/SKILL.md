@@ -1,11 +1,11 @@
 ---
 name: configure-ecc
-description: Everything Claude Code 的交互式安装程序 — 引导用户选择并安装技能和规则到用户级或项目级目录，验证路径，并可选择性地优化已安装的文件。
+description: Everything Codex 的交互式安装程序 — 引导用户选择并安装技能和规则到用户级或项目级目录，验证路径，并可选择性地优化已安装的文件。
 ---
 
-# 配置 Everything Claude Code (ECC)
+# 配置 Everything Codex (ECC)
 
-一个交互式、分步安装向导，用于 Everything Claude Code 项目。使用 `AskUserQuestion` 引导用户选择性安装技能和规则，然后验证正确性并提供优化。
+一个交互式、分步安装向导，用于 Everything Codex 项目。使用 `AskUserQuestion` 引导用户选择性安装技能和规则，然后验证正确性并提供优化。
 
 ## 何时激活
 
@@ -16,10 +16,9 @@ description: Everything Claude Code 的交互式安装程序 — 引导用户选
 
 ## 先决条件
 
-此技能必须在激活前对 Claude Code 可访问。有两种引导方式：
+此技能必须在激活前对 Codex 可访问。
 
-1. **通过插件**: `/plugin install everything-claude-code` — 插件会自动加载此技能
-2. **手动**: 仅将此技能复制到 `~/.claude/skills/configure-ecc/SKILL.md`，然后通过说 "configure ecc" 激活
+1. **手动**: 仅将此技能复制到 `~/.codex/skills/configure-ecc/SKILL.md`，然后通过说 "configure ecc" 激活
 
 ***
 
@@ -45,16 +44,16 @@ git clone https://github.com/affaan-m/everything-claude-code.git /tmp/everything
 ```
 Question: "Where should ECC components be installed?"
 Options:
-  - "User-level (~/.claude/)" — "Applies to all your Claude Code projects"
-  - "Project-level (.claude/)" — "Applies only to the current project"
+  - "User-level (~/.codex/)" — "Applies to all your Codex projects"
+  - "Project-level (.codex/)" — "Applies only to the current project"
   - "Both" — "Common/shared items user-level, project-specific items project-level"
 ```
 
 将选择存储为 `INSTALL_LEVEL`。设置目标目录：
 
-* 用户级别：`TARGET=~/.claude`
-* 项目级别：`TARGET=.claude`（相对于当前项目根目录）
-* 两者：`TARGET_USER=~/.claude`，`TARGET_PROJECT=.claude`
+* 用户级别：`TARGET=~/.codex`
+* 项目级别：`TARGET=.codex`（相对于当前项目根目录）
+* 两者：`TARGET_USER=~/.codex`，`TARGET_PROJECT=.codex`
 
 如果目标目录不存在，则创建它们：
 
@@ -192,15 +191,15 @@ ls -la $TARGET/rules/
 扫描所有已安装的 `.md` 文件中的路径引用：
 
 ```bash
-grep -rn "~/.claude/" $TARGET/skills/ $TARGET/rules/
+grep -rn "~/.codex/" $TARGET/skills/ $TARGET/rules/
 grep -rn "../common/" $TARGET/rules/
 grep -rn "skills/" $TARGET/skills/
 ```
 
-**对于项目级别安装**，标记任何对 `~/.claude/` 路径的引用：
+**对于项目级别安装**，标记任何对 `~/.codex/` 路径的引用：
 
-* 如果技能引用 `~/.claude/settings.json` — 这通常没问题（设置始终是用户级别的）
-* 如果技能引用 `~/.claude/skills/` 或 `~/.claude/rules/` — 如果仅安装在项目级别，这可能损坏
+* 如果技能引用 `~/.codex/settings.json` — 这通常没问题（设置始终是用户级别的）
+* 如果技能引用 `~/.codex/skills/` 或 `~/.codex/rules/` — 如果仅安装在项目级别，这可能损坏
 * 如果技能通过名称引用另一项技能 — 检查被引用的技能是否也已安装
 
 ### 4c：检查技能间的交叉引用
@@ -209,7 +208,7 @@ grep -rn "skills/" $TARGET/skills/
 
 * `django-tdd` 可能引用 `django-patterns`
 * `springboot-tdd` 可能引用 `springboot-patterns`
-* `continuous-learning-v2` 引用 `~/.claude/homunculus/` 目录
+* `continuous-learning-v2` 引用 `~/.codex/homunculus/` 目录
 * `python-testing` 可能引用 `python-patterns`
 * `golang-testing` 可能引用 `golang-patterns`
 * 特定语言规则引用其 `common/` 对应项
@@ -220,8 +219,8 @@ grep -rn "skills/" $TARGET/skills/
 
 1. **文件**：包含问题引用的文件
 2. **行号**：行号
-3. **问题**：哪里出错了（例如，"引用了 ~/.claude/skills/python-patterns 但 python-patterns 未安装"）
-4. **建议的修复**：该怎么做（例如，"安装 python-patterns 技能" 或 "将路径更新为 .claude/skills/"）
+3. **问题**：哪里出错了（例如，"引用了 ~/.codex/skills/python-patterns 但 python-patterns 未安装"）
+4. **建议的修复**：该怎么做（例如，"安装 python-patterns 技能" 或 "将路径更新为 .codex/skills/"）
 
 ***
 
@@ -297,18 +296,18 @@ rm -rf /tmp/everything-claude-code
 
 ## 故障排除
 
-### "Claude Code 未获取技能"
+### "Codex 未获取技能"
 
 * 验证技能目录包含一个 `SKILL.md` 文件（不仅仅是松散的 .md 文件）
-* 对于用户级别：检查 `~/.claude/skills/<skill-name>/SKILL.md` 是否存在
-* 对于项目级别：检查 `.claude/skills/<skill-name>/SKILL.md` 是否存在
+* 对于用户级别：检查 `~/.codex/skills/<skill-name>/SKILL.md` 是否存在
+* 对于项目级别：检查 `.codex/skills/<skill-name>/SKILL.md` 是否存在
 
 ### "规则不工作"
 
 * 规则是平面文件，不在子目录中：`$TARGET/rules/coding-style.md`（正确）对比 `$TARGET/rules/common/coding-style.md`（对于平面安装不正确）
-* 安装规则后重启 Claude Code
+* 安装规则后重启 Codex
 
 ### "项目级别安装后出现路径引用错误"
 
-* 有些技能假设 `~/.claude/` 路径。运行步骤 4 验证来查找并修复这些问题。
-* 对于 `continuous-learning-v2`，`~/.claude/homunculus/` 目录始终是用户级别的 — 这是预期的，不是错误。
+* 有些技能假设 `~/.codex/` 路径。运行步骤 4 验证来查找并修复这些问题。
+* 对于 `continuous-learning-v2`，`~/.codex/homunculus/` 目录始终是用户级别的 — 这是预期的，不是错误。

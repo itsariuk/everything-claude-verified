@@ -33,7 +33,7 @@
 
 ## 輸出格式
 
-在 `~/.claude/skills/learned/[pattern-name].md` 建立技能檔案：
+在 `~/.codex/skills/learned/[pattern-name].md` 建立技能檔案：
 
 ```markdown
 # [描述性模式名稱]
@@ -60,7 +60,7 @@
 2. 識別最有價值/可重用的見解
 3. 起草技能檔案
 4. 請使用者在儲存前確認
-5. 儲存到 `~/.claude/skills/learned/`
+5. 儲存到 `~/.codex/skills/learned/`
 
 ## 注意事項
 

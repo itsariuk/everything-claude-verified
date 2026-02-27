@@ -1,25 +1,25 @@
 ---
 name: security-scan
-description: 使用AgentShield扫描您的Claude Code配置（.claude/目录），检测安全漏洞、错误配置和注入风险。检查CLAUDE.md、settings.json、MCP服务器、钩子和代理定义。
+description: 使用AgentShield扫描您的Codex配置（.codex/目录），检测安全漏洞、错误配置和注入风险。检查AGENTS.md、settings.json、MCP服务器、钩子和代理定义。
 ---
 
 # 安全扫描技能
 
-使用 [AgentShield](https://github.com/affaan-m/agentshield) 审计您的 Claude Code 配置中的安全问题。
+使用 [AgentShield](https://github.com/affaan-m/agentshield) 审计您的 Codex 配置中的安全问题。
 
 ## 何时激活
 
-* 设置新的 Claude Code 项目时
-* 修改 `.claude/settings.json`、`CLAUDE.md` 或 MCP 配置后
+* 设置新的 Codex 项目时
+* 修改 `.codex/settings.json`、`AGENTS.md` 或 MCP 配置后
 * 提交配置更改前
-* 加入具有现有 Claude Code 配置的新代码库时
+* 加入具有现有 Codex 配置的新代码库时
 * 定期进行安全卫生检查时
 
 ## 扫描内容
 
 | 文件 | 检查项 |
 |------|--------|
-| `CLAUDE.md` | 硬编码的密钥、自动运行指令、提示词注入模式 |
+| `AGENTS.md` | 硬编码的密钥、自动运行指令、提示词注入模式 |
 | `settings.json` | 过于宽松的允许列表、缺失的拒绝列表、危险的绕过标志 |
 | `mcp.json` | 有风险的 MCP 服务器、硬编码的环境变量密钥、npx 供应链风险 |
 | `hooks/` | 通过 `${file}` 插值导致的命令注入、数据泄露、静默错误抑制 |
@@ -44,14 +44,14 @@ npx ecc-agentshield scan .
 
 ### 基础扫描
 
-针对当前项目的 `.claude/` 目录运行：
+针对当前项目的 `.codex/` 目录运行：
 
 ```bash
 # Scan current project
 npx ecc-agentshield scan
 
 # Scan a specific path
-npx ecc-agentshield scan --path /path/to/.claude
+npx ecc-agentshield scan --path /path/to/.codex
 
 # Scan with minimum severity filter
 npx ecc-agentshield scan --min-severity medium
@@ -105,7 +105,7 @@ npx ecc-agentshield scan --opus --stream
 
 ### 初始化安全配置
 
-从头开始搭建一个新的安全 `.claude/` 配置：
+从头开始搭建一个新的安全 `.codex/` 配置：
 
 ```bash
 npx ecc-agentshield init
@@ -114,7 +114,7 @@ npx ecc-agentshield init
 创建：
 
 * 具有作用域权限和拒绝列表的 `settings.json`
-* 遵循安全最佳实践的 `CLAUDE.md`
+* 遵循安全最佳实践的 `AGENTS.md`
 * `mcp.json` 占位符
 
 ### GitHub Action
@@ -150,7 +150,7 @@ npx ecc-agentshield init
 
 ### 高优先级发现（生产前修复）
 
-* CLAUDE.md 中的自动运行指令（提示词注入向量）
+* AGENTS.md 中的自动运行指令（提示词注入向量）
 * 权限配置中缺少拒绝列表
 * 具有不必要 Bash 访问权限的代理
 

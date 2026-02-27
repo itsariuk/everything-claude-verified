@@ -1,25 +1,25 @@
 ---
 name: security-scan
-description: AgentShield を使用して、Claude Code の設定（.claude/ ディレクトリ）のセキュリティ脆弱性、設定ミス、インジェクションリスクをスキャンします。CLAUDE.md、settings.json、MCP サーバー、フック、エージェント定義をチェックします。
+description: AgentShield を使用して、Codex の設定（.codex/ ディレクトリ）のセキュリティ脆弱性、設定ミス、インジェクションリスクをスキャンします。AGENTS.md、settings.json、MCP サーバー、フック、エージェント定義をチェックします。
 ---
 
 # Security Scan Skill
 
-[AgentShield](https://github.com/affaan-m/agentshield) を使用して、Claude Code の設定のセキュリティ問題を監査します。
+[AgentShield](https://github.com/affaan-m/agentshield) を使用して、Codex の設定のセキュリティ問題を監査します。
 
 ## 起動タイミング
 
-- 新しい Claude Code プロジェクトのセットアップ時
-- `.claude/settings.json`、`CLAUDE.md`、または MCP 設定の変更後
+- 新しい Codex プロジェクトのセットアップ時
+- `.codex/settings.json`、`AGENTS.md`、または MCP 設定の変更後
 - 設定変更をコミットする前
-- 既存の Claude Code 設定を持つ新しいリポジトリにオンボーディングする際
+- 既存の Codex 設定を持つ新しいリポジトリにオンボーディングする際
 - 定期的なセキュリティ衛生チェック
 
 ## スキャン対象
 
 | ファイル | チェック内容 |
 |------|--------|
-| `CLAUDE.md` | ハードコードされたシークレット、自動実行命令、プロンプトインジェクションパターン |
+| `AGENTS.md` | ハードコードされたシークレット、自動実行命令、プロンプトインジェクションパターン |
 | `settings.json` | 過度に寛容な許可リスト、欠落した拒否リスト、危険なバイパスフラグ |
 | `mcp.json` | リスクのある MCP サーバー、ハードコードされた環境シークレット、npx サプライチェーンリスク |
 | `hooks/` | 補間によるコマンドインジェクション、データ流出、サイレントエラー抑制 |
@@ -44,14 +44,14 @@ npx ecc-agentshield scan .
 
 ### 基本スキャン
 
-現在のプロジェクトの `.claude/` ディレクトリに対して実行します：
+現在のプロジェクトの `.codex/` ディレクトリに対して実行します：
 
 ```bash
 # 現在のプロジェクトをスキャン
 npx ecc-agentshield scan
 
 # 特定のパスをスキャン
-npx ecc-agentshield scan --path /path/to/.claude
+npx ecc-agentshield scan --path /path/to/.codex
 
 # 最小深刻度フィルタでスキャン
 npx ecc-agentshield scan --min-severity medium
@@ -103,7 +103,7 @@ npx ecc-agentshield scan --opus --stream
 
 ### 安全な設定の初期化
 
-新しい安全な `.claude/` 設定をゼロから構築します：
+新しい安全な `.codex/` 設定をゼロから構築します：
 
 ```bash
 npx ecc-agentshield init
@@ -111,7 +111,7 @@ npx ecc-agentshield init
 
 作成されるもの：
 - スコープ付き権限と拒否リストを持つ `settings.json`
-- セキュリティベストプラクティスを含む `CLAUDE.md`
+- セキュリティベストプラクティスを含む `AGENTS.md`
 - `mcp.json` プレースホルダー
 
 ### GitHub Action
@@ -145,7 +145,7 @@ CI パイプラインに追加します：
 - シェルを実行する MCP サーバー
 
 ### 高い発見（本番前に修正）
-- CLAUDE.md 内の自動実行命令（プロンプトインジェクションベクトル）
+- AGENTS.md 内の自動実行命令（プロンプトインジェクションベクトル）
 - 権限内の欠落した拒否リスト
 - 不要な Bash アクセスを持つエージェント
 

@@ -203,4 +203,4 @@ Result: throttle.ts, middleware/index.ts, router-setup.ts
 
 * [长篇指南](https://x.com/affaanmustafa/status/2014040193557471352) - 子智能体编排部分
 * `continuous-learning` 技能 - 用于随时间改进的模式
-* 在 `~/.claude/agents/` 中的智能体定义
+* 在 `~/.codex/agents/` 中的智能体定义

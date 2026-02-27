@@ -4,7 +4,7 @@
  *
  * Cross-platform (Windows, macOS, Linux)
  *
- * Runs before Claude compacts context, giving you a chance to
+ * Runs before Codex compacts context, giving you a chance to
  * preserve important state that might get lost in summarization.
  */
 

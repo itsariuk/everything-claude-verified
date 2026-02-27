@@ -22,7 +22,7 @@
 
 * **Codex** – 后端逻辑、算法（**后端权威，可信赖**）
 * **Gemini** – 前端视角（**后端意见仅供参考**）
-* **Claude (自身)** – 协调、规划、执行、交付
+* **Codex (自身)** – 协调、规划、执行、交付
 
 ***
 
@@ -33,7 +33,7 @@
 ```
 # New session call
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend codex - \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend codex - \"$PWD\" <<'EOF'
 ROLE_FILE: <role prompt path>
 <TASK>
 Requirement: <enhanced requirement (or $ARGUMENTS if not enhanced)>
@@ -48,7 +48,7 @@ EOF",
 
 # Resume session call
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend codex resume <SESSION_ID> - \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend codex resume <SESSION_ID> - \"$PWD\" <<'EOF'
 ROLE_FILE: <role prompt path>
 <TASK>
 Requirement: <enhanced requirement (or $ARGUMENTS if not enhanced)>
@@ -66,9 +66,9 @@ EOF",
 
 | 阶段 | Codex |
 |-------|-------|
-| 分析 | `~/.claude/.ccg/prompts/codex/analyzer.md` |
-| 规划 | `~/.claude/.ccg/prompts/codex/architect.md` |
-| 评审 | `~/.claude/.ccg/prompts/codex/reviewer.md` |
+| 分析 | `~/.codex/.ccg/prompts/codex/analyzer.md` |
+| 规划 | `~/.codex/.ccg/prompts/codex/architect.md` |
+| 评审 | `~/.codex/.ccg/prompts/codex/reviewer.md` |
 
 **会话复用**：每次调用返回 `SESSION_ID: xxx`，在后续阶段使用 `resume xxx`。在第 2 阶段保存 `CODEX_SESSION`，在第 3 和第 5 阶段使用 `resume`。
 
@@ -101,7 +101,7 @@ EOF",
 
 **必须调用 Codex**（遵循上述调用规范）：
 
-* ROLE\_FILE：`~/.claude/.ccg/prompts/codex/analyzer.md`
+* ROLE\_FILE：`~/.codex/.ccg/prompts/codex/analyzer.md`
 * 需求：增强后的需求（或未增强时的 $ARGUMENTS）
 * 上下文：来自阶段 1 的项目上下文
 * 输出：技术可行性分析、推荐解决方案（至少 2 个）、风险评估
@@ -116,12 +116,12 @@ EOF",
 
 **必须调用 Codex**（使用 `resume <CODEX_SESSION>` 以复用会话）：
 
-* ROLE\_FILE：`~/.claude/.ccg/prompts/codex/architect.md`
+* ROLE\_FILE：`~/.codex/.ccg/prompts/codex/architect.md`
 * 需求：用户选择的解决方案
 * 上下文：阶段 2 的分析结果
 * 输出：文件结构、函数/类设计、依赖关系
 
-Claude 综合规划，在用户批准后保存到 `.claude/plan/task-name.md`。
+Codex 综合规划，在用户批准后保存到 `.codex/plan/task-name.md`。
 
 ### 阶段 4：实施
 
@@ -137,7 +137,7 @@ Claude 综合规划，在用户批准后保存到 `.claude/plan/task-name.md`。
 
 **必须调用 Codex**（遵循上述调用规范）：
 
-* ROLE\_FILE：`~/.claude/.ccg/prompts/codex/reviewer.md`
+* ROLE\_FILE：`~/.codex/.ccg/prompts/codex/reviewer.md`
 * 需求：评审以下后端代码变更
 * 上下文：git diff 或代码内容
 * 输出：安全性、性能、错误处理、API 合规性问题列表
@@ -159,4 +159,4 @@ Claude 综合规划，在用户批准后保存到 `.claude/plan/task-name.md`。
 1. **Codex 的后端意见是可信赖的**
 2. **Gemini 的后端意见仅供参考**
 3. 外部模型**对文件系统零写入权限**
-4. Claude 处理所有代码写入和文件操作
+4. Codex 处理所有代码写入和文件操作

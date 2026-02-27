@@ -75,6 +75,15 @@ function runTests() {
 
   let passed = 0;
   let failed = 0;
+  const codexTestRoot = createTestDir();
+  const codexDir = path.join(codexTestRoot, '.codex');
+  const originalCodexDir = process.env.CODEX_DIR;
+  const originalHome = process.env.HOME;
+  const originalUserProfile = process.env.USERPROFILE;
+  fs.mkdirSync(codexDir, { recursive: true });
+  process.env.CODEX_DIR = codexDir;
+  process.env.HOME = codexTestRoot;
+  process.env.USERPROFILE = codexTestRoot;
 
   // Threshold boundary tests (default minSessionLength = 10)
   console.log('Threshold boundary (default min=10):');
@@ -259,9 +268,9 @@ function runTests() {
   })) passed++; else failed++;
 
   // ── Round 53: env var fallback path ──
-  console.log('\nRound 53: CLAUDE_TRANSCRIPT_PATH fallback:');
+  console.log('\nRound 53: CODEX_TRANSCRIPT_PATH fallback:');
 
-  if (test('falls back to CLAUDE_TRANSCRIPT_PATH env var when stdin is invalid JSON', () => {
+  if (test('falls back to CODEX_TRANSCRIPT_PATH env var when stdin is invalid JSON', () => {
     const testDir = createTestDir();
     const transcript = createTranscript(testDir, 15);
 
@@ -269,7 +278,7 @@ function runTests() {
       encoding: 'utf8',
       input: 'invalid json {{{',
       timeout: 10000,
-      env: { ...process.env, CLAUDE_TRANSCRIPT_PATH: transcript }
+      env: { ...process.env, CODEX_TRANSCRIPT_PATH: transcript }
     });
 
     assert.strictEqual(result.status, 0, 'Should exit 0');
@@ -413,6 +422,13 @@ function runTests() {
 
   // Summary
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
+  if (originalCodexDir !== undefined) process.env.CODEX_DIR = originalCodexDir;
+  else delete process.env.CODEX_DIR;
+  if (originalHome !== undefined) process.env.HOME = originalHome;
+  else delete process.env.HOME;
+  if (originalUserProfile !== undefined) process.env.USERPROFILE = originalUserProfile;
+  else delete process.env.USERPROFILE;
+  cleanupTestDir(codexTestRoot);
   process.exit(failed > 0 ? 1 : 0);
 }
 

@@ -1,6 +1,6 @@
 # 执行 - 多模型协同执行
 
-多模型协同执行 - 从计划获取原型 → Claude 重构并实施 → 多模型审计与交付。
+多模型协同执行 - 从计划获取原型 → Codex 重构并实施 → 多模型审计与交付。
 
 $ARGUMENTS
 
@@ -9,7 +9,7 @@ $ARGUMENTS
 ## 核心协议
 
 * **语言协议**：与工具/模型交互时使用**英语**，与用户沟通时使用用户的语言
-* **代码主权**：外部模型**零文件系统写入权限**，所有修改由 Claude 执行
+* **代码主权**：外部模型**零文件系统写入权限**，所有修改由 Codex 执行
 * **脏原型重构**：将 Codex/Gemini 统一差异视为“脏原型”，必须重构为生产级代码
 * **止损机制**：当前阶段输出未经验证前，不得进入下一阶段
 * **前提条件**：仅在用户明确回复“Y”到 `/ccg:plan` 输出后执行（如果缺失，必须先确认）
@@ -23,7 +23,7 @@ $ARGUMENTS
 ```
 # Resume session call (recommended) - Implementation Prototype
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
 ROLE_FILE: <role prompt path>
 <TASK>
 Requirement: <task description>
@@ -38,7 +38,7 @@ EOF",
 
 # New session call - Implementation Prototype
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
 ROLE_FILE: <role prompt path>
 <TASK>
 Requirement: <task description>
@@ -56,7 +56,7 @@ EOF",
 
 ```
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
 ROLE_FILE: <role prompt path>
 <TASK>
 Scope: Audit the final code changes.
@@ -85,8 +85,8 @@ EOF",
 
 | 阶段 | Codex | Gemini |
 |-------|-------|--------|
-| 实施 | `~/.claude/.ccg/prompts/codex/architect.md` | `~/.claude/.ccg/prompts/gemini/frontend.md` |
-| 审查 | `~/.claude/.ccg/prompts/codex/reviewer.md` | `~/.claude/.ccg/prompts/gemini/reviewer.md` |
+| 实施 | `~/.codex/.ccg/prompts/codex/architect.md` | `~/.codex/.ccg/prompts/gemini/frontend.md` |
+| 审查 | `~/.codex/.ccg/prompts/codex/reviewer.md` | `~/.codex/.ccg/prompts/gemini/reviewer.md` |
 
 **会话重用**：如果 `/ccg:plan` 提供了 SESSION\_ID，使用 `resume <SESSION_ID>` 来重用上下文。
 
@@ -113,7 +113,7 @@ TaskOutput({ task_id: "<task_id>", block: true, timeout: 600000 })
 `[Mode: Prepare]`
 
 1. **识别输入类型**：
-   * 计划文件路径（例如 `.claude/plan/xxx.md`）
+   * 计划文件路径（例如 `.codex/plan/xxx.md`）
    * 直接任务描述
 
 2. **读取计划内容**：
@@ -174,7 +174,7 @@ mcp__ace-tool__search_context({
 
 **限制**：上下文 < 32k 令牌
 
-1. 调用 Gemini（使用 `~/.claude/.ccg/prompts/gemini/frontend.md`）
+1. 调用 Gemini（使用 `~/.codex/.ccg/prompts/gemini/frontend.md`）
 2. 输入：计划内容 + 检索到的上下文 + 目标文件
 3. 输出：`Unified Diff Patch ONLY. Strictly prohibit any actual modifications.`
 4. **Gemini 是前端设计权威，其 CSS/React/Vue 原型是最终的视觉基线**
@@ -183,7 +183,7 @@ mcp__ace-tool__search_context({
 
 #### 路由 B：后端/逻辑/算法 → Codex
 
-1. 调用 Codex（使用 `~/.claude/.ccg/prompts/codex/architect.md`）
+1. 调用 Codex（使用 `~/.codex/.ccg/prompts/codex/architect.md`）
 2. 输入：计划内容 + 检索到的上下文 + 目标文件
 3. 输出：`Unified Diff Patch ONLY. Strictly prohibit any actual modifications.`
 4. **Codex 是后端逻辑权威，利用其逻辑推理和调试能力**
@@ -205,7 +205,7 @@ mcp__ace-tool__search_context({
 
 `[Mode: Implement]`
 
-**Claude 作为代码主权执行以下步骤**：
+**Codex 作为代码主权执行以下步骤**：
 
 1. **读取差异**：解析 Codex/Gemini 返回的统一差异补丁
 
@@ -244,12 +244,12 @@ mcp__ace-tool__search_context({
 **更改生效后，必须立即并行调用** Codex 和 Gemini 进行代码审查：
 
 1. **Codex 审查**（`run_in_background: true`）：
-   * ROLE\_FILE：`~/.claude/.ccg/prompts/codex/reviewer.md`
+   * ROLE\_FILE：`~/.codex/.ccg/prompts/codex/reviewer.md`
    * 输入：更改的差异 + 目标文件
    * 重点：安全性、性能、错误处理、逻辑正确性
 
 2. **Gemini 审查**（`run_in_background: true`）：
-   * ROLE\_FILE：`~/.claude/.ccg/prompts/gemini/reviewer.md`
+   * ROLE\_FILE：`~/.codex/.ccg/prompts/gemini/reviewer.md`
    * 输入：更改的差异 + 目标文件
    * 重点：可访问性、设计一致性、用户体验
 
@@ -288,7 +288,7 @@ mcp__ace-tool__search_context({
 
 ## 关键规则
 
-1. **代码主权** – 所有文件修改由 Claude 执行，外部模型零写入权限
+1. **代码主权** – 所有文件修改由 Codex 执行，外部模型零写入权限
 2. **脏原型重构** – Codex/Gemini 输出视为草稿，必须重构
 3. **信任规则** – 后端遵循 Codex，前端遵循 Gemini
 4. **最小更改** – 仅修改必要代码，无副作用
@@ -300,7 +300,7 @@ mcp__ace-tool__search_context({
 
 ```bash
 # Execute plan file
-/ccg:execute .claude/plan/feature-name.md
+/ccg:execute .codex/plan/feature-name.md
 
 # Execute task directly (for plans already discussed in context)
 /ccg:execute implement user authentication based on previous plan

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Claude Code Hooks Configuration",
-  "description": "Configuration for Claude Code hooks. Event types are validated at runtime and must be one of: PreToolUse, PostToolUse, PreCompact, SessionStart, SessionEnd, Stop, Notification, SubagentStop",
+  "title": "Codex Hooks Configuration",
+  "description": "Configuration for Codex hooks. Event types are validated at runtime and must be one of: PreToolUse, PostToolUse, PreCompact, SessionStart, SessionEnd, Stop, Notification, SubagentStop",
   "$defs": {
     "hookItem": {
       "type": "object",

@@ -6,11 +6,11 @@ version: 2.0.0
 
 # Continuous Learning v2 - Instinct-Based Architecture
 
-An advanced learning system that turns your Claude Code sessions into reusable knowledge through atomic "instincts" - small learned behaviors with confidence scoring.
+An advanced learning system that turns your Codex sessions into reusable knowledge through atomic "instincts" - small learned behaviors with confidence scoring.
 
 ## When to Activate
 
-- Setting up automatic learning from Claude Code sessions
+- Setting up automatic learning from Codex sessions
 - Configuring instinct-based behavior extraction via hooks
 - Tuning confidence thresholds for learned behaviors
 - Reviewing, exporting, or importing instinct libraries
@@ -100,7 +100,7 @@ Session Activity
 
 ### 1. Enable Observation Hooks
 
-Add to your `~/.claude/settings.json`.
+Add to your `~/.codex/settings.json`.
 
 **If installed as a plugin** (recommended):
 
@@ -111,21 +111,21 @@ Add to your `~/.claude/settings.json`.
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre"
+        "command": "${CODEX_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre"
       }]
     }],
     "PostToolUse": [{
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post"
+        "command": "${CODEX_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post"
       }]
     }]
   }
 }
 ```
 
-**If installed manually** to `~/.claude/skills`:
+**If installed manually** to `~/.codex/skills`:
 
 ```json
 {
@@ -134,14 +134,14 @@ Add to your `~/.claude/settings.json`.
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh pre"
+        "command": "~/.codex/skills/continuous-learning-v2/hooks/observe.sh pre"
       }]
     }],
     "PostToolUse": [{
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh post"
+        "command": "~/.codex/skills/continuous-learning-v2/hooks/observe.sh post"
       }]
     }]
   }
@@ -153,8 +153,8 @@ Add to your `~/.claude/settings.json`.
 The Python CLI will create these automatically, but you can also create them manually:
 
 ```bash
-mkdir -p ~/.claude/homunculus/{instincts/{personal,inherited},evolved/{agents,skills,commands}}
-touch ~/.claude/homunculus/observations.jsonl
+mkdir -p ~/.codex/homunculus/{instincts/{personal,inherited},evolved/{agents,skills,commands}}
+touch ~/.codex/homunculus/observations.jsonl
 ```
 
 ### 3. Use the Instinct Commands
@@ -184,13 +184,13 @@ Edit `config.json`:
   "version": "2.0",
   "observation": {
     "enabled": true,
-    "store_path": "~/.claude/homunculus/observations.jsonl",
+    "store_path": "~/.codex/homunculus/observations.jsonl",
     "max_file_size_mb": 10,
     "archive_after_days": 7
   },
   "instincts": {
-    "personal_path": "~/.claude/homunculus/instincts/personal/",
-    "inherited_path": "~/.claude/homunculus/instincts/inherited/",
+    "personal_path": "~/.codex/homunculus/instincts/personal/",
+    "inherited_path": "~/.codex/homunculus/instincts/inherited/",
     "min_confidence": 0.3,
     "auto_approve_threshold": 0.7,
     "confidence_decay_rate": 0.05
@@ -208,7 +208,7 @@ Edit `config.json`:
   },
   "evolution": {
     "cluster_threshold": 3,
-    "evolved_path": "~/.claude/homunculus/evolved/"
+    "evolved_path": "~/.codex/homunculus/evolved/"
   }
 }
 ```
@@ -216,7 +216,7 @@ Edit `config.json`:
 ## File Structure
 
 ```
-~/.claude/homunculus/
+~/.codex/homunculus/
 ├── identity.json           # Your profile, technical level
 ├── observations.jsonl      # Current session observations
 ├── observations.archive/   # Processed observations
@@ -260,7 +260,7 @@ Confidence evolves over time:
 
 ## Why Hooks vs Skills for Observation?
 
-> "v1 relied on skills to observe. Skills are probabilistic—they fire ~50-80% of the time based on Claude's judgment."
+> "v1 relied on skills to observe. Skills are probabilistic—they fire ~50-80% of the time based on Codex's judgment."
 
 Hooks fire **100% of the time**, deterministically. This means:
 - Every tool call is observed
@@ -270,7 +270,7 @@ Hooks fire **100% of the time**, deterministically. This means:
 ## Backward Compatibility
 
 v2 is fully compatible with v1:
-- Existing `~/.claude/skills/learned/` skills still work
+- Existing `~/.codex/skills/learned/` skills still work
 - Stop hook still runs (but now also feeds into v2)
 - Gradual migration path: run both in parallel
 
@@ -289,4 +289,4 @@ v2 is fully compatible with v1:
 
 ---
 
-*Instinct-based learning: teaching Claude your patterns, one observation at a time.*
+*Instinct-based learning: teaching Codex your patterns, one observation at a time.*

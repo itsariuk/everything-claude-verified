@@ -1,6 +1,6 @@
-# 为 Everything Claude Code 做贡献
+# 为 Everything Codex 做贡献
 
-感谢您想要贡献！这个仓库是 Claude Code 用户的社区资源。
+感谢您想要贡献！这个仓库是 Codex 用户的社区资源。
 
 ## 目录
 
@@ -66,8 +66,8 @@ git checkout -b feat/my-contribution
 # 3. Add your contribution (see sections below)
 
 # 4. Test locally
-cp -r skills/my-skill ~/.claude/skills/  # for skills
-# Then test with Claude Code
+cp -r skills/my-skill ~/.codex/skills/  # for skills
+# Then test with Codex
 
 # 5. Submit PR
 git add . && git commit -m "feat: add my-skill" && git push
@@ -77,7 +77,7 @@ git add . && git commit -m "feat: add my-skill" && git push
 
 ## 贡献技能
 
-技能是 Claude Code 根据上下文加载的知识模块。
+技能是 Codex 根据上下文加载的知识模块。
 
 ### 目录结构
 
@@ -132,7 +132,7 @@ function example() {
 * \[ ] 包含实用的代码示例
 * \[ ] 少于 500 行
 * \[ ] 使用清晰的章节标题
-* \[ ] 已通过 Claude Code 测试
+* \[ ] 已通过 Codex 测试
 
 ### 技能示例
 
@@ -160,7 +160,7 @@ agents/your-agent-name.md
 ```markdown
 ---
 name: 你的代理名称
-description: 该代理的作用以及 Claude 应在何时调用它。请具体说明！
+description: 该代理的作用以及 Codex 应在何时调用它。请具体说明！
 tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
 model: sonnet
 ---
@@ -219,7 +219,7 @@ model: sonnet
 
 ## 贡献钩子
 
-钩子是由 Claude Code 事件触发的自动行为。
+钩子是由 Codex 事件触发的自动行为。
 
 ### 文件位置
 
@@ -391,7 +391,7 @@ docs: improve contributing guide
 
 ## 检查清单
 - [ ] 遵循格式指南
-- [ ] 已使用 Claude Code 进行测试
+- [ ] 已使用 Codex 进行测试
 - [ ] 无敏感信息（API 密钥、路径）
 - [ ] 描述清晰
 

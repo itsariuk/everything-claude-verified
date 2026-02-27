@@ -4,8 +4,8 @@
  *
  * Cross-platform (Windows, macOS, Linux)
  *
- * Runs on Stop hook to extract reusable patterns from Claude Code sessions.
- * Reads transcript_path from stdin JSON (Claude Code hook input).
+ * Runs on Stop hook to extract reusable patterns from Codex sessions.
+ * Reads transcript_path from stdin JSON (Codex hook input).
  *
  * Why Stop hook instead of UserPromptSubmit:
  * - Stop runs once at session end (lightweight)
@@ -22,7 +22,7 @@ const {
   log
 } = require('../lib/utils');
 
-// Read hook input from stdin (Claude Code provides transcript_path via stdin JSON)
+// Read hook input from stdin (Codex provides transcript_path via stdin JSON)
 const MAX_STDIN = 1024 * 1024;
 let stdinData = '';
 process.stdin.setEncoding('utf8');
@@ -48,8 +48,8 @@ async function main() {
     const input = JSON.parse(stdinData);
     transcriptPath = input.transcript_path;
   } catch {
-    // Fallback: try env var for backwards compatibility
-    transcriptPath = process.env.CLAUDE_TRANSCRIPT_PATH;
+    // Fallback: try env var
+    transcriptPath = process.env.CODEX_TRANSCRIPT_PATH;
   }
 
   // Get script directory to find config
@@ -92,7 +92,7 @@ async function main() {
     process.exit(0);
   }
 
-  // Signal to Claude that session should be evaluated for extractable patterns
+  // Signal to Codex that session should be evaluated for extractable patterns
   log(`[ContinuousLearning] Session has ${messageCount} messages - evaluate for extractable patterns`);
   log(`[ContinuousLearning] Save learned skills to: ${learnedSkillsPath}`);
 

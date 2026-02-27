@@ -23,7 +23,7 @@ $ARGUMENTS
 ```
 # セッション再開呼び出し(推奨) - 実装プロトタイプ
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
 ROLE_FILE: <ロールプロンプトパス>
 <TASK>
 Requirement: <タスクの説明>
@@ -38,7 +38,7 @@ EOF",
 
 # 新規セッション呼び出し - 実装プロトタイプ
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
 ROLE_FILE: <ロールプロンプトパス>
 <TASK>
 Requirement: <タスクの説明>
@@ -56,7 +56,7 @@ EOF",
 
 ```
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
 ROLE_FILE: <ロールプロンプトパス>
 <TASK>
 Scope: 最終的なコード変更を監査。
@@ -84,8 +84,8 @@ EOF",
 
 | フェーズ | Codex | Gemini |
 |-------|-------|--------|
-| 実装 | `~/.claude/.ccg/prompts/codex/architect.md` | `~/.claude/.ccg/prompts/gemini/frontend.md` |
-| レビュー | `~/.claude/.ccg/prompts/codex/reviewer.md` | `~/.claude/.ccg/prompts/gemini/reviewer.md` |
+| 実装 | `~/.codex/.ccg/prompts/codex/architect.md` | `~/.codex/.ccg/prompts/gemini/frontend.md` |
+| レビュー | `~/.codex/.ccg/prompts/codex/reviewer.md` | `~/.codex/.ccg/prompts/gemini/reviewer.md` |
 
 **セッション再利用**: `/ccg:plan`がSESSION_IDを提供した場合、`resume <SESSION_ID>`を使用してコンテキストを再利用します。
 
@@ -111,7 +111,7 @@ TaskOutput({ task_id: "<task_id>", block: true, timeout: 600000 })
 `[Mode: Prepare]`
 
 1. **入力タイプの識別**:
-   - 計画ファイルパス(例: `.claude/plan/xxx.md`)
+   - 計画ファイルパス(例: `.codex/plan/xxx.md`)
    - 直接的なタスク説明
 
 2. **計画内容の読み取り**:
@@ -170,7 +170,7 @@ mcp__ace-tool__search_context({
 
 **制限**: コンテキスト < 32kトークン
 
-1. Geminiを呼び出す(`~/.claude/.ccg/prompts/gemini/frontend.md`を使用)
+1. Geminiを呼び出す(`~/.codex/.ccg/prompts/gemini/frontend.md`を使用)
 2. 入力: 計画内容 + 取得したコンテキスト + 対象ファイル
 3. OUTPUT: `統一差分パッチのみ。実際の変更を厳格に禁止。`
 4. **Geminiはフロントエンドデザインの権威であり、そのCSS/React/Vueプロトタイプは最終的なビジュアルベースライン**
@@ -179,7 +179,7 @@ mcp__ace-tool__search_context({
 
 #### ルート B: バックエンド/ロジック/アルゴリズム → Codex
 
-1. Codexを呼び出す(`~/.claude/.ccg/prompts/codex/architect.md`を使用)
+1. Codexを呼び出す(`~/.codex/.ccg/prompts/codex/architect.md`を使用)
 2. 入力: 計画内容 + 取得したコンテキスト + 対象ファイル
 3. OUTPUT: `統一差分パッチのみ。実際の変更を厳格に禁止。`
 4. **Codexはバックエンドロジックの権威であり、その論理的推論とデバッグ機能を活用**
@@ -240,12 +240,12 @@ mcp__ace-tool__search_context({
 **変更が有効になった後、すぐにCodexとGeminiを並列呼び出ししてコードレビューを実施する必要があります**:
 
 1. **Codexレビュー**(`run_in_background: true`):
-   - ROLE_FILE: `~/.claude/.ccg/prompts/codex/reviewer.md`
+   - ROLE_FILE: `~/.codex/.ccg/prompts/codex/reviewer.md`
    - 入力: 変更された差分 + 対象ファイル
    - フォーカス: セキュリティ、パフォーマンス、エラーハンドリング、ロジックの正確性
 
 2. **Geminiレビュー**(`run_in_background: true`):
-   - ROLE_FILE: `~/.claude/.ccg/prompts/gemini/reviewer.md`
+   - ROLE_FILE: `~/.codex/.ccg/prompts/gemini/reviewer.md`
    - 入力: 変更された差分 + 対象ファイル
    - フォーカス: アクセシビリティ、デザインの一貫性、ユーザーエクスペリエンス
 
@@ -295,7 +295,7 @@ mcp__ace-tool__search_context({
 
 ```bash
 # 計画ファイルを実行
-/ccg:execute .claude/plan/feature-name.md
+/ccg:execute .codex/plan/feature-name.md
 
 # タスクを直接実行(コンテキストで既に議論された計画の場合)
 /ccg:execute 前の計画に基づいてユーザー認証を実装

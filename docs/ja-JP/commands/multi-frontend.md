@@ -21,7 +21,7 @@
 **連携モデル**:
 - **Gemini** – フロントエンドUI/UX(**フロントエンドの権威、信頼できる**)
 - **Codex** – バックエンドの視点(**フロントエンドの意見は参考のみ**)
-- **Claude(自身)** – オーケストレーション、計画、実装、配信
+- **Codex(自身)** – オーケストレーション、計画、実装、配信
 
 ---
 
@@ -32,7 +32,7 @@
 ```
 # 新規セッション呼び出し
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend gemini --gemini-model gemini-3-pro-preview - \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend gemini --gemini-model gemini-3-pro-preview - \"$PWD\" <<'EOF'
 ROLE_FILE: <ロールプロンプトパス>
 <TASK>
 Requirement: <強化された要件(または強化されていない場合は$ARGUMENTS)>
@@ -47,7 +47,7 @@ EOF",
 
 # セッション再開呼び出し
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend gemini --gemini-model gemini-3-pro-preview resume <SESSION_ID> - \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend gemini --gemini-model gemini-3-pro-preview resume <SESSION_ID> - \"$PWD\" <<'EOF'
 ROLE_FILE: <ロールプロンプトパス>
 <TASK>
 Requirement: <強化された要件(または強化されていない場合は$ARGUMENTS)>
@@ -65,9 +65,9 @@ EOF",
 
 | フェーズ | Gemini |
 |-------|--------|
-| 分析 | `~/.claude/.ccg/prompts/gemini/analyzer.md` |
-| 計画 | `~/.claude/.ccg/prompts/gemini/architect.md` |
-| レビュー | `~/.claude/.ccg/prompts/gemini/reviewer.md` |
+| 分析 | `~/.codex/.ccg/prompts/gemini/analyzer.md` |
+| 計画 | `~/.codex/.ccg/prompts/gemini/architect.md` |
+| レビュー | `~/.codex/.ccg/prompts/gemini/reviewer.md` |
 
 **セッション再利用**: 各呼び出しは`SESSION_ID: xxx`を返します。後続のフェーズでは`resume xxx`を使用してください。フェーズ2で`GEMINI_SESSION`を保存し、フェーズ3と5で`resume`を使用します。
 
@@ -99,7 +99,7 @@ EOF",
 `[Mode: Ideation]` - Gemini主導の分析
 
 **Geminiを呼び出す必要があります**(上記の呼び出し仕様に従う):
-- ROLE_FILE: `~/.claude/.ccg/prompts/gemini/analyzer.md`
+- ROLE_FILE: `~/.codex/.ccg/prompts/gemini/analyzer.md`
 - Requirement: 強化された要件(または強化されていない場合は$ARGUMENTS)
 - Context: フェーズ1からのプロジェクトコンテキスト
 - OUTPUT: UIの実現可能性分析、推奨ソリューション(少なくとも2つ)、UX評価
@@ -113,12 +113,12 @@ EOF",
 `[Mode: Plan]` - Gemini主導の計画
 
 **Geminiを呼び出す必要があります**(`resume <GEMINI_SESSION>`を使用してセッションを再利用):
-- ROLE_FILE: `~/.claude/.ccg/prompts/gemini/architect.md`
+- ROLE_FILE: `~/.codex/.ccg/prompts/gemini/architect.md`
 - Requirement: ユーザーが選択したソリューション
 - Context: フェーズ2からの分析結果
 - OUTPUT: コンポーネント構造、UIフロー、スタイリングアプローチ
 
-Claudeが計画を統合し、ユーザーの承認後に`.claude/plan/task-name.md`に保存します。
+Codexが計画を統合し、ユーザーの承認後に`.codex/plan/task-name.md`に保存します。
 
 ### フェーズ 4: 実装
 
@@ -133,7 +133,7 @@ Claudeが計画を統合し、ユーザーの承認後に`.claude/plan/task-name
 `[Mode: Optimize]` - Gemini主導のレビュー
 
 **Geminiを呼び出す必要があります**(上記の呼び出し仕様に従う):
-- ROLE_FILE: `~/.claude/.ccg/prompts/gemini/reviewer.md`
+- ROLE_FILE: `~/.codex/.ccg/prompts/gemini/reviewer.md`
 - Requirement: 以下のフロントエンドコード変更をレビュー
 - Context: git diffまたはコード内容
 - OUTPUT: アクセシビリティ、レスポンシブ性、パフォーマンス、デザインの一貫性の問題リスト
@@ -155,4 +155,4 @@ Claudeが計画を統合し、ユーザーの承認後に`.claude/plan/task-name
 1. **Geminiのフロントエンド意見は信頼できる**
 2. **Codexのフロントエンド意見は参考のみ**
 3. 外部モデルは**ファイルシステムへの書き込みアクセスがゼロ**
-4. Claudeがすべてのコード書き込みとファイル操作を処理
+4. Codexがすべてのコード書き込みとファイル操作を処理

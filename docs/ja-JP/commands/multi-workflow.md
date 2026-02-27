@@ -14,7 +14,7 @@
 
 - 開発するタスク: $ARGUMENTS
 - 品質ゲートを備えた構造化された6フェーズワークフロー
-- マルチモデル連携: Codex(バックエンド) + Gemini(フロントエンド) + Claude(オーケストレーション)
+- マルチモデル連携: Codex(バックエンド) + Gemini(フロントエンド) + Codex(オーケストレーション)
 - MCPサービス統合(ace-tool)による機能強化
 
 ## 役割
@@ -25,7 +25,7 @@
 - **ace-tool MCP** – コード取得 + プロンプト強化
 - **Codex** – バックエンドロジック、アルゴリズム、デバッグ(**バックエンドの権威、信頼できる**)
 - **Gemini** – フロントエンドUI/UX、ビジュアルデザイン(**フロントエンドエキスパート、バックエンドの意見は参考のみ**)
-- **Claude(自身)** – オーケストレーション、計画、実装、配信
+- **Codex(自身)** – オーケストレーション、計画、実装、配信
 
 ---
 
@@ -36,7 +36,7 @@
 ```
 # 新規セッション呼び出し
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
 ROLE_FILE: <ロールプロンプトパス>
 <TASK>
 Requirement: <強化された要件(または強化されていない場合は$ARGUMENTS)>
@@ -51,7 +51,7 @@ EOF",
 
 # セッション再開呼び出し
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
 ROLE_FILE: <ロールプロンプトパス>
 <TASK>
 Requirement: <強化された要件(または強化されていない場合は$ARGUMENTS)>
@@ -72,9 +72,9 @@ EOF",
 
 | フェーズ | Codex | Gemini |
 |-------|-------|--------|
-| 分析 | `~/.claude/.ccg/prompts/codex/analyzer.md` | `~/.claude/.ccg/prompts/gemini/analyzer.md` |
-| 計画 | `~/.claude/.ccg/prompts/codex/architect.md` | `~/.claude/.ccg/prompts/gemini/architect.md` |
-| レビュー | `~/.claude/.ccg/prompts/codex/reviewer.md` | `~/.claude/.ccg/prompts/gemini/reviewer.md` |
+| 分析 | `~/.codex/.ccg/prompts/codex/analyzer.md` | `~/.codex/.ccg/prompts/gemini/analyzer.md` |
+| 計画 | `~/.codex/.ccg/prompts/codex/architect.md` | `~/.codex/.ccg/prompts/gemini/architect.md` |
+| レビュー | `~/.codex/.ccg/prompts/codex/reviewer.md` | `~/.codex/.ccg/prompts/gemini/reviewer.md` |
 
 **セッション再利用**: 各呼び出しは`SESSION_ID: xxx`を返し、後続のフェーズでは`resume xxx`サブコマンドを使用します(注意: `resume`、`--resume`ではない)。
 
@@ -143,7 +143,7 @@ TaskOutput({ task_id: "<task_id>", block: true, timeout: 600000 })
 
 **上記の`マルチモデル呼び出し仕様`の`重要`指示に従ってください**
 
-**Claude統合**: Codexのバックエンド計画 + Geminiのフロントエンド計画を採用し、ユーザーの承認後に`.claude/plan/task-name.md`に保存します。
+**Codex統合**: Codexのバックエンド計画 + Geminiのフロントエンド計画を採用し、ユーザーの承認後に`.codex/plan/task-name.md`に保存します。
 
 ### フェーズ 4: 実装
 
@@ -179,5 +179,5 @@ TaskOutput({ task_id: "<task_id>", block: true, timeout: 600000 })
 ## 重要なルール
 
 1. フェーズの順序はスキップできません(ユーザーが明示的に指示しない限り)
-2. 外部モデルは**ファイルシステムへの書き込みアクセスがゼロ**、すべての変更はClaudeが実行
+2. 外部モデルは**ファイルシステムへの書き込みアクセスがゼロ**、すべての変更はCodexが実行
 3. スコア < 7またはユーザーが承認しない場合は**強制停止**

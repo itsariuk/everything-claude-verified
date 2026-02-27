@@ -91,7 +91,7 @@ await browser.injectKeyboardEvent({ type: 'keyDown', key: 'Enter', code: 'Enter'
 await browser.startScreencast()  // Stream viewport frames
 ```
 
-### Agent Browser 与 Claude Code
+### Agent Browser 与 Codex
 
 如果您安装了 `agent-browser` 技能，请使用 `/agent-browser` 进行交互式浏览器自动化任务。
 

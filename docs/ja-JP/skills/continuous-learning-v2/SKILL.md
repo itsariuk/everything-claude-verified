@@ -6,7 +6,7 @@ version: 2.0.0
 
 # Continuous Learning v2 - インスティンクトベースアーキテクチャ
 
-Claude Codeセッションを信頼度スコアリング付きの小さな学習済み行動である「インスティンクト」を通じて再利用可能な知識に変える高度な学習システム。
+Codexセッションを信頼度スコアリング付きの小さな学習済み行動である「インスティンクト」を通じて再利用可能な知識に変える高度な学習システム。
 
 ## v2の新機能
 
@@ -92,7 +92,7 @@ Session Activity
 
 ### 1. 観察フックを有効化
 
-`~/.claude/settings.json`に追加します。
+`~/.codex/settings.json`に追加します。
 
 **プラグインとしてインストールした場合**（推奨）：
 
@@ -103,21 +103,21 @@ Session Activity
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre"
+        "command": "${CODEX_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh pre"
       }]
     }],
     "PostToolUse": [{
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post"
+        "command": "${CODEX_PLUGIN_ROOT}/skills/continuous-learning-v2/hooks/observe.sh post"
       }]
     }]
   }
 }
 ```
 
-**`~/.claude/skills`に手動でインストールした場合**：
+**`~/.codex/skills`に手動でインストールした場合**：
 
 ```json
 {
@@ -126,14 +126,14 @@ Session Activity
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh pre"
+        "command": "~/.codex/skills/continuous-learning-v2/hooks/observe.sh pre"
       }]
     }],
     "PostToolUse": [{
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "~/.claude/skills/continuous-learning-v2/hooks/observe.sh post"
+        "command": "~/.codex/skills/continuous-learning-v2/hooks/observe.sh post"
       }]
     }]
   }
@@ -145,8 +145,8 @@ Session Activity
 Python CLIが自動的に作成しますが、手動で作成することもできます：
 
 ```bash
-mkdir -p ~/.claude/homunculus/{instincts/{personal,inherited},evolved/{agents,skills,commands}}
-touch ~/.claude/homunculus/observations.jsonl
+mkdir -p ~/.codex/homunculus/{instincts/{personal,inherited},evolved/{agents,skills,commands}}
+touch ~/.codex/homunculus/observations.jsonl
 ```
 
 ### 3. インスティンクトコマンドを使用
@@ -176,13 +176,13 @@ touch ~/.claude/homunculus/observations.jsonl
   "version": "2.0",
   "observation": {
     "enabled": true,
-    "store_path": "~/.claude/homunculus/observations.jsonl",
+    "store_path": "~/.codex/homunculus/observations.jsonl",
     "max_file_size_mb": 10,
     "archive_after_days": 7
   },
   "instincts": {
-    "personal_path": "~/.claude/homunculus/instincts/personal/",
-    "inherited_path": "~/.claude/homunculus/instincts/inherited/",
+    "personal_path": "~/.codex/homunculus/instincts/personal/",
+    "inherited_path": "~/.codex/homunculus/instincts/inherited/",
     "min_confidence": 0.3,
     "auto_approve_threshold": 0.7,
     "confidence_decay_rate": 0.05
@@ -200,7 +200,7 @@ touch ~/.claude/homunculus/observations.jsonl
   },
   "evolution": {
     "cluster_threshold": 3,
-    "evolved_path": "~/.claude/homunculus/evolved/"
+    "evolved_path": "~/.codex/homunculus/evolved/"
   }
 }
 ```
@@ -208,7 +208,7 @@ touch ~/.claude/homunculus/observations.jsonl
 ## ファイル構造
 
 ```
-~/.claude/homunculus/
+~/.codex/homunculus/
 ├── identity.json           # プロフィール、技術レベル
 ├── observations.jsonl      # 現在のセッション観察
 ├── observations.archive/   # 処理済み観察
@@ -252,7 +252,7 @@ touch ~/.claude/homunculus/observations.jsonl
 
 ## 観察にスキルではなくフックを使用する理由は？
 
-> 「v1はスキルに依存して観察していました。スキルは確率的で、Claudeの判断に基づいて約50-80%の確率で発火します。」
+> 「v1はスキルに依存して観察していました。スキルは確率的で、Codexの判断に基づいて約50-80%の確率で発火します。」
 
 フックは**100%の確率で**決定論的に発火します。これは次のことを意味します：
 - すべてのツール呼び出しが観察される
@@ -262,7 +262,7 @@ touch ~/.claude/homunculus/observations.jsonl
 ## 後方互換性
 
 v2はv1と完全に互換性があります：
-- 既存の`~/.claude/skills/learned/`スキルは引き続き機能
+- 既存の`~/.codex/skills/learned/`スキルは引き続き機能
 - Stopフックは引き続き実行される（ただしv2にもフィードされる）
 - 段階的な移行パス：両方を並行して実行
 
@@ -281,4 +281,4 @@ v2はv1と完全に互換性があります：
 
 ---
 
-*インスティンクトベースの学習：一度に1つの観察で、Claudeにあなたのパターンを教える。*
+*インスティンクトベースの学習：一度に1つの観察で、Codexにあなたのパターンを教える。*

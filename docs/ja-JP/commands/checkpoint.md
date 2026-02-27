@@ -12,10 +12,10 @@
 
 1. `/verify quick` を実行して現在の状態が clean であることを確認
 2. チェックポイント名を使用して git stash またはコミットを作成
-3. チェックポイントを `.claude/checkpoints.log` に記録：
+3. チェックポイントを `.codex/checkpoints.log` に記録：
 
 ```bash
-echo "$(date +%Y-%m-%d-%H:%M) | $CHECKPOINT_NAME | $(git rev-parse --short HEAD)" >> .claude/checkpoints.log
+echo "$(date +%Y-%m-%d-%H:%M) | $CHECKPOINT_NAME | $(git rev-parse --short HEAD)" >> .codex/checkpoints.log
 ```
 
 4. チェックポイント作成を報告

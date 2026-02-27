@@ -4,8 +4,8 @@
  *
  * Cross-platform (Windows, macOS, Linux)
  *
- * Runs when a new Claude session starts. Loads the most recent session
- * summary into Claude's context via stdout, and reports available
+ * Runs when a new Codex session starts. Loads the most recent session
+ * summary into Codex's context via stdout, and reports available
  * sessions and learned skills.
  */
 
@@ -37,7 +37,7 @@ async function main() {
     log(`[SessionStart] Found ${recentSessions.length} recent session(s)`);
     log(`[SessionStart] Latest: ${latest.path}`);
 
-    // Read and inject the latest session content into Claude's context
+    // Read and inject the latest session content into Codex's context
     const content = readFile(latest.path);
     if (content && !content.includes('[Session context goes here]')) {
       // Only inject if the session has actual content (not the blank template)

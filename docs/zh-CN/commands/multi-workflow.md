@@ -14,7 +14,7 @@
 
 * 待开发任务：$ARGUMENTS
 * 结构化的 6 阶段工作流程，包含质量门控
-* 多模型协作：Codex（后端） + Gemini（前端） + Claude（编排）
+* 多模型协作：Codex（后端） + Gemini（前端） + Codex（编排）
 * MCP 服务集成（ace-tool）以增强能力
 
 ## 你的角色
@@ -26,7 +26,7 @@
 * **ace-tool MCP** – 代码检索 + 提示词增强
 * **Codex** – 后端逻辑、算法、调试（**后端权威，可信赖**）
 * **Gemini** – 前端 UI/UX、视觉设计（**前端专家，后端意见仅供参考**）
-* **Claude（自身）** – 编排、规划、执行、交付
+* **Codex（自身）** – 编排、规划、执行、交付
 
 ***
 
@@ -37,7 +37,7 @@
 ```
 # New session call
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
 ROLE_FILE: <role prompt path>
 <TASK>
 Requirement: <enhanced requirement (or $ARGUMENTS if not enhanced)>
@@ -52,7 +52,7 @@ EOF",
 
 # Resume session call
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
 ROLE_FILE: <role prompt path>
 <TASK>
 Requirement: <enhanced requirement (or $ARGUMENTS if not enhanced)>
@@ -74,9 +74,9 @@ EOF",
 
 | 阶段 | Codex | Gemini |
 |-------|-------|--------|
-| 分析 | `~/.claude/.ccg/prompts/codex/analyzer.md` | `~/.claude/.ccg/prompts/gemini/analyzer.md` |
-| 规划 | `~/.claude/.ccg/prompts/codex/architect.md` | `~/.claude/.ccg/prompts/gemini/architect.md` |
-| 审查 | `~/.claude/.ccg/prompts/codex/reviewer.md` | `~/.claude/.ccg/prompts/gemini/reviewer.md` |
+| 分析 | `~/.codex/.ccg/prompts/codex/analyzer.md` | `~/.codex/.ccg/prompts/gemini/analyzer.md` |
+| 规划 | `~/.codex/.ccg/prompts/codex/architect.md` | `~/.codex/.ccg/prompts/gemini/architect.md` |
+| 审查 | `~/.codex/.ccg/prompts/codex/reviewer.md` | `~/.codex/.ccg/prompts/gemini/reviewer.md` |
 
 **会话复用**：每次调用返回 `SESSION_ID: xxx`，在后续阶段使用 `resume xxx` 子命令（注意：`resume`，而非 `--resume`）。
 
@@ -148,7 +148,7 @@ TaskOutput({ task_id: "<task_id>", block: true, timeout: 600000 })
 
 **遵循上方 `Multi-Model Call Specification` 中的 `IMPORTANT` 说明**
 
-**Claude 综合**：采纳 Codex 后端计划 + Gemini 前端计划，在用户批准后保存到 `.claude/plan/task-name.md`。
+**Codex 综合**：采纳 Codex 后端计划 + Gemini 前端计划，在用户批准后保存到 `.codex/plan/task-name.md`。
 
 ### 阶段 4：实施
 
@@ -185,5 +185,5 @@ TaskOutput({ task_id: "<task_id>", block: true, timeout: 600000 })
 ## 关键规则
 
 1. 阶段顺序不可跳过（除非用户明确指示）
-2. 外部模型**对文件系统零写入权限**，所有修改由 Claude 执行
+2. 外部模型**对文件系统零写入权限**，所有修改由 Codex 执行
 3. 当评分 < 7 或用户不批准时**强制停止**

@@ -89,7 +89,7 @@ await browser.injectKeyboardEvent({ type: 'keyDown', key: 'Enter', code: 'Enter'
 await browser.startScreencast()  // ビューポートフレームをストリーム
 ```
 
-### Claude CodeでのAgent Browser
+### CodexでのAgent Browser
 `agent-browser`スキルがインストールされている場合、インタラクティブなブラウザ自動化タスクには`/agent-browser`を使用してください。
 
 ---

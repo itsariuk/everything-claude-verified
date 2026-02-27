@@ -10,6 +10,9 @@ const fs = require('fs');
 const os = require('os');
 const { spawn } = require('child_process');
 
+const DEFAULT_TEST_HOME = path.join(os.tmpdir(), `hooks-home-${Date.now()}`);
+fs.mkdirSync(path.join(DEFAULT_TEST_HOME, '.codex'), { recursive: true });
+
 // Test helper
 function test(name, fn) {
   try {
@@ -39,8 +42,20 @@ async function asyncTest(name, fn) {
 // Run a script and capture output
 function runScript(scriptPath, input = '', env = {}) {
   return new Promise((resolve, reject) => {
+    const mergedEnv = { ...process.env, ...env };
+    if (!Object.prototype.hasOwnProperty.call(env, 'HOME')) {
+      mergedEnv.HOME = DEFAULT_TEST_HOME;
+    }
+    if (!Object.prototype.hasOwnProperty.call(env, 'USERPROFILE')) {
+      mergedEnv.USERPROFILE = mergedEnv.HOME;
+    }
+    if (!Object.prototype.hasOwnProperty.call(env, 'CODEX_DIR')) {
+      const baseHome = mergedEnv.HOME || mergedEnv.USERPROFILE || os.homedir();
+      mergedEnv.CODEX_DIR = path.join(baseHome, '.codex');
+    }
+
     const proc = spawn('node', [scriptPath], {
-      env: { ...process.env, ...env },
+      env: mergedEnv,
       stdio: ['pipe', 'pipe', 'pipe']
     });
 
@@ -106,8 +121,8 @@ async function runTests() {
 
   if (await asyncTest('exits 0 even with isolated empty HOME', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-iso-start-${Date.now()}`);
-    fs.mkdirSync(path.join(isoHome, '.claude', 'sessions'), { recursive: true });
-    fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'sessions'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'skills', 'learned'), { recursive: true });
     try {
       const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
         HOME: isoHome, USERPROFILE: isoHome
@@ -128,9 +143,9 @@ async function runTests() {
 
   if (await asyncTest('skips template session content', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-tpl-start-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
-    fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'skills', 'learned'), { recursive: true });
 
     // Create a session file with template placeholder
     const sessionFile = path.join(sessionsDir, '2026-02-11-abcd1234-session.tmp');
@@ -153,9 +168,9 @@ async function runTests() {
 
   if (await asyncTest('injects real session content', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-real-start-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
-    fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'skills', 'learned'), { recursive: true });
 
     // Create a real session file
     const sessionFile = path.join(sessionsDir, '2026-02-11-efgh5678-session.tmp');
@@ -181,9 +196,9 @@ async function runTests() {
 
   if (await asyncTest('reports learned skills count', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-skills-start-${Date.now()}`);
-    const learnedDir = path.join(isoHome, '.claude', 'skills', 'learned');
+    const learnedDir = path.join(isoHome, '.codex', 'skills', 'learned');
     fs.mkdirSync(learnedDir, { recursive: true });
-    fs.mkdirSync(path.join(isoHome, '.claude', 'sessions'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'sessions'), { recursive: true });
 
     // Create learned skill files
     fs.writeFileSync(path.join(learnedDir, 'testing-patterns.md'), '# Testing');
@@ -238,9 +253,9 @@ async function runTests() {
     await runScript(path.join(scriptsDir, 'session-end.js'));
 
     // Check if session file was created
-    // Note: Without CLAUDE_SESSION_ID, falls back to project name (not 'default')
+    // Note: Without CODEX_SESSION_ID, falls back to project name (not 'default')
     // Use local time to match the script's getDateString() function
-    const sessionsDir = path.join(os.homedir(), '.claude', 'sessions');
+    const sessionsDir = path.join(DEFAULT_TEST_HOME, '.codex', 'sessions');
     const now = new Date();
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
@@ -258,12 +273,12 @@ async function runTests() {
 
     // Run with custom session ID
     await runScript(path.join(scriptsDir, 'session-end.js'), '', {
-      CLAUDE_SESSION_ID: testSessionId
+      CODEX_SESSION_ID: testSessionId
     });
 
     // Check if session file was created with session ID
     // Use local time to match the script's getDateString() function
-    const sessionsDir = path.join(os.homedir(), '.claude', 'sessions');
+    const sessionsDir = path.join(DEFAULT_TEST_HOME, '.codex', 'sessions');
     const now = new Date();
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const sessionFile = path.join(sessionsDir, `${today}-${expectedShortId}-session.tmp`);
@@ -286,13 +301,13 @@ async function runTests() {
 
   if (await asyncTest('creates compaction log', async () => {
     await runScript(path.join(scriptsDir, 'pre-compact.js'));
-    const logFile = path.join(os.homedir(), '.claude', 'sessions', 'compaction-log.txt');
+    const logFile = path.join(DEFAULT_TEST_HOME, '.codex', 'sessions', 'compaction-log.txt');
     assert.ok(fs.existsSync(logFile), 'Compaction log should exist');
   })) passed++; else failed++;
 
   if (await asyncTest('annotates active session file with compaction marker', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-compact-annotate-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     // Create an active .tmp session file
@@ -316,7 +331,7 @@ async function runTests() {
 
   if (await asyncTest('compaction log contains timestamp', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-compact-ts-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     try {
@@ -342,7 +357,7 @@ async function runTests() {
 
   if (await asyncTest('runs without error', async () => {
     const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-      CLAUDE_SESSION_ID: 'test-session-' + Date.now()
+      CODEX_SESSION_ID: 'test-session-' + Date.now()
     });
     assert.strictEqual(result.code, 0, `Exit code should be 0, got ${result.code}`);
   })) passed++; else failed++;
@@ -353,12 +368,12 @@ async function runTests() {
     // Run multiple times
     for (let i = 0; i < 3; i++) {
       await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId
+        CODEX_SESSION_ID: sessionId
       });
     }
 
     // Check counter file
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     const count = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
     assert.strictEqual(count, 3, `Counter should be 3, got ${count}`);
 
@@ -368,13 +383,13 @@ async function runTests() {
 
   if (await asyncTest('suggests compact at threshold', async () => {
     const sessionId = 'test-threshold-' + Date.now();
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
 
     // Set counter to threshold - 1
     fs.writeFileSync(counterFile, '49');
 
     const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-      CLAUDE_SESSION_ID: sessionId,
+      CODEX_SESSION_ID: sessionId,
       COMPACT_THRESHOLD: '50'
     });
 
@@ -389,12 +404,12 @@ async function runTests() {
 
   if (await asyncTest('does not suggest below threshold', async () => {
     const sessionId = 'test-below-' + Date.now();
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
 
     fs.writeFileSync(counterFile, '10');
 
     const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-      CLAUDE_SESSION_ID: sessionId,
+      CODEX_SESSION_ID: sessionId,
       COMPACT_THRESHOLD: '50'
     });
 
@@ -408,13 +423,13 @@ async function runTests() {
 
   if (await asyncTest('suggests at regular intervals after threshold', async () => {
     const sessionId = 'test-interval-' + Date.now();
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
 
     // Set counter to 74 (next will be 75, which is >50 and 75%25==0)
     fs.writeFileSync(counterFile, '74');
 
     const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-      CLAUDE_SESSION_ID: sessionId,
+      CODEX_SESSION_ID: sessionId,
       COMPACT_THRESHOLD: '50'
     });
 
@@ -428,12 +443,12 @@ async function runTests() {
 
   if (await asyncTest('handles corrupted counter file', async () => {
     const sessionId = 'test-corrupt-' + Date.now();
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
 
     fs.writeFileSync(counterFile, 'not-a-number');
 
     const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-      CLAUDE_SESSION_ID: sessionId
+      CODEX_SESSION_ID: sessionId
     });
 
     assert.strictEqual(result.code, 0, 'Should handle corrupted counter gracefully');
@@ -447,25 +462,25 @@ async function runTests() {
 
   if (await asyncTest('uses default session ID when no env var', async () => {
     const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-      CLAUDE_SESSION_ID: '' // Empty, should use 'default'
+      CODEX_SESSION_ID: '' // Empty, should use 'default'
     });
 
     assert.strictEqual(result.code, 0, 'Should work with default session ID');
 
     // Cleanup the default counter file
-    const counterFile = path.join(os.tmpdir(), 'claude-tool-count-default');
+    const counterFile = path.join(os.tmpdir(), 'codex-tool-count-default');
     if (fs.existsSync(counterFile)) fs.unlinkSync(counterFile);
   })) passed++; else failed++;
 
   if (await asyncTest('validates threshold bounds', async () => {
     const sessionId = 'test-bounds-' + Date.now();
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
 
     // Invalid threshold should fall back to 50
     fs.writeFileSync(counterFile, '49');
 
     const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-      CLAUDE_SESSION_ID: sessionId,
+      CODEX_SESSION_ID: sessionId,
       COMPACT_THRESHOLD: '-5' // Invalid: negative
     });
 
@@ -880,7 +895,7 @@ async function runTests() {
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
-  if (await asyncTest('uses CLAUDE_TRANSCRIPT_PATH env var as fallback', async () => {
+  if (await asyncTest('uses CODEX_TRANSCRIPT_PATH env var as fallback', async () => {
     const testDir = createTestDir();
     const transcriptPath = path.join(testDir, 'transcript.jsonl');
 
@@ -891,7 +906,7 @@ async function runTests() {
 
     // Send invalid JSON to stdin so it falls back to env var
     const result = await runScript(path.join(scriptsDir, 'session-end.js'), 'not json', {
-      CLAUDE_TRANSCRIPT_PATH: transcriptPath
+      CODEX_TRANSCRIPT_PATH: transcriptPath
     });
     assert.strictEqual(result.code, 0, 'Should use env var fallback');
     cleanupTestDir(testDir);
@@ -915,7 +930,7 @@ async function runTests() {
     assert.strictEqual(result.code, 0, 'Should handle backticks without crash');
 
     // Find the session file in the temp HOME
-    const claudeDir = path.join(testDir, '.claude', 'sessions');
+    const claudeDir = path.join(testDir, '.codex', 'sessions');
     if (fs.existsSync(claudeDir)) {
       const files = fs.readdirSync(claudeDir).filter(f => f.endsWith('.tmp'));
       if (files.length > 0) {
@@ -946,7 +961,7 @@ async function runTests() {
     });
     assert.strictEqual(result.code, 0);
 
-    const claudeDir = path.join(testDir, '.claude', 'sessions');
+    const claudeDir = path.join(testDir, '.codex', 'sessions');
     if (fs.existsSync(claudeDir)) {
       const files = fs.readdirSync(claudeDir).filter(f => f.endsWith('.tmp'));
       if (files.length > 0) {
@@ -979,7 +994,7 @@ async function runTests() {
     });
     assert.strictEqual(result.code, 0);
 
-    const claudeDir = path.join(testDir, '.claude', 'sessions');
+    const claudeDir = path.join(testDir, '.codex', 'sessions');
     if (fs.existsSync(claudeDir)) {
       const files = fs.readdirSync(claudeDir).filter(f => f.endsWith('.tmp'));
       if (files.length > 0) {
@@ -1010,7 +1025,7 @@ async function runTests() {
     });
     assert.strictEqual(result.code, 0);
 
-    const claudeDir = path.join(testDir, '.claude', 'sessions');
+    const claudeDir = path.join(testDir, '.codex', 'sessions');
     if (fs.existsSync(claudeDir)) {
       const files = fs.readdirSync(claudeDir).filter(f => f.endsWith('.tmp'));
       if (files.length > 0) {
@@ -1044,7 +1059,7 @@ async function runTests() {
     });
     assert.strictEqual(result.code, 0);
 
-    const claudeDir = path.join(testDir, '.claude', 'sessions');
+    const claudeDir = path.join(testDir, '.codex', 'sessions');
     if (fs.existsSync(claudeDir)) {
       const files = fs.readdirSync(claudeDir).filter(f => f.endsWith('.tmp'));
       if (files.length > 0) {
@@ -1077,7 +1092,7 @@ async function runTests() {
     });
     assert.strictEqual(result.code, 0);
 
-    const claudeDir = path.join(testDir, '.claude', 'sessions');
+    const claudeDir = path.join(testDir, '.codex', 'sessions');
     if (fs.existsSync(claudeDir)) {
       const files = fs.readdirSync(claudeDir).filter(f => f.endsWith('.tmp'));
       if (files.length > 0) {
@@ -1093,11 +1108,11 @@ async function runTests() {
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
-  if (await asyncTest('parses Claude Code JSONL format (entry.message.content)', async () => {
+  if (await asyncTest('parses Codex JSONL format (entry.message.content)', async () => {
     const testDir = createTestDir();
     const transcriptPath = path.join(testDir, 'transcript.jsonl');
 
-    // Claude Code v2.1.41+ JSONL format: user messages nested in entry.message
+    // Codex v2.1.41+ JSONL format: user messages nested in entry.message
     const lines = [
       '{"type":"user","message":{"role":"user","content":"Fix the build error"}}',
       '{"type":"user","message":{"role":"user","content":[{"type":"text","text":"Also update tests"}]}}',
@@ -1110,7 +1125,7 @@ async function runTests() {
     });
     assert.strictEqual(result.code, 0);
 
-    const claudeDir = path.join(testDir, '.claude', 'sessions');
+    const claudeDir = path.join(testDir, '.codex', 'sessions');
     if (fs.existsSync(claudeDir)) {
       const files = fs.readdirSync(claudeDir).filter(f => f.endsWith('.tmp'));
       if (files.length > 0) {
@@ -1126,7 +1141,7 @@ async function runTests() {
     const testDir = createTestDir();
     const transcriptPath = path.join(testDir, 'transcript.jsonl');
 
-    // Claude Code JSONL: tool uses nested in assistant message content array
+    // Codex JSONL: tool uses nested in assistant message content array
     const lines = [
       '{"type":"user","content":"Edit the config"}',
       JSON.stringify({
@@ -1149,7 +1164,7 @@ async function runTests() {
     });
     assert.strictEqual(result.code, 0);
 
-    const claudeDir = path.join(testDir, '.claude', 'sessions');
+    const claudeDir = path.join(testDir, '.codex', 'sessions');
     if (fs.existsSync(claudeDir)) {
       const files = fs.readdirSync(claudeDir).filter(f => f.endsWith('.tmp'));
       if (files.length > 0) {
@@ -1205,7 +1220,7 @@ async function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('script references use CLAUDE_PLUGIN_ROOT variable', () => {
+  if (test('script references use CODEX_ROOT or CODEX_PLUGIN_ROOT variable', () => {
     const hooksPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
     const hooks = JSON.parse(fs.readFileSync(hooksPath, 'utf8'));
 
@@ -1213,11 +1228,11 @@ async function runTests() {
       for (const entry of hookArray) {
         for (const hook of entry.hooks) {
           if (hook.type === 'command' && hook.command.includes('scripts/hooks/')) {
-            // Check for the literal string "${CLAUDE_PLUGIN_ROOT}" in the command
-            const hasPluginRoot = hook.command.includes('${CLAUDE_PLUGIN_ROOT}');
+            // Codex-native hooks may use either root variable.
+            const hasRootVar = hook.command.includes('${CODEX_ROOT') || hook.command.includes('${CODEX_PLUGIN_ROOT}');
             assert.ok(
-              hasPluginRoot,
-              `Script paths should use CLAUDE_PLUGIN_ROOT: ${hook.command.substring(0, 80)}...`
+              hasRootVar,
+              `Script paths should use CODEX_ROOT/CODEX_PLUGIN_ROOT: ${hook.command.substring(0, 80)}...`
             );
           }
         }
@@ -1227,22 +1242,6 @@ async function runTests() {
     for (const [, hookArray] of Object.entries(hooks.hooks)) {
       checkHooks(hookArray);
     }
-  })) passed++; else failed++;
-
-  // plugin.json validation
-  console.log('\nplugin.json Validation:');
-
-  if (test('plugin.json does NOT have explicit hooks declaration', () => {
-    // Claude Code automatically loads hooks/hooks.json by convention.
-    // Explicitly declaring it in plugin.json causes a duplicate detection error.
-    // See: https://github.com/affaan-m/everything-claude-code/issues/103
-    const pluginPath = path.join(__dirname, '..', '..', '.claude-plugin', 'plugin.json');
-    const plugin = JSON.parse(fs.readFileSync(pluginPath, 'utf8'));
-
-    assert.ok(
-      !plugin.hooks,
-      'plugin.json should NOT have "hooks" field - Claude Code auto-loads hooks/hooks.json'
-    );
   })) passed++; else failed++;
 
   // ─── evaluate-session.js tests ───
@@ -1297,7 +1296,7 @@ async function runTests() {
     const result = await runScript(
       path.join(scriptsDir, 'evaluate-session.js'),
       'not json at all',
-      { CLAUDE_TRANSCRIPT_PATH: '' }
+      { CODEX_TRANSCRIPT_PATH: '' }
     );
     // No valid transcript path from either source → exit 0
     assert.strictEqual(result.code, 0);
@@ -1308,18 +1307,18 @@ async function runTests() {
 
   if (await asyncTest('increments tool counter on each invocation', async () => {
     const sessionId = `test-counter-${Date.now()}`;
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     try {
       // First invocation → count = 1
       await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId
+        CODEX_SESSION_ID: sessionId
       });
       let val = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
       assert.strictEqual(val, 1, 'First call should write count 1');
 
       // Second invocation → count = 2
       await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId
+        CODEX_SESSION_ID: sessionId
       });
       val = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
       assert.strictEqual(val, 2, 'Second call should write count 2');
@@ -1330,12 +1329,12 @@ async function runTests() {
 
   if (await asyncTest('suggests compact at exact threshold', async () => {
     const sessionId = `test-threshold-${Date.now()}`;
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     try {
       // Pre-seed counter at threshold - 1 so next call hits threshold
       fs.writeFileSync(counterFile, '4');
       const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId,
+        CODEX_SESSION_ID: sessionId,
         COMPACT_THRESHOLD: '5'
       });
       assert.strictEqual(result.code, 0);
@@ -1347,13 +1346,13 @@ async function runTests() {
 
   if (await asyncTest('suggests at periodic intervals after threshold', async () => {
     const sessionId = `test-periodic-${Date.now()}`;
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     try {
       // Pre-seed at 29 so next call = 30 (threshold 5 + 25 = 30)
       // (30 - 5) % 25 === 0 → should trigger periodic suggestion
       fs.writeFileSync(counterFile, '29');
       const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId,
+        CODEX_SESSION_ID: sessionId,
         COMPACT_THRESHOLD: '5'
       });
       assert.strictEqual(result.code, 0);
@@ -1365,11 +1364,11 @@ async function runTests() {
 
   if (await asyncTest('does not suggest below threshold', async () => {
     const sessionId = `test-below-${Date.now()}`;
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     try {
       fs.writeFileSync(counterFile, '2');
       const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId,
+        CODEX_SESSION_ID: sessionId,
         COMPACT_THRESHOLD: '50'
       });
       assert.strictEqual(result.code, 0);
@@ -1382,12 +1381,12 @@ async function runTests() {
 
   if (await asyncTest('resets counter when file contains huge overflow number', async () => {
     const sessionId = `test-overflow-${Date.now()}`;
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     try {
       // Write a value that passes Number.isFinite() but exceeds 1000000 clamp
       fs.writeFileSync(counterFile, '999999999999');
       const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId
+        CODEX_SESSION_ID: sessionId
       });
       assert.strictEqual(result.code, 0);
       // Should reset to 1 because 999999999999 > 1000000
@@ -1400,11 +1399,11 @@ async function runTests() {
 
   if (await asyncTest('resets counter when file contains negative number', async () => {
     const sessionId = `test-negative-${Date.now()}`;
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     try {
       fs.writeFileSync(counterFile, '-42');
       const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId
+        CODEX_SESSION_ID: sessionId
       });
       assert.strictEqual(result.code, 0);
       const newCount = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
@@ -1416,11 +1415,11 @@ async function runTests() {
 
   if (await asyncTest('handles COMPACT_THRESHOLD of zero (falls back to 50)', async () => {
     const sessionId = `test-zero-thresh-${Date.now()}`;
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     try {
       fs.writeFileSync(counterFile, '49');
       const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId,
+        CODEX_SESSION_ID: sessionId,
         COMPACT_THRESHOLD: '0'
       });
       assert.strictEqual(result.code, 0);
@@ -1432,12 +1431,12 @@ async function runTests() {
 
   if (await asyncTest('handles invalid COMPACT_THRESHOLD (falls back to 50)', async () => {
     const sessionId = `test-invalid-thresh-${Date.now()}`;
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     try {
       // Pre-seed at 49 so next call = 50 (the fallback default)
       fs.writeFileSync(counterFile, '49');
       const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId,
+        CODEX_SESSION_ID: sessionId,
         COMPACT_THRESHOLD: 'not-a-number'
       });
       assert.strictEqual(result.code, 0);
@@ -1658,7 +1657,7 @@ async function runTests() {
 
   if (await asyncTest('updates Last Updated timestamp in existing session file', async () => {
     const testDir = createTestDir();
-    const sessionsDir = path.join(testDir, '.claude', 'sessions');
+    const sessionsDir = path.join(testDir, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     // Get the expected filename
@@ -1673,7 +1672,7 @@ async function runTests() {
 
     const result = await runScript(path.join(scriptsDir, 'session-end.js'), '', {
       HOME: testDir, USERPROFILE: testDir,
-      CLAUDE_SESSION_ID: `session-${shortId}`
+      CODEX_SESSION_ID: `session-${shortId}`
     });
     assert.strictEqual(result.code, 0);
 
@@ -1685,7 +1684,7 @@ async function runTests() {
 
   if (await asyncTest('replaces blank template with summary when updating existing file', async () => {
     const testDir = createTestDir();
-    const sessionsDir = path.join(testDir, '.claude', 'sessions');
+    const sessionsDir = path.join(testDir, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     const utils = require('../../scripts/lib/utils');
@@ -1708,7 +1707,7 @@ async function runTests() {
     const stdinJson = JSON.stringify({ transcript_path: transcriptPath });
     const result = await runScript(path.join(scriptsDir, 'session-end.js'), stdinJson, {
       HOME: testDir, USERPROFILE: testDir,
-      CLAUDE_SESSION_ID: `session-${shortId}`
+      CODEX_SESSION_ID: `session-${shortId}`
     });
     assert.strictEqual(result.code, 0);
 
@@ -1721,7 +1720,7 @@ async function runTests() {
 
   if (await asyncTest('preserves existing session content when no blank template marker', async () => {
     const testDir = createTestDir();
-    const sessionsDir = path.join(testDir, '.claude', 'sessions');
+    const sessionsDir = path.join(testDir, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     const utils = require('../../scripts/lib/utils');
@@ -1739,7 +1738,7 @@ async function runTests() {
     const stdinJson = JSON.stringify({ transcript_path: transcriptPath });
     const result = await runScript(path.join(scriptsDir, 'session-end.js'), stdinJson, {
       HOME: testDir, USERPROFILE: testDir,
-      CLAUDE_SESSION_ID: `session-${shortId}`
+      CODEX_SESSION_ID: `session-${shortId}`
     });
     assert.strictEqual(result.code, 0);
 
@@ -1753,7 +1752,7 @@ async function runTests() {
 
   if (await asyncTest('only annotates *-session.tmp files, not other .tmp files', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-compact-glob-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     // Create a session .tmp file and a non-session .tmp file
@@ -1779,7 +1778,7 @@ async function runTests() {
 
   if (await asyncTest('handles no active session files gracefully', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-compact-nosession-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     try {
@@ -1816,7 +1815,7 @@ async function runTests() {
     assert.strictEqual(result.code, 0);
 
     // With no user messages, extractSessionSummary returns null → blank template
-    const claudeDir = path.join(testDir, '.claude', 'sessions');
+    const claudeDir = path.join(testDir, '.codex', 'sessions');
     if (fs.existsSync(claudeDir)) {
       const files = fs.readdirSync(claudeDir).filter(f => f.endsWith('.tmp'));
       if (files.length > 0) {
@@ -1830,7 +1829,7 @@ async function runTests() {
   if (await asyncTest('extracts tool_use from assistant message content blocks', async () => {
     const testDir = createTestDir();
     const transcriptPath = path.join(testDir, 'transcript.jsonl');
-    // Claude Code JSONL format: tool_use blocks inside assistant message content array
+    // Codex JSONL format: tool_use blocks inside assistant message content array
     const lines = [
       '{"type":"user","content":"Edit config"}',
       JSON.stringify({
@@ -1852,7 +1851,7 @@ async function runTests() {
     });
     assert.strictEqual(result.code, 0);
 
-    const claudeDir = path.join(testDir, '.claude', 'sessions');
+    const claudeDir = path.join(testDir, '.codex', 'sessions');
     if (fs.existsSync(claudeDir)) {
       const files = fs.readdirSync(claudeDir).filter(f => f.endsWith('.tmp'));
       if (files.length > 0) {
@@ -1872,12 +1871,12 @@ async function runTests() {
     // Regression test: with threshold=13, periodic suggestions should fire at 38, 63, 88...
     // (count - 13) % 25 === 0 → 38-13=25, 63-13=50, etc.
     const sessionId = `test-interval-fix-${Date.now()}`;
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     try {
       // Pre-seed at 37 so next call = 38 (13 + 25 = 38)
       fs.writeFileSync(counterFile, '37');
       const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId,
+        CODEX_SESSION_ID: sessionId,
         COMPACT_THRESHOLD: '13'
       });
       assert.strictEqual(result.code, 0);
@@ -1891,11 +1890,11 @@ async function runTests() {
     // With threshold=13, count=50 should NOT trigger (old behavior would: 50%25===0)
     // New behavior: (50-13)%25 = 37%25 = 12 → no suggestion
     const sessionId = `test-no-false-suggest-${Date.now()}`;
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     try {
       fs.writeFileSync(counterFile, '49');
       const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId,
+        CODEX_SESSION_ID: sessionId,
         COMPACT_THRESHOLD: '13'
       });
       assert.strictEqual(result.code, 0);
@@ -1907,12 +1906,12 @@ async function runTests() {
 
   if (await asyncTest('fd fallback: handles corrupted counter file gracefully', async () => {
     const sessionId = `test-corrupt-${Date.now()}`;
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     try {
       // Write non-numeric data to trigger parseInt → NaN → reset to 1
       fs.writeFileSync(counterFile, 'corrupted data here!!!');
       const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId
+        CODEX_SESSION_ID: sessionId
       });
       assert.strictEqual(result.code, 0);
       const newCount = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
@@ -1924,12 +1923,12 @@ async function runTests() {
 
   if (await asyncTest('handles counter at exact 1000000 boundary', async () => {
     const sessionId = `test-boundary-${Date.now()}`;
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     try {
       // 1000000 is the upper clamp boundary — should still increment
       fs.writeFileSync(counterFile, '1000000');
       const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId
+        CODEX_SESSION_ID: sessionId
       });
       assert.strictEqual(result.code, 0);
       const newCount = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
@@ -1976,8 +1975,8 @@ async function runTests() {
 
   if (await asyncTest('exits 0 with empty sessions directory (no recent sessions)', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-start-empty-${Date.now()}`);
-    fs.mkdirSync(path.join(isoHome, '.claude', 'sessions'), { recursive: true });
-    fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'sessions'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'skills', 'learned'), { recursive: true });
     try {
       const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
         HOME: isoHome, USERPROFILE: isoHome
@@ -1992,9 +1991,9 @@ async function runTests() {
 
   if (await asyncTest('does not inject blank template session into context', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-start-blank-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
-    fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'skills', 'learned'), { recursive: true });
 
     // Create a session file with the blank template marker
     const today = new Date().toISOString().slice(0, 10);
@@ -2438,7 +2437,7 @@ async function runTests() {
 
   if (await asyncTest('annotates only the newest session file when multiple exist', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-compact-multi-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     // Create two session files with different mtimes
@@ -2494,7 +2493,7 @@ async function runTests() {
     assert.strictEqual(result.code, 0);
 
     // Find the session file and verify newlines were collapsed
-    const claudeDir = path.join(testDir, '.claude', 'sessions');
+    const claudeDir = path.join(testDir, '.codex', 'sessions');
     if (fs.existsSync(claudeDir)) {
       const files = fs.readdirSync(claudeDir).filter(f => f.endsWith('.tmp'));
       if (files.length > 0) {
@@ -2522,9 +2521,9 @@ async function runTests() {
 
   if (await asyncTest('does not inject empty session file content into context', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-start-empty-file-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
-    fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'skills', 'learned'), { recursive: true });
 
     // Create a 0-byte session file (simulates truncated/corrupted write)
     const today = new Date().toISOString().slice(0, 10);
@@ -2572,7 +2571,7 @@ async function runTests() {
 
   if (await asyncTest('summary omits Files Modified and Tools Used when none found', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-notools-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     const testDir = createTestDir();
@@ -2608,11 +2607,11 @@ async function runTests() {
 
   if (await asyncTest('reports available session aliases on startup', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-start-alias-${Date.now()}`);
-    fs.mkdirSync(path.join(isoHome, '.claude', 'sessions'), { recursive: true });
-    fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'sessions'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'skills', 'learned'), { recursive: true });
 
     // Pre-populate the aliases file
-    fs.writeFileSync(path.join(isoHome, '.claude', 'session-aliases.json'), JSON.stringify({
+    fs.writeFileSync(path.join(isoHome, '.codex', 'session-aliases.json'), JSON.stringify({
       version: '1.0',
       aliases: {
         'my-feature': { sessionPath: '/sessions/feat', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), title: null },
@@ -2640,7 +2639,7 @@ async function runTests() {
 
   if (await asyncTest('parallel compaction runs all append to log without loss', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-compact-par-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     try {
@@ -2666,9 +2665,9 @@ async function runTests() {
 
   if (await asyncTest('exits 0 when sessions path is a file (not a directory)', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-start-blocked-${Date.now()}`);
-    fs.mkdirSync(path.join(isoHome, '.claude'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex'), { recursive: true });
     // Block sessions dir creation by placing a file at that path
-    fs.writeFileSync(path.join(isoHome, '.claude', 'sessions'), 'blocked');
+    fs.writeFileSync(path.join(isoHome, '.codex', 'sessions'), 'blocked');
 
     try {
       const result = await runScript(path.join(scriptsDir, 'session-start.js'), '', {
@@ -2718,9 +2717,9 @@ async function runTests() {
 
   if (await asyncTest('excludes session files older than 7 days', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-start-7day-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
-    fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'skills', 'learned'), { recursive: true });
 
     // Create session file 6.9 days old (should be INCLUDED by maxAge:7)
     const recentFile = path.join(sessionsDir, '2026-02-06-recent69-session.tmp');
@@ -2754,9 +2753,9 @@ async function runTests() {
 
   if (await asyncTest('injects newest session when multiple recent sessions exist', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-start-multi-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
-    fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'skills', 'learned'), { recursive: true });
 
     const now = Date.now();
 
@@ -2798,7 +2797,7 @@ async function runTests() {
 
     try {
       const result = await runScript(path.join(scriptsDir, 'session-end.js'), oversizedPayload, {
-        CLAUDE_TRANSCRIPT_PATH: transcriptPath
+        CODEX_TRANSCRIPT_PATH: transcriptPath
       });
       assert.strictEqual(result.code, 0, 'Should exit 0 even with oversized stdin');
       // Truncated JSON → JSON.parse throws → falls back to env var → creates session file
@@ -2840,13 +2839,13 @@ async function runTests() {
 
   if (await asyncTest('exits 0 when counter file path is occupied by a directory', async () => {
     const sessionId = `dirblock-${Date.now()}`;
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
     // Create a DIRECTORY at the counter file path — openSync('a+') will fail with EISDIR
     fs.mkdirSync(counterFile);
 
     try {
       const result = await runScript(path.join(scriptsDir, 'suggest-compact.js'), '', {
-        CLAUDE_SESSION_ID: sessionId
+        CODEX_SESSION_ID: sessionId
       });
       assert.strictEqual(result.code, 0,
         'Should exit 0 even when counter file path is a directory (graceful fallback)');
@@ -2866,7 +2865,7 @@ async function runTests() {
       return;
     }
     const isoHome = path.join(os.tmpdir(), `ecc-start-unreadable-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     // Create a session file with real content, then make it unreadable
@@ -2913,7 +2912,7 @@ async function runTests() {
       return;
     }
     const isoHome = path.join(os.tmpdir(), `ecc-compact-ro-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     // Create a session file then make it read-only
@@ -2942,7 +2941,7 @@ async function runTests() {
 
   if (await asyncTest('logs warning when existing session file lacks Last Updated field', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-end-nots-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     // Create transcript with a user message so a summary is produced
@@ -3017,7 +3016,7 @@ async function runTests() {
 
   if (await asyncTest('extracts user messages from role-only format (no type field)', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-role-only-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     const testDir = createTestDir();
@@ -3053,7 +3052,7 @@ async function runTests() {
 
   if (await asyncTest('logs "Transcript not found" for nonexistent transcript_path', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-notfound-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     const stdinJson = JSON.stringify({ transcript_path: '/tmp/nonexistent-transcript-99999.jsonl' });
@@ -3080,7 +3079,7 @@ async function runTests() {
 
   if (await asyncTest('extracts tool name and file path from entry.name/entry.input (not tool_name/tool_input)', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-r70-entryname-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
     const transcriptPath = path.join(isoHome, 'transcript.jsonl');
 
@@ -3123,15 +3122,15 @@ async function runTests() {
   if (await asyncTest('shows selection prompt when no package manager preference found (default source)', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-r71-ss-default-${Date.now()}`);
     const isoProject = path.join(isoHome, 'project');
-    fs.mkdirSync(path.join(isoHome, '.claude', 'sessions'), { recursive: true });
-    fs.mkdirSync(path.join(isoHome, '.claude', 'skills', 'learned'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'sessions'), { recursive: true });
+    fs.mkdirSync(path.join(isoHome, '.codex', 'skills', 'learned'), { recursive: true });
     fs.mkdirSync(isoProject, { recursive: true });
     // No package.json, no lock files, no package-manager.json — forces default source
 
     try {
       const result = await new Promise((resolve, reject) => {
         const env = { ...process.env, HOME: isoHome, USERPROFILE: isoHome };
-        delete env.CLAUDE_PACKAGE_MANAGER; // Remove any env-level PM override
+        delete env.CODEX_PACKAGE_MANAGER; // Remove any env-level PM override
         const proc = spawn('node', [path.join(scriptsDir, 'session-start.js')], {
           env,
           cwd: isoProject, // CWD with no package.json or lock files
@@ -3257,7 +3256,7 @@ async function runTests() {
 
   if (await asyncTest('extracts user messages from entries where only message.role is user (not type or role)', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-msgrole-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     const testDir = createTestDir();
@@ -3318,7 +3317,7 @@ async function runTests() {
     // session-end.js line 50-55: rawContent is checked for string, then array, else ''
     // When content is a number (42), neither branch matches, text = '', message is skipped.
     const isoHome = path.join(os.tmpdir(), `ecc-r81-numcontent-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
     const transcriptPath = path.join(isoHome, 'transcript.jsonl');
 
@@ -3361,7 +3360,7 @@ async function runTests() {
 
   if (await asyncTest('collects tool name from entry with tool_name but non-tool_use type', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-r82-toolname-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     const transcriptPath = path.join(isoHome, 'transcript.jsonl');
@@ -3394,7 +3393,7 @@ async function runTests() {
 
   if (await asyncTest('preserves file when marker present but regex does not match corrupted template', async () => {
     const isoHome = path.join(os.tmpdir(), `ecc-r82-tmpl-${Date.now()}`);
-    const sessionsDir = path.join(isoHome, '.claude', 'sessions');
+    const sessionsDir = path.join(isoHome, '.codex', 'sessions');
     fs.mkdirSync(sessionsDir, { recursive: true });
 
     const today = new Date().toISOString().split('T')[0];
@@ -3542,7 +3541,7 @@ Some random content without the expected ### Context to Load section
     assert.strictEqual(result.code, 0, 'Should exit 0');
 
     // Read the session file to verify tool names and file paths were extracted
-    const claudeDir = path.join(testDir, '.claude', 'sessions');
+    const claudeDir = path.join(testDir, '.codex', 'sessions');
     if (fs.existsSync(claudeDir)) {
       const files = fs.readdirSync(claudeDir).filter(f => f.endsWith('.tmp'));
       if (files.length > 0) {
@@ -3649,7 +3648,7 @@ Some random content without the expected ### Context to Load section
     });
     assert.strictEqual(result.code, 0, 'Should exit 0');
 
-    const claudeDir = path.join(testDir, '.claude', 'sessions');
+    const claudeDir = path.join(testDir, '.codex', 'sessions');
     if (fs.existsSync(claudeDir)) {
       const files = fs.readdirSync(claudeDir).filter(f => f.endsWith('.tmp'));
       if (files.length > 0) {
@@ -3670,6 +3669,7 @@ Some random content without the expected ### Context to Load section
   console.log(`Failed: ${failed}`);
   console.log(`Total:  ${passed + failed}\n`);
 
+  cleanupTestDir(DEFAULT_TEST_HOME);
   process.exit(failed > 0 ? 1 : 0);
 }
 

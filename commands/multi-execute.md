@@ -1,6 +1,6 @@
 # Execute - Multi-Model Collaborative Execution
 
-Multi-model collaborative execution - Get prototype from plan → Claude refactors and implements → Multi-model audit and delivery.
+Multi-model collaborative execution - Get prototype from plan → Codex refactors and implements → Multi-model audit and delivery.
 
 $ARGUMENTS
 
@@ -9,7 +9,7 @@ $ARGUMENTS
 ## Core Protocols
 
 - **Language Protocol**: Use **English** when interacting with tools/models, communicate with user in their language
-- **Code Sovereignty**: External models have **zero filesystem write access**, all modifications by Claude
+- **Code Sovereignty**: External models have **zero filesystem write access**, all modifications by Codex
 - **Dirty Prototype Refactoring**: Treat Codex/Gemini Unified Diff as "dirty prototype", must refactor to production-grade code
 - **Stop-Loss Mechanism**: Do not proceed to next phase until current phase output is validated
 - **Prerequisite**: Only execute after user explicitly replies "Y" to `/ccg:plan` output (if missing, must confirm first)
@@ -23,7 +23,7 @@ $ARGUMENTS
 ```
 # Resume session call (recommended) - Implementation Prototype
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
 ROLE_FILE: <role prompt path>
 <TASK>
 Requirement: <task description>
@@ -38,7 +38,7 @@ EOF",
 
 # New session call - Implementation Prototype
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
 ROLE_FILE: <role prompt path>
 <TASK>
 Requirement: <task description>
@@ -56,7 +56,7 @@ EOF",
 
 ```
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}resume <SESSION_ID> - \"$PWD\" <<'EOF'
 ROLE_FILE: <role prompt path>
 <TASK>
 Scope: Audit the final code changes.
@@ -84,8 +84,8 @@ EOF",
 
 | Phase | Codex | Gemini |
 |-------|-------|--------|
-| Implementation | `~/.claude/.ccg/prompts/codex/architect.md` | `~/.claude/.ccg/prompts/gemini/frontend.md` |
-| Review | `~/.claude/.ccg/prompts/codex/reviewer.md` | `~/.claude/.ccg/prompts/gemini/reviewer.md` |
+| Implementation | `~/.codex/.ccg/prompts/codex/architect.md` | `~/.codex/.ccg/prompts/gemini/frontend.md` |
+| Review | `~/.codex/.ccg/prompts/codex/reviewer.md` | `~/.codex/.ccg/prompts/gemini/reviewer.md` |
 
 **Session Reuse**: If `/ccg:plan` provided SESSION_ID, use `resume <SESSION_ID>` to reuse context.
 
@@ -111,7 +111,7 @@ TaskOutput({ task_id: "<task_id>", block: true, timeout: 600000 })
 `[Mode: Prepare]`
 
 1. **Identify Input Type**:
-   - Plan file path (e.g., `.claude/plan/xxx.md`)
+   - Plan file path (e.g., `.codex/plan/xxx.md`)
    - Direct task description
 
 2. **Read Plan Content**:
@@ -170,7 +170,7 @@ mcp__ace-tool__search_context({
 
 **Limit**: Context < 32k tokens
 
-1. Call Gemini (use `~/.claude/.ccg/prompts/gemini/frontend.md`)
+1. Call Gemini (use `~/.codex/.ccg/prompts/gemini/frontend.md`)
 2. Input: Plan content + retrieved context + target files
 3. OUTPUT: `Unified Diff Patch ONLY. Strictly prohibit any actual modifications.`
 4. **Gemini is frontend design authority, its CSS/React/Vue prototype is the final visual baseline**
@@ -179,7 +179,7 @@ mcp__ace-tool__search_context({
 
 #### Route B: Backend/Logic/Algorithms → Codex
 
-1. Call Codex (use `~/.claude/.ccg/prompts/codex/architect.md`)
+1. Call Codex (use `~/.codex/.ccg/prompts/codex/architect.md`)
 2. Input: Plan content + retrieved context + target files
 3. OUTPUT: `Unified Diff Patch ONLY. Strictly prohibit any actual modifications.`
 4. **Codex is backend logic authority, leverage its logical reasoning and debug capabilities**
@@ -201,7 +201,7 @@ mcp__ace-tool__search_context({
 
 `[Mode: Implement]`
 
-**Claude as Code Sovereign executes the following steps**:
+**Codex as Code Sovereign executes the following steps**:
 
 1. **Read Diff**: Parse Unified Diff Patch returned by Codex/Gemini
 
@@ -240,12 +240,12 @@ mcp__ace-tool__search_context({
 **After changes take effect, MUST immediately parallel call** Codex and Gemini for Code Review:
 
 1. **Codex Review** (`run_in_background: true`):
-   - ROLE_FILE: `~/.claude/.ccg/prompts/codex/reviewer.md`
+   - ROLE_FILE: `~/.codex/.ccg/prompts/codex/reviewer.md`
    - Input: Changed Diff + target files
    - Focus: Security, performance, error handling, logic correctness
 
 2. **Gemini Review** (`run_in_background: true`):
-   - ROLE_FILE: `~/.claude/.ccg/prompts/gemini/reviewer.md`
+   - ROLE_FILE: `~/.codex/.ccg/prompts/gemini/reviewer.md`
    - Input: Changed Diff + target files
    - Focus: Accessibility, design consistency, user experience
 
@@ -283,7 +283,7 @@ After audit passes, report to user:
 
 ## Key Rules
 
-1. **Code Sovereignty** – All file modifications by Claude, external models have zero write access
+1. **Code Sovereignty** – All file modifications by Codex, external models have zero write access
 2. **Dirty Prototype Refactoring** – Codex/Gemini output treated as draft, must refactor
 3. **Trust Rules** – Backend follows Codex, Frontend follows Gemini
 4. **Minimal Changes** – Only modify necessary code, no side effects
@@ -295,7 +295,7 @@ After audit passes, report to user:
 
 ```bash
 # Execute plan file
-/ccg:execute .claude/plan/feature-name.md
+/ccg:execute .codex/plan/feature-name.md
 
 # Execute task directly (for plans already discussed in context)
 /ccg:execute implement user authentication based on previous plan

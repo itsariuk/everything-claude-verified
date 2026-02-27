@@ -453,7 +453,7 @@ PRをレビューする際、インラインコメントを投稿:
 
 ---
 
-> セキュリティレビューはClaude Code security-reviewerエージェントによって実行されました
+> セキュリティレビューはCodex security-reviewerエージェントによって実行されました
 > 質問については、docs/SECURITY.mdを参照してください
 ```
 

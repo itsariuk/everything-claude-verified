@@ -51,7 +51,7 @@ function runCompact(envOverrides = {}) {
  * Get the counter file path for a given session ID.
  */
 function getCounterFilePath(sessionId) {
-  return path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+  return path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
 }
 
 function runTests() {
@@ -78,7 +78,7 @@ function runTests() {
 
   if (test('creates counter file on first run', () => {
     cleanupCounter();
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession });
+    const result = runCompact({ CODEX_SESSION_ID: testSession });
     assert.strictEqual(result.code, 0, 'Should exit 0');
     assert.ok(fs.existsSync(counterFile), 'Counter file should be created');
     const count = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
@@ -89,9 +89,9 @@ function runTests() {
 
   if (test('increments counter on subsequent runs', () => {
     cleanupCounter();
-    runCompact({ CLAUDE_SESSION_ID: testSession });
-    runCompact({ CLAUDE_SESSION_ID: testSession });
-    runCompact({ CLAUDE_SESSION_ID: testSession });
+    runCompact({ CODEX_SESSION_ID: testSession });
+    runCompact({ CODEX_SESSION_ID: testSession });
+    runCompact({ CODEX_SESSION_ID: testSession });
     const count = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
     assert.strictEqual(count, 3, 'Counter should be 3 after three runs');
     cleanupCounter();
@@ -104,9 +104,9 @@ function runTests() {
   if (test('suggests compact at threshold (COMPACT_THRESHOLD=3)', () => {
     cleanupCounter();
     // Run 3 times with threshold=3
-    runCompact({ CLAUDE_SESSION_ID: testSession, COMPACT_THRESHOLD: '3' });
-    runCompact({ CLAUDE_SESSION_ID: testSession, COMPACT_THRESHOLD: '3' });
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession, COMPACT_THRESHOLD: '3' });
+    runCompact({ CODEX_SESSION_ID: testSession, COMPACT_THRESHOLD: '3' });
+    runCompact({ CODEX_SESSION_ID: testSession, COMPACT_THRESHOLD: '3' });
+    const result = runCompact({ CODEX_SESSION_ID: testSession, COMPACT_THRESHOLD: '3' });
     assert.ok(
       result.stderr.includes('3 tool calls reached') || result.stderr.includes('consider /compact'),
       `Should suggest compact at threshold. Got stderr: ${result.stderr}`
@@ -117,8 +117,8 @@ function runTests() {
 
   if (test('does NOT suggest compact before threshold', () => {
     cleanupCounter();
-    runCompact({ CLAUDE_SESSION_ID: testSession, COMPACT_THRESHOLD: '5' });
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession, COMPACT_THRESHOLD: '5' });
+    runCompact({ CODEX_SESSION_ID: testSession, COMPACT_THRESHOLD: '5' });
+    const result = runCompact({ CODEX_SESSION_ID: testSession, COMPACT_THRESHOLD: '5' });
     assert.ok(
       !result.stderr.includes('StrategicCompact'),
       'Should NOT suggest compact before threshold'
@@ -136,7 +136,7 @@ function runTests() {
     // threshold=3, so we need count=28 → 25 calls past threshold
     // Write 27 to the counter file, next run will be 28 = 3 + 25
     fs.writeFileSync(counterFile, '27');
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession, COMPACT_THRESHOLD: '3' });
+    const result = runCompact({ CODEX_SESSION_ID: testSession, COMPACT_THRESHOLD: '3' });
     // count=28, threshold=3, 28-3=25, 25 % 25 === 0 → should suggest
     assert.ok(
       result.stderr.includes('28 tool calls') || result.stderr.includes('checkpoint'),
@@ -153,7 +153,7 @@ function runTests() {
     cleanupCounter();
     // Write counter to 49, next run will be 50 = default threshold
     fs.writeFileSync(counterFile, '49');
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession });
+    const result = runCompact({ CODEX_SESSION_ID: testSession });
     // Remove COMPACT_THRESHOLD from env
     assert.ok(
       result.stderr.includes('50 tool calls reached'),
@@ -166,7 +166,7 @@ function runTests() {
   if (test('ignores invalid COMPACT_THRESHOLD (negative)', () => {
     cleanupCounter();
     fs.writeFileSync(counterFile, '49');
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession, COMPACT_THRESHOLD: '-5' });
+    const result = runCompact({ CODEX_SESSION_ID: testSession, COMPACT_THRESHOLD: '-5' });
     // Invalid threshold falls back to 50
     assert.ok(
       result.stderr.includes('50 tool calls reached'),
@@ -179,7 +179,7 @@ function runTests() {
   if (test('ignores non-numeric COMPACT_THRESHOLD', () => {
     cleanupCounter();
     fs.writeFileSync(counterFile, '49');
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession, COMPACT_THRESHOLD: 'abc' });
+    const result = runCompact({ CODEX_SESSION_ID: testSession, COMPACT_THRESHOLD: 'abc' });
     // NaN falls back to 50
     assert.ok(
       result.stderr.includes('50 tool calls reached'),
@@ -195,7 +195,7 @@ function runTests() {
   if (test('resets counter on corrupted file content', () => {
     cleanupCounter();
     fs.writeFileSync(counterFile, 'not-a-number');
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession });
+    const result = runCompact({ CODEX_SESSION_ID: testSession });
     assert.strictEqual(result.code, 0);
     // Corrupted file → parsed is NaN → falls back to count=1
     const count = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
@@ -208,7 +208,7 @@ function runTests() {
     cleanupCounter();
     // Value > 1000000 should be clamped
     fs.writeFileSync(counterFile, '9999999');
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession });
+    const result = runCompact({ CODEX_SESSION_ID: testSession });
     assert.strictEqual(result.code, 0);
     const count = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
     assert.strictEqual(count, 1, 'Should reset to 1 for value > 1000000');
@@ -219,7 +219,7 @@ function runTests() {
   if (test('handles empty counter file', () => {
     cleanupCounter();
     fs.writeFileSync(counterFile, '');
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession });
+    const result = runCompact({ CODEX_SESSION_ID: testSession });
     assert.strictEqual(result.code, 0);
     // Empty file → bytesRead=0 → count starts at 1
     const count = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
@@ -237,9 +237,9 @@ function runTests() {
     const fileA = getCounterFilePath(sessionA);
     const fileB = getCounterFilePath(sessionB);
     try {
-      runCompact({ CLAUDE_SESSION_ID: sessionA });
-      runCompact({ CLAUDE_SESSION_ID: sessionA });
-      runCompact({ CLAUDE_SESSION_ID: sessionB });
+      runCompact({ CODEX_SESSION_ID: sessionA });
+      runCompact({ CODEX_SESSION_ID: sessionA });
+      runCompact({ CODEX_SESSION_ID: sessionB });
       const countA = parseInt(fs.readFileSync(fileA, 'utf8').trim(), 10);
       const countB = parseInt(fs.readFileSync(fileB, 'utf8').trim(), 10);
       assert.strictEqual(countA, 2, 'Session A should have count 2');
@@ -254,9 +254,9 @@ function runTests() {
   // Always exits 0
   console.log('\nExit code:');
 
-  if (test('always exits 0 (never blocks Claude)', () => {
+  if (test('always exits 0 (never blocks Codex)', () => {
     cleanupCounter();
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession });
+    const result = runCompact({ CODEX_SESSION_ID: testSession });
     assert.strictEqual(result.code, 0, 'Should always exit 0');
     cleanupCounter();
   })) passed++;
@@ -268,7 +268,7 @@ function runTests() {
   if (test('rejects COMPACT_THRESHOLD=0 (falls back to 50)', () => {
     cleanupCounter();
     fs.writeFileSync(counterFile, '49');
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession, COMPACT_THRESHOLD: '0' });
+    const result = runCompact({ CODEX_SESSION_ID: testSession, COMPACT_THRESHOLD: '0' });
     // 0 is invalid (must be > 0), falls back to 50, count becomes 50 → should suggest
     assert.ok(
       result.stderr.includes('50 tool calls reached'),
@@ -281,7 +281,7 @@ function runTests() {
   if (test('accepts COMPACT_THRESHOLD=10000 (boundary max)', () => {
     cleanupCounter();
     fs.writeFileSync(counterFile, '9999');
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession, COMPACT_THRESHOLD: '10000' });
+    const result = runCompact({ CODEX_SESSION_ID: testSession, COMPACT_THRESHOLD: '10000' });
     // count becomes 10000, threshold=10000 → should suggest
     assert.ok(
       result.stderr.includes('10000 tool calls reached'),
@@ -294,7 +294,7 @@ function runTests() {
   if (test('rejects COMPACT_THRESHOLD=10001 (falls back to 50)', () => {
     cleanupCounter();
     fs.writeFileSync(counterFile, '49');
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession, COMPACT_THRESHOLD: '10001' });
+    const result = runCompact({ CODEX_SESSION_ID: testSession, COMPACT_THRESHOLD: '10001' });
     // 10001 > 10000, invalid, falls back to 50, count becomes 50 → should suggest
     assert.ok(
       result.stderr.includes('50 tool calls reached'),
@@ -307,7 +307,7 @@ function runTests() {
   if (test('rejects float COMPACT_THRESHOLD (e.g. 3.5)', () => {
     cleanupCounter();
     fs.writeFileSync(counterFile, '49');
-    const result = runCompact({ CLAUDE_SESSION_ID: testSession, COMPACT_THRESHOLD: '3.5' });
+    const result = runCompact({ CODEX_SESSION_ID: testSession, COMPACT_THRESHOLD: '3.5' });
     // parseInt('3.5') = 3, which is valid (> 0 && <= 10000)
     // count becomes 50, threshold=3, 50-3=47, 47%25≠0 and 50≠3 → no suggestion
     assert.strictEqual(result.code, 0);
@@ -323,7 +323,7 @@ function runTests() {
   if (test('counter value at exact boundary 1000000 is valid', () => {
     cleanupCounter();
     fs.writeFileSync(counterFile, '999999');
-    runCompact({ CLAUDE_SESSION_ID: testSession, COMPACT_THRESHOLD: '3' });
+    runCompact({ CODEX_SESSION_ID: testSession, COMPACT_THRESHOLD: '3' });
     // 999999 is valid (> 0, <= 1000000), count becomes 1000000
     const count = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
     assert.strictEqual(count, 1000000, 'Counter at 1000000 boundary should be valid');
@@ -334,7 +334,7 @@ function runTests() {
   if (test('counter value at 1000001 is clamped (reset to 1)', () => {
     cleanupCounter();
     fs.writeFileSync(counterFile, '1000001');
-    runCompact({ CLAUDE_SESSION_ID: testSession });
+    runCompact({ CODEX_SESSION_ID: testSession });
     const count = parseInt(fs.readFileSync(counterFile, 'utf8').trim(), 10);
     assert.strictEqual(count, 1, 'Counter > 1000000 should be reset to 1');
     cleanupCounter();
@@ -344,12 +344,12 @@ function runTests() {
   // ── Round 64: default session ID fallback ──
   console.log('\nDefault session ID fallback (Round 64):');
 
-  if (test('uses "default" session ID when CLAUDE_SESSION_ID is empty', () => {
+  if (test('uses "default" session ID when CODEX_SESSION_ID is empty', () => {
     const defaultCounterFile = getCounterFilePath('default');
     try { fs.unlinkSync(defaultCounterFile); } catch (_err) { /* ignore */ }
     try {
-      // Pass empty CLAUDE_SESSION_ID — falsy, so script uses 'default'
-      const env = { ...process.env, CLAUDE_SESSION_ID: '' };
+      // Pass empty CODEX_SESSION_ID — falsy, so script uses 'default'
+      const env = { ...process.env, CODEX_SESSION_ID: '' };
       const result = spawnSync('node', [compactScript], {
         encoding: 'utf8',
         input: '{}',

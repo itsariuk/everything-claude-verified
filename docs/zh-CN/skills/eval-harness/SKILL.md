@@ -6,7 +6,7 @@ tools: Read, Write, Edit, Bash, Grep, Glob
 
 # Eval Harness 技能
 
-一个用于 Claude Code 会话的正式评估框架，实现了评估驱动开发 (EDD) 原则。
+一个用于 Codex 会话的正式评估框架，实现了评估驱动开发 (EDD) 原则。
 
 ## 理念
 
@@ -21,11 +21,11 @@ tools: Read, Write, Edit, Bash, Grep, Glob
 
 ### 能力评估
 
-测试 Claude 是否能完成之前无法完成的事情：
+测试 Codex 是否能完成之前无法完成的事情：
 
 ```markdown
 [能力评估：功能名称]
-任务：描述 Claude 应完成的工作
+任务：描述 Codex 应完成的工作
 成功标准：
   - [ ] 标准 1
   - [ ] 标准 2
@@ -68,7 +68,7 @@ npm run build && echo "PASS" || echo "FAIL"
 
 ### 2. 基于模型的评分器
 
-使用 Claude 来评估开放式输出：
+使用 Codex 来评估开放式输出：
 
 ```markdown
 [MODEL GRADER PROMPT]
@@ -186,7 +186,7 @@ npm test -- --testPathPattern="existing"
 /eval define feature-name
 ```
 
-在 `.claude/evals/feature-name.md` 处创建评估定义文件
+在 `.codex/evals/feature-name.md` 处创建评估定义文件
 
 ### 实施过程中
 
@@ -209,7 +209,7 @@ npm test -- --testPathPattern="existing"
 将评估存储在项目中：
 
 ```
-.claude/
+.codex/
   evals/
     feature-xyz.md      # Eval definition
     feature-xyz.log     # Eval run history

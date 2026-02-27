@@ -10,15 +10,15 @@ Practical settings and habits to reduce token consumption, extend session qualit
 
 These are recommended defaults for most users. Power users can tune values further based on their workload — for example, setting `MAX_THINKING_TOKENS` lower for simple tasks or higher for complex architectural work.
 
-Add to your `~/.claude/settings.json`:
+Add to your `~/.codex/settings.json`:
 
 ```json
 {
   "model": "sonnet",
   "env": {
     "MAX_THINKING_TOKENS": "10000",
-    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "50",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
+    "CODEX_AUTOCOMPACT_PCT_OVERRIDE": "50",
+    "CODEX_SUBAGENT_MODEL": "haiku"
   }
 }
 ```
@@ -29,8 +29,8 @@ Add to your `~/.claude/settings.json`:
 |---------|---------|-------------|--------|
 | `model` | opus | **sonnet** | Sonnet handles ~80% of coding tasks well. Switch to Opus with `/model opus` for complex reasoning. ~60% cost reduction. |
 | `MAX_THINKING_TOKENS` | 31,999 | **10,000** | Extended thinking reserves up to 31,999 output tokens per request for internal reasoning. Reducing this cuts hidden cost by ~70%. Set to `0` to disable for trivial tasks. |
-| `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | 95 | **50** | Auto-compaction triggers when context reaches this % of capacity. Default 95% is too late — quality degrades before that. Compacting at 50% keeps sessions healthier. |
-| `CLAUDE_CODE_SUBAGENT_MODEL` | _(inherits main)_ | **haiku** | Subagents (Task tool) run on this model. Haiku is ~80% cheaper and sufficient for exploration, file reading, and test running. |
+| `CODEX_AUTOCOMPACT_PCT_OVERRIDE` | 95 | **50** | Auto-compaction triggers when context reaches this % of capacity. Default 95% is too late — quality degrades before that. Compacting at 50% keeps sessions healthier. |
+| `CODEX_SUBAGENT_MODEL` | _(inherits main)_ | **haiku** | Subagents (Task tool) run on this model. Haiku is ~80% cheaper and sufficient for exploration, file reading, and test running. |
 
 ### Toggling extended thinking
 
@@ -104,11 +104,11 @@ Tips:
 
 ## Agent Teams Cost Warning
 
-[Agent Teams](https://code.claude.com/docs/en/agent-teams) (experimental) spawns multiple independent context windows. Each teammate consumes tokens separately.
+[Agent Teams](https://platform.openai.com/docs/codex) (experimental) spawns multiple independent context windows. Each teammate consumes tokens separately.
 
 - Only use for tasks where parallelism adds clear value (multi-module work, parallel reviews)
 - For simple sequential tasks, subagents (Task tool) are more token-efficient
-- Enable with: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in settings
+- Enable with: `CODEX_EXPERIMENTAL_AGENT_TEAMS=1` in settings
 
 ---
 
@@ -128,9 +128,9 @@ The `configure-ecc` install wizard could offer to set these environment variable
 /compact                   # At logical breakpoints
 /cost                      # Check spending
 
-# Environment variables (add to ~/.claude/settings.json "env" block)
+# Environment variables (add to ~/.codex/settings.json "env" block)
 MAX_THINKING_TOKENS=10000
-CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=50
-CLAUDE_CODE_SUBAGENT_MODEL=haiku
-CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+CODEX_AUTOCOMPACT_PCT_OVERRIDE=50
+CODEX_SUBAGENT_MODEL=haiku
+CODEX_EXPERIMENTAL_AGENT_TEAMS=1
 ```

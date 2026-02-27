@@ -36,7 +36,7 @@
 project/
 ├── ecosystem.config.cjs              # PM2 config
 ├── {backend}/start.cjs               # Python wrapper (if applicable)
-└── .claude/
+└── .codex/
     ├── commands/
     │   ├── pm2-all.md                # Start all + monit
     │   ├── pm2-all-stop.md           # Stop all
@@ -212,16 +212,16 @@ pm2 monit
 1. 扫描项目服务
 2. 生成 `ecosystem.config.cjs`
 3. 为 Python 服务生成 `{backend}/start.cjs`（如果适用）
-4. 在 `.claude/commands/` 中生成命令文件
-5. 在 `.claude/scripts/` 中生成脚本文件
-6. **更新项目 CLAUDE.md**，添加 PM2 信息（见下文）
+4. 在 `.codex/commands/` 中生成命令文件
+5. 在 `.codex/scripts/` 中生成脚本文件
+6. **更新项目 AGENTS.md**，添加 PM2 信息（见下文）
 7. **显示完成摘要**，包含终端命令
 
 ***
 
-## 初始化后：更新 CLAUDE.md
+## 初始化后：更新 AGENTS.md
 
-生成文件后，将 PM2 部分追加到项目的 `CLAUDE.md`（如果不存在则创建）：
+生成文件后，将 PM2 部分追加到项目的 `AGENTS.md`（如果不存在则创建）：
 
 ````markdown
 ## PM2 服务
@@ -242,7 +242,7 @@ pm2 resurrect                    # Restore saved list
 ```
 ````
 
-**更新 CLAUDE.md 的规则：**
+**更新 AGENTS.md 的规则：**
 
 * 如果存在 PM2 部分，替换它
 * 如果不存在，追加到末尾
@@ -263,7 +263,7 @@ pm2 resurrect                    # Restore saved list
 |------|------|------|
 | {port} | {name} | {type} |
 
-**Claude Commands:** /pm2-all, /pm2-all-stop, /pm2-{port}, /pm2-{port}-stop, /pm2-logs, /pm2-status
+**Codex Commands:** /pm2-all, /pm2-all-stop, /pm2-{port}, /pm2-{port}-stop, /pm2-logs, /pm2-status
 
 **Terminal Commands:**
 ## First time (with config file)

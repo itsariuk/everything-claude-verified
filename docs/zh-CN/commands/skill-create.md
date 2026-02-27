@@ -6,7 +6,7 @@ allowed_tools: ["Bash", "Read", "Write", "Grep", "Glob"]
 
 # /skill-create - 本地技能生成
 
-分析你的仓库的 git 历史，以提取编码模式并生成 SKILL.md 文件，用于向 Claude 传授你团队的实践方法。
+分析你的仓库的 git 历史，以提取编码模式并生成 SKILL.md 文件，用于向 Codex 传授你团队的实践方法。
 
 ## 使用方法
 
@@ -21,7 +21,7 @@ allowed_tools: ["Bash", "Read", "Write", "Grep", "Glob"]
 
 1. **解析 Git 历史** - 分析提交记录、文件更改和模式
 2. **检测模式** - 识别重复出现的工作流程和约定
-3. **生成 SKILL.md** - 创建有效的 Claude Code 技能文件
+3. **生成 SKILL.md** - 创建有效的 Codex 技能文件
 4. **可选创建 Instincts** - 用于 continuous-learning-v2 系统
 
 ## 分析步骤
@@ -174,4 +174,4 @@ src/
 
 ***
 
-*属于 [Everything Claude Code](https://github.com/affaan-m/everything-claude-code)*
+*属于 [Everything Codex](https://github.com/affaan-m/everything-claude-code)*

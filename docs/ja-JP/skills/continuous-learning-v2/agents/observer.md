@@ -7,7 +7,7 @@ run_mode: background
 
 # Observerエージェント
 
-Claude Codeセッションからの観察を分析してパターンを検出し、本能を作成するバックグラウンドエージェント。
+Codexセッションからの観察を分析してパターンを検出し、本能を作成するバックグラウンドエージェント。
 
 ## 実行タイミング
 
@@ -18,7 +18,7 @@ Claude Codeセッションからの観察を分析してパターンを検出し
 
 ## 入力
 
-`~/.claude/homunculus/observations.jsonl`から観察を読み取ります:
+`~/.codex/homunculus/observations.jsonl`から観察を読み取ります:
 
 ```jsonl
 {"timestamp":"2025-01-22T10:30:00Z","event":"tool_start","session":"abc123","tool":"Edit","input":"..."}
@@ -32,7 +32,7 @@ Claude Codeセッションからの観察を分析してパターンを検出し
 観察から以下のパターンを探します:
 
 ### 1. ユーザー修正
-ユーザーのフォローアップメッセージがClaudeの前のアクションを修正する場合:
+ユーザーのフォローアップメッセージがCodexの前のアクションを修正する場合:
 - "いいえ、YではなくXを使ってください"
 - "実は、意図したのは..."
 - 即座の元に戻す/やり直しパターン
@@ -65,7 +65,7 @@ Claude Codeセッションからの観察を分析してパターンを検出し
 
 ## 出力
 
-`~/.claude/homunculus/instincts/personal/`に本能を作成/更新:
+`~/.codex/homunculus/instincts/personal/`に本能を作成/更新:
 
 ```yaml
 ---

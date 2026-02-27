@@ -12,7 +12,7 @@
 
 创建新的评估定义：
 
-1. 使用模板创建 `.claude/evals/feature-name.md`：
+1. 使用模板创建 `.codex/evals/feature-name.md`：
 
 ```markdown
 ## EVAL: 功能名称
@@ -40,11 +40,11 @@
 
 为功能运行评估：
 
-1. 从 `.claude/evals/feature-name.md` 读取评估定义
+1. 从 `.codex/evals/feature-name.md` 读取评估定义
 2. 对于每个能力评估：
    * 尝试验证标准
    * 记录 通过/失败
-   * 在 `.claude/evals/feature-name.log` 中记录尝试
+   * 在 `.codex/evals/feature-name.log` 中记录尝试
 3. 对于每个回归评估：
    * 运行相关测试
    * 与基线比较

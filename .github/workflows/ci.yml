@@ -130,7 +130,7 @@ jobs:
       - name: Run tests
         run: node tests/run-all.js
         env:
-          CLAUDE_CODE_PACKAGE_MANAGER: ${{ matrix.pm }}
+          CODEX_CODE_PACKAGE_MANAGER: ${{ matrix.pm }}
 
       # Upload test artifacts on failure
       - name: Upload test artifacts

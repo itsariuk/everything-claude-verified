@@ -23,7 +23,7 @@
 - **前端**：Next.js 15（App Router）、TypeScript、React
 - **後端**：FastAPI（Python）、Pydantic 模型
 - **資料庫**：Supabase（PostgreSQL）
-- **AI**：Claude API 帶工具呼叫和結構化輸出
+- **AI**：Codex API 帶工具呼叫和結構化輸出
 - **部署**：Google Cloud Run
 - **測試**：Playwright（E2E）、pytest（後端）、React Testing Library
 
@@ -45,7 +45,7 @@
               ┌───────────────┼───────────────┐
               ▼               ▼               ▼
         ┌──────────┐   ┌──────────┐   ┌──────────┐
-        │ Supabase │   │  Claude  │   │  Redis   │
+        │ Supabase │   │  Codex  │   │  Redis   │
         │ Database │   │   API    │   │  Cache   │
         └──────────┘   └──────────┘   └──────────┘
 ```
@@ -144,7 +144,7 @@ async function fetchApi<T>(
 }
 ```
 
-### Claude AI 整合（結構化輸出）
+### Codex AI 整合（結構化輸出）
 
 ```python
 from anthropic import Anthropic

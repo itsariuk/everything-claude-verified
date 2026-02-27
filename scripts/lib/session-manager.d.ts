@@ -1,6 +1,6 @@
 /**
- * Session Manager Library for Claude Code.
- * Provides CRUD operations for session files stored as markdown in ~/.claude/sessions/.
+ * Session Manager Library for Codex.
+ * Provides CRUD operations for session files stored as markdown in ~/.codex/sessions/.
  */
 
 /** Parsed metadata from a session filename */

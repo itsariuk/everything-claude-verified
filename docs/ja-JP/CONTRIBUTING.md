@@ -1,6 +1,6 @@
-# Everything Claude Codeに貢献する
+# Everything Codexに貢献する
 
-貢献いただきありがとうございます！このリポジトリはClaude Codeユーザーのためのコミュニティリソースです。
+貢献いただきありがとうございます！このリポジトリはCodexユーザーのためのコミュニティリソースです。
 
 ## 目次
 
@@ -62,8 +62,8 @@ git checkout -b feat/my-contribution
 # 3. 貢献を追加（以下のセクション参照）
 
 # 4. ローカルでテスト
-cp -r skills/my-skill ~/.claude/skills/  # スキルの場合
-# その後、Claude Codeでテスト
+cp -r skills/my-skill ~/.codex/skills/  # スキルの場合
+# その後、Codexでテスト
 
 # 5. PR を送信
 git add . && git commit -m "feat: add my-skill" && git push
@@ -73,7 +73,7 @@ git add . && git commit -m "feat: add my-skill" && git push
 
 ## スキルの貢献
 
-スキルは、コンテキストに基づいてClaude Codeが読み込む知識モジュールです。
+スキルは、コンテキストに基づいてCodexが読み込む知識モジュールです。
 
 ### ディレクトリ構造
 
@@ -125,7 +125,7 @@ function example() {
 - [ ] 実践的なコード例を含む
 - [ ] 500行以下
 - [ ] 明確なセクションヘッダーを使用
-- [ ] Claude Codeでテスト済み
+- [ ] Codexでテスト済み
 
 ### サンプルスキル
 
@@ -153,7 +153,7 @@ agents/your-agent-name.md
 ```markdown
 ---
 name: your-agent-name
-description: このエージェントが実行する操作と、Claude が呼び出すべき時期。具体的に！
+description: このエージェントが実行する操作と、Codex が呼び出すべき時期。具体的に！
 tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
 model: sonnet
 ---
@@ -211,7 +211,7 @@ Output: [返すもの]
 
 ## フックの貢献
 
-フックはClaude Codeイベントによってトリガーされる自動的な動作です。
+フックはCodexイベントによってトリガーされる自動的な動作です。
 
 ### ファイルの場所
 
@@ -380,7 +380,7 @@ docs: improve contributing guide
 
 ## Checklist
 - [ ] フォーマットガイドに従う
-- [ ] Claude Codeでテスト済み
+- [ ] Codexでテスト済み
 - [ ] 機密情報なし（APIキー、パス）
 - [ ] 明確な説明
 ```

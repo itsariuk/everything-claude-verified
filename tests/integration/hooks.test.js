@@ -39,7 +39,7 @@ async function asyncTest(name, fn) {
 }
 
 /**
- * Run a hook script with simulated Claude Code input
+ * Run a hook script with simulated Codex input
  * @param {string} scriptPath - Path to the hook script
  * @param {object} input - Hook input object (will be JSON stringified)
  * @param {object} env - Environment variables
@@ -66,7 +66,7 @@ function runHookWithInput(scriptPath, input = {}, env = {}, timeoutMs = 10000) {
       }
     });
 
-    // Send JSON input on stdin (simulating Claude Code hook invocation)
+    // Send JSON input on stdin (simulating Codex hook invocation)
     if (input && Object.keys(input).length > 0) {
       proc.stdin.write(JSON.stringify(input));
     }
@@ -162,6 +162,15 @@ async function runTests() {
 
   let passed = 0;
   let failed = 0;
+  const codexTestRoot = createTestDir();
+  const codexDir = path.join(codexTestRoot, '.codex');
+  const originalCodexDir = process.env.CODEX_DIR;
+  const originalHome = process.env.HOME;
+  const originalUserProfile = process.env.USERPROFILE;
+  fs.mkdirSync(codexDir, { recursive: true });
+  process.env.CODEX_DIR = codexDir;
+  process.env.HOME = codexTestRoot;
+  process.env.USERPROFILE = codexTestRoot;
 
   const scriptsDir = path.join(__dirname, '..', '..', 'scripts', 'hooks');
   const hooksJsonPath = path.join(__dirname, '..', '..', 'hooks', 'hooks.json');
@@ -335,7 +344,7 @@ async function runTests() {
 
   if (await asyncTest('suggest-compact increments and triggers at threshold', async () => {
     const sessionId = 'integration-test-' + Date.now();
-    const counterFile = path.join(os.tmpdir(), `claude-tool-count-${sessionId}`);
+    const counterFile = path.join(os.tmpdir(), `codex-tool-count-${sessionId}`);
 
     try {
       // Set counter just below threshold
@@ -344,7 +353,7 @@ async function runTests() {
       const result = await runHookWithInput(
         path.join(scriptsDir, 'suggest-compact.js'),
         {},
-        { CLAUDE_SESSION_ID: sessionId, COMPACT_THRESHOLD: '50' }
+        { CODEX_SESSION_ID: sessionId, COMPACT_THRESHOLD: '50' }
       );
 
       assert.ok(
@@ -451,7 +460,7 @@ async function runTests() {
       assert.ok(result.stderr.includes('[SessionEnd]'), 'Should have SessionEnd log');
 
       // Verify a session file was created
-      const sessionsDir = path.join(testDir, '.claude', 'sessions');
+      const sessionsDir = path.join(testDir, '.codex', 'sessions');
       if (fs.existsSync(sessionsDir)) {
         const files = fs.readdirSync(sessionsDir).filter(f => f.endsWith('.tmp'));
         assert.ok(files.length > 0, 'Should create a session file');
@@ -499,7 +508,7 @@ async function runTests() {
     const testDir = createTestDir();
     const transcriptPath = path.join(testDir, 'nested-transcript.jsonl');
 
-    // Claude Code JSONL format uses nested message.content arrays
+    // Codex JSONL format uses nested message.content arrays
     const lines = [
       JSON.stringify({ type: 'user', message: { role: 'user', content: [
         { type: 'text', text: 'Refactor the utils module' }
@@ -521,7 +530,7 @@ async function runTests() {
       assert.strictEqual(result.code, 0, 'Should exit 0');
 
       // Check session file was created
-      const sessionsDir = path.join(testDir, '.claude', 'sessions');
+      const sessionsDir = path.join(testDir, '.codex', 'sessions');
       if (fs.existsSync(sessionsDir)) {
         const files = fs.readdirSync(sessionsDir).filter(f => f.endsWith('.tmp'));
         assert.ok(files.length > 0, 'Should create session file');
@@ -708,6 +717,13 @@ async function runTests() {
   console.log(`Failed: ${failed}`);
   console.log(`Total:  ${passed + failed}\n`);
 
+  if (originalCodexDir !== undefined) process.env.CODEX_DIR = originalCodexDir;
+  else delete process.env.CODEX_DIR;
+  if (originalHome !== undefined) process.env.HOME = originalHome;
+  else delete process.env.HOME;
+  if (originalUserProfile !== undefined) process.env.USERPROFILE = originalUserProfile;
+  else delete process.env.USERPROFILE;
+  cleanupTestDir(codexTestRoot);
   process.exit(failed > 0 ? 1 : 0);
 }
 

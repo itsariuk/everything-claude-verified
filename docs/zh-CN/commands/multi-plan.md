@@ -10,9 +10,9 @@ $ARGUMENTS
 
 * **语言协议**：与工具/模型交互时使用 **英语**，与用户沟通时使用其语言
 * **强制并行**：Codex/Gemini 调用 **必须** 使用 `run_in_background: true`（包括单模型调用，以避免阻塞主线程）
-* **代码主权**：外部模型 **零文件系统写入权限**，所有修改由 Claude 执行
+* **代码主权**：外部模型 **零文件系统写入权限**，所有修改由 Codex 执行
 * **止损机制**：在当前阶段输出验证完成前，不进入下一阶段
-* **仅限规划**：此命令允许读取上下文并写入 `.claude/plan/*` 计划文件，但 **绝不修改生产代码**
+* **仅限规划**：此命令允许读取上下文并写入 `.codex/plan/*` 计划文件，但 **绝不修改生产代码**
 
 ***
 
@@ -22,7 +22,7 @@ $ARGUMENTS
 
 ```
 Bash({
-  command: "~/.claude/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
+  command: "~/.codex/bin/codeagent-wrapper {{LITE_MODE_FLAG}}--backend <codex|gemini> {{GEMINI_MODEL_FLAG}}- \"$PWD\" <<'EOF'
 ROLE_FILE: <role prompt path>
 <TASK>
 Requirement: <enhanced requirement>
@@ -44,8 +44,8 @@ EOF",
 
 | 阶段 | Codex | Gemini |
 |-------|-------|--------|
-| 分析 | `~/.claude/.ccg/prompts/codex/analyzer.md` | `~/.claude/.ccg/prompts/gemini/analyzer.md` |
-| 规划 | `~/.claude/.ccg/prompts/codex/architect.md` | `~/.claude/.ccg/prompts/gemini/architect.md` |
+| 分析 | `~/.codex/.ccg/prompts/codex/analyzer.md` | `~/.codex/.ccg/prompts/gemini/analyzer.md` |
+| 规划 | `~/.codex/.ccg/prompts/codex/architect.md` | `~/.codex/.ccg/prompts/gemini/architect.md` |
 
 **会话复用**：每次调用返回 `SESSION_ID: xxx`（通常由包装器输出），**必须保存** 供后续 `/ccg:execute` 使用。
 
@@ -122,12 +122,12 @@ mcp__ace-tool__search_context({
 将 **原始需求**（不预设观点）分发给两个模型：
 
 1. **Codex 后端分析**：
-   * ROLE\_FILE：`~/.claude/.ccg/prompts/codex/analyzer.md`
+   * ROLE\_FILE：`~/.codex/.ccg/prompts/codex/analyzer.md`
    * 重点：技术可行性、架构影响、性能考虑、潜在风险
    * 输出：多视角解决方案 + 优缺点分析
 
 2. **Gemini 前端分析**：
-   * ROLE\_FILE：`~/.claude/.ccg/prompts/gemini/analyzer.md`
+   * ROLE\_FILE：`~/.codex/.ccg/prompts/gemini/analyzer.md`
    * 重点：UI/UX 影响、用户体验、视觉设计
    * 输出：多视角解决方案 + 优缺点分析
 
@@ -144,19 +144,19 @@ mcp__ace-tool__search_context({
 
 #### 2.3（可选但推荐）双模型计划草案
 
-为减少 Claude 综合计划中的遗漏风险，可以并行让两个模型输出“计划草案”（仍然 **不允许** 修改文件）：
+为减少 Codex 综合计划中的遗漏风险，可以并行让两个模型输出“计划草案”（仍然 **不允许** 修改文件）：
 
 1. **Codex 计划草案**（后端权威）：
-   * ROLE\_FILE：`~/.claude/.ccg/prompts/codex/architect.md`
+   * ROLE\_FILE：`~/.codex/.ccg/prompts/codex/architect.md`
    * 输出：分步计划 + 伪代码（重点：数据流/边缘情况/错误处理/测试策略）
 
 2. **Gemini 计划草案**（前端权威）：
-   * ROLE\_FILE：`~/.claude/.ccg/prompts/gemini/architect.md`
+   * ROLE\_FILE：`~/.codex/.ccg/prompts/gemini/architect.md`
    * 输出：分步计划 + 伪代码（重点：信息架构/交互/可访问性/视觉一致性）
 
 使用 `TaskOutput` 等待两个模型的完整结果，记录它们建议的关键差异。
 
-#### 2.4 生成实施计划（Claude 最终版本）
+#### 2.4 生成实施计划（Codex 最终版本）
 
 综合两个分析，生成 **分步实施计划**：
 
@@ -197,13 +197,13 @@ mcp__ace-tool__search_context({
 
 1. 向用户呈现完整的实施计划（包括伪代码）
 
-2. 将计划保存到 `.claude/plan/<feature-name>.md`（从需求中提取功能名称，例如 `user-auth`，`payment-module`）
+2. 将计划保存到 `.codex/plan/<feature-name>.md`（从需求中提取功能名称，例如 `user-auth`，`payment-module`）
 
 3. 以 **粗体文本** 输出提示（必须使用实际保存的文件路径）：
 
    ***
 
-   **计划已生成并保存至 `.claude/plan/actual-feature-name.md`**
+   **计划已生成并保存至 `.codex/plan/actual-feature-name.md`**
 
    **请审阅以上计划。您可以：**
 
@@ -211,7 +211,7 @@ mcp__ace-tool__search_context({
    * **执行计划**：复制以下命令到新会话
 
    ```
-   /ccg:execute .claude/plan/actual-feature-name.md
+   /ccg:execute .codex/plan/actual-feature-name.md
    ```
 
    ***
@@ -233,8 +233,8 @@ mcp__ace-tool__search_context({
 
 规划完成后，将计划保存至：
 
-* **首次规划**：`.claude/plan/<feature-name>.md`
-* **迭代版本**：`.claude/plan/<feature-name>-v2.md`，`.claude/plan/<feature-name>-v3.md`...
+* **首次规划**：`.codex/plan/<feature-name>.md`
+* **迭代版本**：`.codex/plan/<feature-name>-v2.md`，`.codex/plan/<feature-name>-v3.md`...
 
 计划文件写入应在向用户呈现计划前完成。
 
@@ -245,7 +245,7 @@ mcp__ace-tool__search_context({
 如果用户请求修改计划：
 
 1. 根据用户反馈调整计划内容
-2. 更新 `.claude/plan/<feature-name>.md` 文件
+2. 更新 `.codex/plan/<feature-name>.md` 文件
 3. 重新呈现修改后的计划
 4. 提示用户再次审阅或执行
 
@@ -256,7 +256,7 @@ mcp__ace-tool__search_context({
 用户批准后，**手动** 执行：
 
 ```bash
-/ccg:execute .claude/plan/<feature-name>.md
+/ccg:execute .codex/plan/<feature-name>.md
 ```
 
 ***

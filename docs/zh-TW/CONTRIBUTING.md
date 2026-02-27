@@ -1,6 +1,6 @@
-# 貢獻 Everything Claude Code
+# 貢獻 Everything Codex
 
-感謝您想要貢獻。本儲存庫旨在成為 Claude Code 使用者的社群資源。
+感謝您想要貢獻。本儲存庫旨在成為 Codex 使用者的社群資源。
 
 ## 我們正在尋找什麼
 
@@ -137,7 +137,7 @@ Detailed instructions...
 
 ### 5. 測試您的貢獻
 
-在提交前確保您的設定能與 Claude Code 正常運作。
+在提交前確保您的設定能與 Codex 正常運作。
 
 ### 6. 提交 PR
 

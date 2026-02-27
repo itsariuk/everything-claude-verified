@@ -13,13 +13,13 @@ command: true
 プラグインルートパスを使用してインスティンクトCLIを実行します:
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/scripts/instinct-cli.py" status
+python3 "${CODEX_PLUGIN_ROOT}/skills/continuous-learning-v2/scripts/instinct-cli.py" status
 ```
 
-または、`CLAUDE_PLUGIN_ROOT` が設定されていない場合（手動インストール）の場合は:
+または、`CODEX_PLUGIN_ROOT` が設定されていない場合（手動インストール）の場合は:
 
 ```bash
-python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py status
+python3 ~/.codex/skills/continuous-learning-v2/scripts/instinct-cli.py status
 ```
 
 ## 使用方法
@@ -32,8 +32,8 @@ python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py status
 
 ## 実行内容
 
-1. `~/.claude/homunculus/instincts/personal/` からすべてのインスティンクトファイルを読み込む
-2. `~/.claude/homunculus/instincts/inherited/` から継承されたインスティンクトを読み込む
+1. `~/.codex/homunculus/instincts/personal/` からすべてのインスティンクトファイルを読み込む
+2. `~/.codex/homunculus/instincts/inherited/` から継承されたインスティンクトを読み込む
 3. ドメインごとにグループ化し、信頼度バーとともに表示
 
 ## 出力形式

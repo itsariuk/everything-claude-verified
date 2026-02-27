@@ -1,11 +1,11 @@
 ---
 name: continuous-learning
-description: Claude Codeセッションから再利用可能なパターンを自動的に抽出し、将来の使用のために学習済みスキルとして保存します。
+description: Codexセッションから再利用可能なパターンを自動的に抽出し、将来の使用のために学習済みスキルとして保存します。
 ---
 
 # 継続学習スキル
 
-Claude Codeセッションを終了時に自動的に評価し、学習済みスキルとして保存できる再利用可能なパターンを抽出します。
+Codexセッションを終了時に自動的に評価し、学習済みスキルとして保存できる再利用可能なパターンを抽出します。
 
 ## 動作原理
 
@@ -13,7 +13,7 @@ Claude Codeセッションを終了時に自動的に評価し、学習済みス
 
 1. **セッション評価**: セッションに十分なメッセージがあるか確認(デフォルト: 10以上)
 2. **パターン検出**: セッションから抽出可能なパターンを識別
-3. **スキル抽出**: 有用なパターンを`~/.claude/skills/learned/`に保存
+3. **スキル抽出**: 有用なパターンを`~/.codex/skills/learned/`に保存
 
 ## 設定
 
@@ -24,7 +24,7 @@ Claude Codeセッションを終了時に自動的に評価し、学習済みス
   "min_session_length": 10,
   "extraction_threshold": "medium",
   "auto_approve": false,
-  "learned_skills_path": "~/.claude/skills/learned/",
+  "learned_skills_path": "~/.codex/skills/learned/",
   "patterns_to_detect": [
     "error_resolution",
     "user_corrections",
@@ -52,7 +52,7 @@ Claude Codeセッションを終了時に自動的に評価し、学習済みス
 
 ## フック設定
 
-`~/.claude/settings.json`に追加:
+`~/.codex/settings.json`に追加:
 
 ```json
 {
@@ -61,7 +61,7 @@ Claude Codeセッションを終了時に自動的に評価し、学習済みス
       "matcher": "*",
       "hooks": [{
         "type": "command",
-        "command": "~/.claude/skills/continuous-learning/evaluate-session.sh"
+        "command": "~/.codex/skills/continuous-learning/evaluate-session.sh"
       }]
     }]
   }

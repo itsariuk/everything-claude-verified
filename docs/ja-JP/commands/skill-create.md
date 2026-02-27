@@ -6,7 +6,7 @@ allowed_tools: ["Bash", "Read", "Write", "Grep", "Glob"]
 
 # /skill-create - ローカルスキル生成
 
-リポジトリのgit履歴を分析してコーディングパターンを抽出し、Claudeにチームのプラクティスを教えるSKILL.mdファイルを生成します。
+リポジトリのgit履歴を分析してコーディングパターンを抽出し、Codexにチームのプラクティスを教えるSKILL.mdファイルを生成します。
 
 ## 使用方法
 
@@ -21,7 +21,7 @@ allowed_tools: ["Bash", "Read", "Write", "Grep", "Glob"]
 
 1. **Git履歴の解析** - コミット、ファイル変更、パターンを分析
 2. **パターンの検出** - 繰り返されるワークフローと慣習を特定
-3. **SKILL.mdの生成** - 有効なClaude Codeスキルファイルを作成
+3. **SKILL.mdの生成** - 有効なCodexスキルファイルを作成
 4. **オプションでInstinctsを作成** - continuous-learning-v2システム用
 
 ## 分析ステップ
@@ -171,4 +171,4 @@ src/
 
 ---
 
-*[Everything Claude Code](https://github.com/affaan-m/everything-claude-code)の一部*
+*[Everything Codex](https://github.com/affaan-m/everything-claude-code)の一部*

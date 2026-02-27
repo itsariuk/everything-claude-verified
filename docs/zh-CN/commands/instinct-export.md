@@ -23,7 +23,7 @@ command: /instinct-export
 
 ## 操作步骤
 
-1. 从 `~/.claude/homunculus/instincts/personal/` 读取本能
+1. 从 `~/.codex/homunculus/instincts/personal/` 读取本能
 2. 根据标志进行筛选
 3. 剥离敏感信息：
    * 移除会话 ID

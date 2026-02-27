@@ -11,7 +11,7 @@
 
 set -e
 
-CONFIG_DIR="${HOME}/.claude/homunculus"
+CONFIG_DIR="${HOME}/.codex/homunculus"
 PID_FILE="${CONFIG_DIR}/.observer.pid"
 LOG_FILE="${CONFIG_DIR}/observer.log"
 OBSERVATIONS_FILE="${CONFIG_DIR}/observations.jsonl"
@@ -85,7 +85,7 @@ case "${1:-start}" in
 
         echo "[$(date)] Analyzing $obs_count observations..." >> "$LOG_FILE"
 
-        # Use Claude Code with Haiku to analyze observations
+        # Use Codex with Haiku to analyze observations
         # This spawns a quick analysis session
         if command -v claude &> /dev/null; then
           exit_code=0
@@ -93,7 +93,7 @@ case "${1:-start}" in
             "Read $OBSERVATIONS_FILE and identify patterns. If you find 3+ occurrences of the same pattern, create an instinct file in $CONFIG_DIR/instincts/personal/ following the format in the observer agent spec. Be conservative - only create instincts for clear patterns." \
             >> "$LOG_FILE" 2>&1 || exit_code=$?
           if [ "$exit_code" -ne 0 ]; then
-            echo "[$(date)] Claude analysis failed (exit $exit_code)" >> "$LOG_FILE"
+            echo "[$(date)] Codex analysis failed (exit $exit_code)" >> "$LOG_FILE"
           fi
         else
           echo "[$(date)] claude CLI not found, skipping analysis" >> "$LOG_FILE"

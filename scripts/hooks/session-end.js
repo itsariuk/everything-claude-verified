@@ -4,7 +4,7 @@
  *
  * Cross-platform (Windows, macOS, Linux)
  *
- * Runs when Claude session ends. Extracts a meaningful summary from
+ * Runs when Codex session ends. Extracts a meaningful summary from
  * the session transcript (via stdin JSON transcript_path) and saves it
  * to a session file for cross-session continuity.
  */
@@ -46,7 +46,7 @@ function extractSessionSummary(transcriptPath) {
 
       // Collect user messages (first 200 chars each)
       if (entry.type === 'user' || entry.role === 'user' || entry.message?.role === 'user') {
-        // Support both direct content and nested message.content (Claude Code JSONL format)
+        // Support both direct content and nested message.content (Codex JSONL format)
         const rawContent = entry.message?.content ?? entry.content;
         const text = typeof rawContent === 'string'
           ? rawContent
@@ -69,7 +69,7 @@ function extractSessionSummary(transcriptPath) {
         }
       }
 
-      // Extract tool uses from assistant message content blocks (Claude Code JSONL format)
+      // Extract tool uses from assistant message content blocks (Codex JSONL format)
       if (entry.type === 'assistant' && Array.isArray(entry.message?.content)) {
         for (const block of entry.message.content) {
           if (block.type === 'tool_use') {
@@ -102,7 +102,7 @@ function extractSessionSummary(transcriptPath) {
   };
 }
 
-// Read hook input from stdin (Claude Code provides transcript_path via stdin JSON)
+// Read hook input from stdin (Codex provides transcript_path via stdin JSON)
 const MAX_STDIN = 1024 * 1024;
 let stdinData = '';
 process.stdin.setEncoding('utf8');
@@ -132,8 +132,8 @@ async function main() {
     const input = JSON.parse(stdinData);
     transcriptPath = input.transcript_path;
   } catch {
-    // Fallback: try env var for backwards compatibility
-    transcriptPath = process.env.CLAUDE_TRANSCRIPT_PATH;
+    // Fallback: try env var
+    transcriptPath = process.env.CODEX_TRANSCRIPT_PATH;
   }
 
   const sessionsDir = getSessionsDir();
@@ -232,4 +232,3 @@ function buildSummarySection(summary) {
 
   return section;
 }
-

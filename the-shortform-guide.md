@@ -1,10 +1,10 @@
-# The Shorthand Guide to Everything Claude Code
+# The Shorthand Guide to Everything Codex
 
-![Header: Anthropic Hackathon Winner - Tips & Tricks for Claude Code](./assets/images/shortform/00-header.png)
+![Header: Anthropic Hackathon Winner - Tips & Tricks for Codex](./assets/images/shortform/00-header.png)
 
 ---
 
-**Been an avid Claude Code user since the experimental rollout in Feb, and won the Anthropic x Forum Ventures hackathon with [zenith.chat](https://zenith.chat) alongside [@DRodriguezFX](https://x.com/DRodriguezFX) - completely using Claude Code.**
+**Been an avid Codex user since the experimental rollout in Feb, and won the Anthropic x Forum Ventures hackathon with [zenith.chat](https://zenith.chat) alongside [@DRodriguezFX](https://x.com/DRodriguezFX) - completely using Codex.**
 
 Here's my complete setup after 10 months of daily use: skills, hooks, subagents, MCPs, plugins, and what actually works.
 
@@ -14,19 +14,19 @@ Here's my complete setup after 10 months of daily use: skills, hooks, subagents,
 
 Skills operate like rules, constricted to certain scopes and workflows. They're shorthand to prompts when you need to execute a particular workflow.
 
-After a long session of coding with Opus 4.5, you want to clean out dead code and loose .md files? Run `/refactor-clean`. Need testing? `/tdd`, `/e2e`, `/test-coverage`. Skills can also include codemaps - a way for Claude to quickly navigate your codebase without burning context on exploration.
+After a long session of coding with Opus 4.5, you want to clean out dead code and loose .md files? Run `/refactor-clean`. Need testing? `/tdd`, `/e2e`, `/test-coverage`. Skills can also include codemaps - a way for Codex to quickly navigate your codebase without burning context on exploration.
 
 ![Terminal showing chained commands](./assets/images/shortform/02-chaining-commands.jpeg)
 *Chaining commands together*
 
 Commands are skills executed via slash commands. They overlap but are stored differently:
 
-- **Skills**: `~/.claude/skills/` - broader workflow definitions
-- **Commands**: `~/.claude/commands/` - quick executable prompts
+- **Skills**: `~/.codex/skills/` - broader workflow definitions
+- **Commands**: `~/.codex/commands/` - quick executable prompts
 
 ```bash
 # Example skill structure
-~/.claude/skills/
+~/.codex/skills/
   pmx-guidelines.md      # Project-specific patterns
   coding-standards.md    # Language best practices
   tdd-workflow/          # Multi-file skill with README.md
@@ -44,7 +44,7 @@ Hooks are trigger-based automations that fire on specific events. Unlike skills,
 1. **PreToolUse** - Before a tool executes (validation, reminders)
 2. **PostToolUse** - After a tool finishes (formatting, feedback loops)
 3. **UserPromptSubmit** - When you send a message
-4. **Stop** - When Claude finishes responding
+4. **Stop** - When Codex finishes responding
 5. **PreCompact** - Before context compaction
 6. **Notification** - Permission requests
 
@@ -67,7 +67,7 @@ Hooks are trigger-based automations that fire on specific events. Unlike skills,
 ```
 
 ![PostToolUse hook feedback](./assets/images/shortform/03-posttooluse-hook.png)
-*Example of what feedback you get in Claude Code, while running a PostToolUse hook*
+*Example of what feedback you get in Codex, while running a PostToolUse hook*
 
 **Pro tip:** Use the `hookify` plugin to create hooks conversationally instead of writing JSON manually. Run `/hookify` and describe what you want.
 
@@ -75,13 +75,13 @@ Hooks are trigger-based automations that fire on specific events. Unlike skills,
 
 ## Subagents
 
-Subagents are processes your orchestrator (main Claude) can delegate tasks to with limited scopes. They can run in background or foreground, freeing up context for the main agent.
+Subagents are processes your orchestrator (main Codex) can delegate tasks to with limited scopes. They can run in background or foreground, freeing up context for the main agent.
 
 Subagents work nicely with skills - a subagent capable of executing a subset of your skills can be delegated tasks and use those skills autonomously. They can also be sandboxed with specific tool permissions.
 
 ```bash
 # Example subagent structure
-~/.claude/agents/
+~/.codex/agents/
   planner.md           # Feature implementation planning
   architect.md         # System design decisions
   tdd-guide.md         # Test-driven development
@@ -98,13 +98,13 @@ Configure allowed tools, MCPs, and permissions per subagent for proper scoping.
 
 ## Rules and Memory
 
-Your `.rules` folder holds `.md` files with best practices Claude should ALWAYS follow. Two approaches:
+Your `.rules` folder holds `.md` files with best practices Codex should ALWAYS follow. Two approaches:
 
-1. **Single CLAUDE.md** - Everything in one file (user or project level)
+1. **Single AGENTS.md** - Everything in one file (user or project level)
 2. **Rules folder** - Modular `.md` files grouped by concern
 
 ```bash
-~/.claude/rules/
+~/.codex/rules/
   security.md      # No hardcoded secrets, validate inputs
   coding-style.md  # Immutability, file organization
   testing.md       # TDD workflow, 80% coverage
@@ -125,14 +125,14 @@ Your `.rules` folder holds `.md` files with best practices Claude should ALWAYS 
 
 ## MCPs (Model Context Protocol)
 
-MCPs connect Claude to external services directly. Not a replacement for APIs - it's a prompt-driven wrapper around them, allowing more flexibility in navigating information.
+MCPs connect Codex to external services directly. Not a replacement for APIs - it's a prompt-driven wrapper around them, allowing more flexibility in navigating information.
 
-**Example:** Supabase MCP lets Claude pull specific data, run SQL directly upstream without copy-paste. Same for databases, deployment platforms, etc.
+**Example:** Supabase MCP lets Codex pull specific data, run SQL directly upstream without copy-paste. Same for databases, deployment platforms, etc.
 
 ![Supabase MCP listing tables](./assets/images/shortform/04-supabase-mcp.jpeg)
 *Example of the Supabase MCP listing the tables within the public schema*
 
-**Chrome in Claude:** is a built-in plugin MCP that lets Claude autonomously control your browser - clicking around to see how things work.
+**Chrome in Codex:** is a built-in plugin MCP that lets Codex autonomously control your browser - clicking around to see how things work.
 
 **CRITICAL: Context Window Management**
 
@@ -149,7 +149,7 @@ Your 200k context window before compacting might only be 70k with too many tools
 # Check enabled MCPs
 /mcp
 
-# Disable unused ones in ~/.claude.json under projects.disabledMcpServers
+# Disable unused ones in ~/.codex.json under projects.disabledMcpServers
 ```
 
 ---
@@ -164,13 +164,13 @@ Plugins package tools for easy installation instead of tedious manual setup. A p
 # Add a marketplace
 claude plugin marketplace add https://github.com/mixedbread-ai/mgrep
 
-# Open Claude, run /plugins, find new marketplace, install from there
+# Open Codex, run /plugins, find new marketplace, install from there
 ```
 
 ![Marketplaces tab showing mgrep](./assets/images/shortform/06-marketplaces-mgrep.jpeg)
 *Displaying the newly installed Mixedbread-Grep marketplace*
 
-**LSP Plugins** are particularly useful if you run Claude Code outside editors frequently. Language Server Protocol gives Claude real-time type checking, go-to-definition, and intelligent completions without needing an IDE open.
+**LSP Plugins** are particularly useful if you run Codex outside editors frequently. Language Server Protocol gives Codex real-time type checking, go-to-definition, and intelligent completions without needing an IDE open.
 
 ```bash
 # Enabled plugins example
@@ -194,7 +194,7 @@ Same warning as MCPs - watch your context window.
 - `/` - Initiate slash commands
 - `Shift+Enter` - Multi-line input
 - `Tab` - Toggle thinking display
-- `Esc Esc` - Interrupt Claude / restore code
+- `Esc Esc` - Interrupt Codex / restore code
 
 ### Parallel Workflows
 
@@ -203,18 +203,18 @@ Same warning as MCPs - watch your context window.
 
 ```bash
 git worktree add ../feature-branch feature-branch
-# Now run separate Claude instances in each worktree
+# Now run separate Codex instances in each worktree
 ```
 
 ### tmux for Long-Running Commands
 
-Stream and watch logs/bash processes Claude runs:
+Stream and watch logs/bash processes Codex runs:
 
 https://github.com/user-attachments/assets/shortform/07-tmux-video.mp4
 
 ```bash
 tmux new -s dev
-# Claude runs commands here, you can detach and reattach
+# Codex runs commands here, you can detach and reattach
 tmux attach -t dev
 ```
 
@@ -236,31 +236,31 @@ mgrep --web "Next.js 15 app router changes"  # Web search
 
 ### GitHub Actions CI/CD
 
-Set up code review on your PRs with GitHub Actions. Claude can review PRs automatically when configured.
+Set up code review on your PRs with GitHub Actions. Codex can review PRs automatically when configured.
 
-![Claude bot approving a PR](./assets/images/shortform/08-github-pr-review.jpeg)
-*Claude approving a bug fix PR*
+![Codex bot approving a PR](./assets/images/shortform/08-github-pr-review.jpeg)
+*Codex approving a bug fix PR*
 
 ### Sandboxing
 
-Use sandbox mode for risky operations - Claude runs in restricted environment without affecting your actual system.
+Use sandbox mode for risky operations - Codex runs in restricted environment without affecting your actual system.
 
 ---
 
 ## On Editors
 
-Your editor choice significantly impacts Claude Code workflow. While Claude Code works from any terminal, pairing it with a capable editor unlocks real-time file tracking, quick navigation, and integrated command execution.
+Your editor choice significantly impacts Codex workflow. While Codex works from any terminal, pairing it with a capable editor unlocks real-time file tracking, quick navigation, and integrated command execution.
 
 ### Zed (My Preference)
 
 I use [Zed](https://zed.dev) - written in Rust, so it's genuinely fast. Opens instantly, handles massive codebases without breaking a sweat, and barely touches system resources.
 
-**Why Zed + Claude Code is a great combo:**
+**Why Zed + Codex is a great combo:**
 
-- **Speed** - Rust-based performance means no lag when Claude is rapidly editing files. Your editor keeps up
-- **Agent Panel Integration** - Zed's Claude integration lets you track file changes in real-time as Claude edits. Jump between files Claude references without leaving the editor
+- **Speed** - Rust-based performance means no lag when Codex is rapidly editing files. Your editor keeps up
+- **Agent Panel Integration** - Zed's Codex integration lets you track file changes in real-time as Codex edits. Jump between files Codex references without leaving the editor
 - **CMD+Shift+R Command Palette** - Quick access to all your custom slash commands, debuggers, build scripts in a searchable UI
-- **Minimal Resource Usage** - Won't compete with Claude for RAM/CPU during heavy operations. Important when running Opus
+- **Minimal Resource Usage** - Won't compete with Codex for RAM/CPU during heavy operations. Important when running Opus
 - **Vim Mode** - Full vim keybindings if that's your thing
 
 ![Zed Editor with custom commands](./assets/images/shortform/09-zed-editor.jpeg)
@@ -268,18 +268,18 @@ I use [Zed](https://zed.dev) - written in Rust, so it's genuinely fast. Opens in
 
 **Editor-Agnostic Tips:**
 
-1. **Split your screen** - Terminal with Claude Code on one side, editor on the other
-2. **Ctrl + G** - quickly open the file Claude is currently working on in Zed
-3. **Auto-save** - Enable autosave so Claude's file reads are always current
-4. **Git integration** - Use editor's git features to review Claude's changes before committing
+1. **Split your screen** - Terminal with Codex on one side, editor on the other
+2. **Ctrl + G** - quickly open the file Codex is currently working on in Zed
+3. **Auto-save** - Enable autosave so Codex's file reads are always current
+4. **Git integration** - Use editor's git features to review Codex's changes before committing
 5. **File watchers** - Most editors auto-reload changed files, verify this is enabled
 
 ### VSCode / Cursor
 
-This is also a viable choice and works well with Claude Code. You can use it in either terminal format, with automatic sync with your editor using `\ide` enabling LSP functionality (somewhat redundant with plugins now). Or you can opt for the extension which is more integrated with the Editor and has a matching UI.
+This is also a viable choice and works well with Codex. You can use it in either terminal format, with automatic sync with your editor using `\ide` enabling LSP functionality (somewhat redundant with plugins now). Or you can opt for the extension which is more integrated with the Editor and has a matching UI.
 
-![VS Code Claude Code Extension](./assets/images/shortform/10-vscode-extension.jpeg)
-*The VS Code extension provides a native graphical interface for Claude Code, integrated directly into your IDE.*
+![VS Code Codex Extension](./assets/images/shortform/10-vscode-extension.jpeg)
+*The VS Code extension provides a native graphical interface for Codex, integrated directly into your IDE.*
 
 ---
 
@@ -373,7 +373,7 @@ affoon:~ ctx:65% Opus 4.5 19:52
 ### Rules Structure
 
 ```
-~/.claude/rules/
+~/.codex/rules/
   security.md      # Mandatory security checks
   coding-style.md  # Immutability, file size limits
   testing.md       # TDD, 80% coverage
@@ -387,7 +387,7 @@ affoon:~ ctx:65% Opus 4.5 19:52
 ### Subagents
 
 ```
-~/.claude/agents/
+~/.codex/agents/
   planner.md           # Break down features
   architect.md         # System design
   tdd-guide.md         # Write tests first
@@ -413,13 +413,13 @@ affoon:~ ctx:65% Opus 4.5 19:52
 
 ## References
 
-- [Plugins Reference](https://code.claude.com/docs/en/plugins-reference)
-- [Hooks Documentation](https://code.claude.com/docs/en/hooks)
-- [Checkpointing](https://code.claude.com/docs/en/checkpointing)
-- [Interactive Mode](https://code.claude.com/docs/en/interactive-mode)
-- [Memory System](https://code.claude.com/docs/en/memory)
-- [Subagents](https://code.claude.com/docs/en/sub-agents)
-- [MCP Overview](https://code.claude.com/docs/en/mcp-overview)
+- [Plugins Reference](https://platform.openai.com/docs/codex)
+- [Hooks Documentation](https://platform.openai.com/docs/codex)
+- [Checkpointing](https://platform.openai.com/docs/codex)
+- [Interactive Mode](https://platform.openai.com/docs/codex)
+- [Memory System](https://platform.openai.com/docs/codex)
+- [Subagents](https://platform.openai.com/docs/codex)
+- [MCP Overview](https://platform.openai.com/docs/codex)
 
 ---
 
