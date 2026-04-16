@@ -381,7 +381,7 @@ function evaluate(rawInput) {
 }
 
 function run(rawInput) {
-  return evaluate(rawInput).output;
+  return evaluate(rawInput);
 }
 
 // ── stdin entry point ────────────────────────────────────────────
