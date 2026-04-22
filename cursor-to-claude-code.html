@@ -796,9 +796,49 @@
 </section>
 
 <!-- 04 CLAUDE CODE NATIVE -->
+<section class="slide">
+  <div class="chapter">memory</div>
+  <div class="slide-num">06 / 34</div>
+  <div class="reveal"><div class="kicker">memory</div></div>
+  <div class="two-col" style="margin-top:clamp(.8rem,1.3vw,1.3rem);">
+    <div class="col reveal" style="display:flex;flex-direction:column;gap:clamp(.6rem,1vw,.9rem);">
+      <div>
+        <h2>State that survives the window.</h2>
+        <p style="margin-top:.5rem;">Just tell Claude. It writes the right file automatically.</p>
+      </div>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">saving decisions to memory</span></div>
+        <div class="terminal-body" style="font-size:clamp(.72rem,.9vw,.82rem);line-height:1.7;">
+          <span class="prompt">you</span> <span class="cmd">remember: we use Solid Queue, not Sidekiq.<br>      no Redis dependency in this project.</span><br>
+          <span class="ok">✓ saved → memory/project_queue_decision.md</span><br><br>
+          <span class="prompt">you</span> <span class="cmd">remember: don't suggest GraphQL.<br>      REST only, team decision from 2024.</span><br>
+          <span class="ok">✓ saved → memory/feedback_no_graphql.md</span><br><br>
+          <span class="prompt">you</span> <span class="cmd">remember: PE-sprint ends April 25.<br>      freeze non-critical merges after that.</span><br>
+          <span class="ok">✓ saved → memory/project_sprint_freeze.md</span>
+        </div>
+      </div>
+    </div>
+    <div class="col reveal">
+      <div class="mono" style="font-size: clamp(.72rem, .92vw, .82rem); color: var(--accent); letter-spacing: .14em; text-transform: uppercase; margin-bottom: .6rem;">the taxonomy</div>
+      <ul class="feat-list">
+        <li><strong>user</strong> — <span class="dim">who you are, how you like to work</span></li>
+        <li><strong>feedback</strong> — <span class="dim">rules and corrections, with the why preserved</span></li>
+        <li><strong>project</strong> — <span class="dim">ongoing initiatives, deadlines, decisions</span></li>
+        <li><strong>reference</strong> — <span class="dim">pointers into Jira, Grafana, Slack channels</span></li>
+      </ul>
+      <div style="margin-top:clamp(.8rem,1.2vw,1.1rem);background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:clamp(.7rem,1vw,.95rem);">
+        <div class="mono" style="font-size:clamp(.68rem,.85vw,.78rem);color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.4rem;">loads automatically</div>
+        <p style="font-size:clamp(.78rem,1vw,.9rem);color:var(--dim);">Every memory file is read at session start. Claude knows your decisions before you type the first word.</p>
+      </div>
+    </div>
+  </div>
+  <div class="sub reveal">Plain-text files. Human-readable. Version-controllable. No opaque embeddings. &nbsp;·&nbsp; <span class="mono accent">/memory</span> to view and edit memory files directly.</div>
+</section>
+
+<!-- CONTROLLING YOUR AGENT -->
 <section class="slide thesis">
   <div class="chapter">the collection</div>
-  <div class="slide-num">06 / 34</div>
+  <div class="slide-num">07 / 34</div>
   <div class="reveal"><div class="kicker">before we start</div></div>
   <h1 class="reveal" style="font-size:clamp(2rem,5.5vw,4.5rem);">
     Claude Code alone is powerful.<br>
@@ -826,7 +866,7 @@
 <!-- 05 PRIMITIVES -->
 <section class="slide">
   <div class="chapter">anatomy</div>
-  <div class="slide-num">07 / 34</div>
+  <div class="slide-num">08 / 34</div>
   <div class="reveal"><div class="kicker">five primitives</div></div>
   <h2 class="reveal">Anatomy of everything-claude-code.</h2>
   <div class="prims reveal">
@@ -866,7 +906,7 @@
 <!-- 01 SKILLS -->
 <section class="slide">
   <div class="chapter">skills</div>
-  <div class="slide-num">08 / 34</div>
+  <div class="slide-num">09 / 34</div>
   <div class="reveal"><div class="kicker">skills</div></div>
   <h2 class="reveal">Knowledge that loads when it's relevant.</h2>
   <div class="sub reveal">
@@ -893,7 +933,7 @@
 <!-- 01 LIVE: SKILL AUTO-LOAD -->
 <section class="slide">
   <div class="chapter">skills · live</div>
-  <div class="slide-num">09 / 34</div>
+  <div class="slide-num">10 / 34</div>
   <div class="reveal"><div class="kicker">context follows the code</div></div>
   <h2 class="reveal">Ask about the code. The right playbooks load.</h2>
   <div class="reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
@@ -917,7 +957,7 @@
 <!-- SKILL AUTHORING -->
 <section class="slide">
   <div class="chapter">skills</div>
-  <div class="slide-num">10 / 34</div>
+  <div class="slide-num">11 / 34</div>
   <div class="reveal"><div class="kicker">defining a skill</div></div>
   <h2 class="reveal">A markdown file. A description. A trigger.</h2>
   <div class="two-col reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
@@ -957,7 +997,7 @@
 <!-- 02 COMMANDS -->
 <section class="slide">
   <div class="chapter">commands</div>
-  <div class="slide-num">11 / 34</div>
+  <div class="slide-num">12 / 34</div>
   <div class="reveal"><div class="kicker">slash commands</div></div>
   <h2 class="reveal">Verbs you teach your agent.</h2>
   <div class="sub reveal">
@@ -1001,7 +1041,7 @@
 <!-- 02 LIVE /tdd -->
 <section class="slide">
   <div class="chapter">commands · live</div>
-  <div class="slide-num">12 / 34</div>
+  <div class="slide-num">13 / 34</div>
   <div class="reveal"><div class="kicker">/tdd · red · green · refactor · gate</div></div>
   <h2 class="reveal">One verb runs the whole loop.</h2>
   <div class="reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
@@ -1023,7 +1063,7 @@
 <!-- PLAN MODE -->
 <section class="slide">
   <div class="chapter">agents</div>
-  <div class="slide-num">13 / 34</div>
+  <div class="slide-num">14 / 34</div>
   <div class="reveal"><div class="kicker">plan mode</div></div>
   <h2 class="reveal">The agent drafts. You approve. No edits until you say so.</h2>
   <div class="two-col reveal" style="margin-top:clamp(1rem,1.6vw,1.5rem);">
@@ -1058,7 +1098,7 @@
 <!-- PRP PIPELINE -->
 <section class="slide">
   <div class="chapter">commands</div>
-  <div class="slide-num">14 / 34</div>
+  <div class="slide-num">15 / 34</div>
   <div class="reveal"><div class="kicker">prp · plans in files · tracked across sessions</div></div>
   <div class="reveal" style="margin-top:clamp(.4rem,.7vw,.6rem);">
     <p style="font-size:clamp(.8rem,1.05vw,.95rem);color:var(--dim);"><strong style="color:var(--ink);">PRP</strong> — Product Requirement Prompts. A collection of prompts for AI-assisted development with Claude Code.</p>
@@ -1092,7 +1132,7 @@
 <!-- WHY ISOLATED CONTEXT (moved) -->
 <section class="slide">
   <div class="chapter">context · science</div>
-  <div class="slide-num">15 / 34</div>
+  <div class="slide-num">16 / 34</div>
   <div class="reveal"><div class="kicker">why isolation matters · the science</div></div>
   <h2 class="reveal">Context is finite. Pollution is real.</h2>
   <div class="two-col reveal" style="margin-top:clamp(1rem,1.6vw,1.5rem);align-items:start;">
@@ -1130,7 +1170,7 @@
 <!-- 03 AGENTS -->
 <section class="slide">
   <div class="chapter">agents</div>
-  <div class="slide-num">16 / 34</div>
+  <div class="slide-num">17 / 34</div>
   <div class="reveal"><div class="kicker">subagents</div></div>
   <h2 class="reveal">Specialists. Parallel. Isolated context.</h2>
   <div class="sub reveal">
@@ -1163,7 +1203,7 @@
 <!-- CONTEXT GAP -->
 <section class="slide">
   <div class="chapter">agents · advanced</div>
-  <div class="slide-num">17 / 34</div>
+  <div class="slide-num">18 / 34</div>
   <div class="reveal"><div class="kicker">the context gap</div></div>
   <h2 class="reveal">Sub-agents lack the orchestrator's context.</h2>
   <div class="sub reveal">The orchestrator knows the purpose. The sub-agent only knows the literal query. Summaries miss what matters.</div>
@@ -1194,7 +1234,7 @@
 <!-- PARALLEL -->
 <section class="slide">
   <div class="chapter">performance</div>
-  <div class="slide-num">18 / 34</div>
+  <div class="slide-num">19 / 34</div>
   <div class="reveal"><div class="kicker">parallel when it counts</div></div>
   <h2 class="reveal">N tool calls per turn, not N turns per tool.</h2>
   <div class="trio reveal" style="margin-top: clamp(1.2rem, 2vw, 2rem);">
@@ -1223,7 +1263,7 @@
 <!-- WORKFLOW DIAGRAM -->
 <section class="slide">
   <div class="chapter">agents · live</div>
-  <div class="slide-num">19 / 34</div>
+  <div class="slide-num">20 / 34</div>
   <div class="reveal"><div class="kicker">/feature-dev · from everything-claude-code</div></div>
   <h2 class="reveal">One command. Four specialists. One approval gate.</h2>
   <div class="reveal" style="margin-top: clamp(1.4rem, 2.5vw, 2.5rem);">
@@ -1270,7 +1310,7 @@
 <!-- ORCHESTRATE DIAGRAM -->
 <section class="slide">
   <div class="chapter">agents · live</div>
-  <div class="slide-num">20 / 34</div>
+  <div class="slide-num">21 / 34</div>
   <div class="reveal"><div class="kicker">/orchestrate · from everything-claude-code</div></div>
   <h2 class="reveal">One prompt. Multiple agents. One decision.</h2>
   <div class="reveal" style="margin-top: clamp(1.2rem, 2.2vw, 2.2rem); display:flex; flex-direction:column; align-items:center; gap:clamp(.65rem,1.1vw,1rem);">
@@ -1325,7 +1365,7 @@
 <!-- 03 AGENT AUTHORING -->
 <section class="slide">
   <div class="chapter">agents</div>
-  <div class="slide-num">21 / 34</div>
+  <div class="slide-num">22 / 34</div>
   <div class="reveal"><div class="kicker">defining an agent</div></div>
   <h2 class="reveal">A markdown file. A model choice. A tool list.</h2>
   <div class="two-col reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
@@ -1364,7 +1404,7 @@
 <!-- COLLECTION GROWS (moved from 10) -->
 <section class="slide">
   <div class="chapter">living system</div>
-  <div class="slide-num">22 / 34</div>
+  <div class="slide-num">23 / 34</div>
   <div class="reveal"><div class="kicker">living system</div></div>
   <h2 class="reveal">The collection grows with your team.</h2>
   <div class="sub reveal">
@@ -1390,7 +1430,7 @@
 <!-- 12 HOOKS -->
 <section class="slide">
   <div class="chapter">hooks</div>
-  <div class="slide-num">23 / 34</div>
+  <div class="slide-num">24 / 34</div>
   <div class="reveal"><div class="kicker">hooks</div></div>
   <h2 class="reveal">Lifecycle enforcement. Not guidance.</h2>
   <div class="sub reveal">
@@ -1422,7 +1462,7 @@
 <!-- 12 LIVE: HOOK PIPELINE -->
 <section class="slide">
   <div class="chapter">hooks · live</div>
-  <div class="slide-num">24 / 34</div>
+  <div class="slide-num">25 / 34</div>
   <div class="reveal"><div class="kicker">three phases · no escape</div></div>
   <h2 class="reveal">The harness runs these. Every time.</h2>
   <div class="multi-term reveal">
@@ -1464,7 +1504,7 @@
 <!-- 13 MCP -->
 <section class="slide">
   <div class="chapter">mcp</div>
-  <div class="slide-num">25 / 34</div>
+  <div class="slide-num">26 / 34</div>
   <div class="reveal"><div class="kicker">model context protocol</div></div>
   <h2 class="reveal">13 servers pre-wired. Day one, no setup.</h2>
   <div class="sub reveal">
@@ -1494,7 +1534,7 @@
 <!-- 14 LIVE: MCP WORKFLOW -->
 <section class="slide">
   <div class="chapter">mcp · live</div>
-  <div class="slide-num">26 / 34</div>
+  <div class="slide-num">27 / 34</div>
   <div class="reveal"><div class="kicker">one prompt · three systems</div></div>
   <h2 class="reveal">Cross-system work. One prompt.</h2>
   <div class="reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
@@ -1518,7 +1558,7 @@
 <!-- NEW: NON-OBVIOUS MCPS -->
 <section class="slide">
   <div class="chapter">mcp</div>
-  <div class="slide-num">27 / 34</div>
+  <div class="slide-num">28 / 34</div>
   <div class="reveal"><div class="kicker">the non-obvious ones</div></div>
   <h2 class="reveal">Three MCPs that change how the agent thinks.</h2>
   <div class="trio reveal" style="margin-top: clamp(1.2rem, 2vw, 2rem);">
@@ -1550,46 +1590,6 @@
 </section>
 
 <!-- NEW: CONTEXT WINDOW MANAGEMENT -->
-<section class="slide">
-  <div class="chapter">memory</div>
-  <div class="slide-num">28 / 34</div>
-  <div class="reveal"><div class="kicker">memory</div></div>
-  <div class="two-col" style="margin-top:clamp(.8rem,1.3vw,1.3rem);">
-    <div class="col reveal" style="display:flex;flex-direction:column;gap:clamp(.6rem,1vw,.9rem);">
-      <div>
-        <h2>State that survives the window.</h2>
-        <p style="margin-top:.5rem;">Just tell Claude. It writes the right file automatically.</p>
-      </div>
-      <div class="terminal">
-        <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">saving decisions to memory</span></div>
-        <div class="terminal-body" style="font-size:clamp(.72rem,.9vw,.82rem);line-height:1.7;">
-          <span class="prompt">you</span> <span class="cmd">remember: we use Solid Queue, not Sidekiq.<br>      no Redis dependency in this project.</span><br>
-          <span class="ok">✓ saved → memory/project_queue_decision.md</span><br><br>
-          <span class="prompt">you</span> <span class="cmd">remember: don't suggest GraphQL.<br>      REST only, team decision from 2024.</span><br>
-          <span class="ok">✓ saved → memory/feedback_no_graphql.md</span><br><br>
-          <span class="prompt">you</span> <span class="cmd">remember: PE-sprint ends April 25.<br>      freeze non-critical merges after that.</span><br>
-          <span class="ok">✓ saved → memory/project_sprint_freeze.md</span>
-        </div>
-      </div>
-    </div>
-    <div class="col reveal">
-      <div class="mono" style="font-size: clamp(.72rem, .92vw, .82rem); color: var(--accent); letter-spacing: .14em; text-transform: uppercase; margin-bottom: .6rem;">the taxonomy</div>
-      <ul class="feat-list">
-        <li><strong>user</strong> — <span class="dim">who you are, how you like to work</span></li>
-        <li><strong>feedback</strong> — <span class="dim">rules and corrections, with the why preserved</span></li>
-        <li><strong>project</strong> — <span class="dim">ongoing initiatives, deadlines, decisions</span></li>
-        <li><strong>reference</strong> — <span class="dim">pointers into Jira, Grafana, Slack channels</span></li>
-      </ul>
-      <div style="margin-top:clamp(.8rem,1.2vw,1.1rem);background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:clamp(.7rem,1vw,.95rem);">
-        <div class="mono" style="font-size:clamp(.68rem,.85vw,.78rem);color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.4rem;">loads automatically</div>
-        <p style="font-size:clamp(.78rem,1vw,.9rem);color:var(--dim);">Every memory file is read at session start. Claude knows your decisions before you type the first word.</p>
-      </div>
-    </div>
-  </div>
-  <div class="sub reveal">Plain-text files. Human-readable. Version-controllable. No opaque embeddings.</div>
-</section>
-
-<!-- CONTROLLING YOUR AGENT -->
 <section class="slide">
   <div class="chapter">mcp</div>
   <div class="slide-num">29 / 34</div>
@@ -1750,7 +1750,7 @@
         <span class="prompt">$</span> <span class="cmd">npm install -g @anthropic-ai/claude-code</span><br><br>
         <span class="out"># 2. install the collection  (ECC_HOOK_PROFILE=strict enables all safety hooks)</span><br>
         <span class="prompt">$</span> <span class="cmd">git clone https://github.com/itsariuk/everything-claude-verified</span><br>
-        <span class="prompt">$</span> <span class="cmd">cd everything-claude-verified && ECC_HOOK_PROFILE=strict ./install.sh ruby php</span><br>
+        <span class="prompt">$</span> <span class="cmd">cd everything-claude-verified && ECC_HOOK_PROFILE=strict ./install.sh --profile developer</span><br>
         <span class="out">› 48 agents · 79 commands · 183 skills · hooks active</span><br><br>
         <span class="out"># 3. first session on-ramp</span><br>
         <span class="prompt">$</span> <span class="cmd">claude</span><br>
