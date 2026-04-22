@@ -20,11 +20,13 @@ function run(rawInput) {
     return { exitCode: 0 };
   }
 
-  const cmd = String(input.tool_input?.command || '');
+  const cmd = String(input.tool_input?.command || '')
+    .replace(/"(?:[^"\\]|\\.)*"/g, '""') // strip double-quoted strings
+    .replace(/'(?:[^'\\]|\\.)*'/g, "''"); // strip single-quoted strings
   if (/\bgit\s+push\b/.test(cmd)) {
     return {
       exitCode: 2,
-      stderr: '[Hook] BLOCKED: git push is not allowed. Push manually.',
+      stderr: '[Hook] BLOCKED: git push is not allowed. Push manually.'
     };
   }
 

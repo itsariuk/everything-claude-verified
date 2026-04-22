@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Cursor to Claude Code · everything-claude-code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --surface: #121217;
+    --elevated: #1a1a20;
+    --ink: #f0f0f2;
+    --dim: #8a8a92;
+    --faint: #4a4a52;
+    --line: #2a2a32;
+    --accent: #00ff9c;
+    --accent-dim: rgba(0, 255, 156, 0.14);
+    --accent-glow: rgba(0, 255, 156, 0.4);
+    --hot: #ff6b35;
+    --hot-dim: rgba(255, 107, 53, 0.12);
+    --rule: rgba(255, 255, 255, 0.08);
+    --grid: rgba(255, 255, 255, 0.035);
+    --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-display);
+    overflow: hidden;
+    height: 100vh;
+    height: 100dvh;
+    width: 100vw;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 56px 56px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 78% 12%, rgba(0, 255, 156, 0.06), transparent 45%),
+      radial-gradient(ellipse at 12% 88%, rgba(255, 107, 53, 0.05), transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .deck {
+    position: relative;
+    z-index: 1;
+    height: 100dvh;
+    width: 100vw;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    height: 100vh; height: 100dvh;
+    overflow: hidden;
+    padding: clamp(2rem, 4.5vw, 4.5rem) clamp(2.25rem, 5vw, 5rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity .4s ease, transform .5s cubic-bezier(.2,.8,.2,1);
+    pointer-events: none;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .slide-num, .chapter {
+    position: absolute;
+    top: clamp(1.5rem, 3vw, 2.5rem);
+    font-family: var(--font-mono);
+    font-size: clamp(.68rem, .95vw, .82rem);
+    letter-spacing: .08em;
+    z-index: 3;
+  }
+  .slide-num { right: clamp(2.25rem, 5vw, 5rem); color: var(--faint); }
+  .chapter {
+    left: clamp(2.25rem, 5vw, 5rem);
+    color: var(--accent);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .chapter::before {
+    content: '● ';
+    animation: blink 2.2s infinite;
+  }
+  @keyframes blink { 50% { opacity: .35; } }
+
+  h1 {
+    font-weight: 600;
+    font-size: clamp(2.6rem, 7vw, 6rem);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+  }
+  h2 {
+    font-weight: 500;
+    font-size: clamp(1.9rem, 4.5vw, 3.6rem);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+  h3 {
+    font-weight: 500;
+    font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  p {
+    font-size: clamp(.95rem, 1.3vw, 1.2rem);
+    line-height: 1.5;
+  }
+
+  .dim { color: var(--dim); }
+  .faint { color: var(--faint); }
+  .accent { color: var(--accent); }
+  .hot { color: var(--hot); }
+  .mono { font-family: var(--font-mono); }
+
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: clamp(.78rem, 1.05vw, .95rem);
+    color: var(--accent);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    margin-bottom: clamp(.9rem, 1.4vw, 1.35rem);
+  }
+
+  .sub {
+    font-weight: 300;
+    font-size: clamp(1.15rem, 2vw, 1.8rem);
+    line-height: 1.3;
+    color: var(--dim);
+    letter-spacing: -0.01em;
+    margin-top: clamp(.9rem, 1.6vw, 1.5rem);
+    max-width: 62ch;
+  }
+
+  /* ------- TITLE SLIDE ------- */
+  .title-slide .arrow {
+    display: inline-block;
+    color: var(--hot);
+    font-family: var(--font-mono);
+    transform: translateY(-.08em);
+    padding: 0 .08em;
+  }
+  .title-slide h1 {
+    font-size: clamp(3rem, 9.5vw, 8rem);
+    font-weight: 700;
+  }
+  .title-slide .meta {
+    margin-top: clamp(1.8rem, 3vw, 2.8rem);
+    font-family: var(--font-mono);
+    font-size: clamp(.82rem, 1.05vw, .95rem);
+    color: var(--dim);
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .title-slide .meta .dot {
+    width: 4px; height: 4px;
+    background: var(--faint);
+    border-radius: 50%;
+  }
+
+  /* ------- TERMINAL ------- */
+  .terminal {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    font-family: var(--font-mono);
+    overflow: hidden;
+    box-shadow: 0 24px 48px rgba(0,0,0,.45), 0 0 0 1px rgba(0,255,156,.02);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .55rem .85rem;
+    background: var(--elevated);
+    border-bottom: 1px solid var(--rule);
+    flex-shrink: 0;
+  }
+  .terminal-bar .d {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--faint);
+  }
+  .terminal-bar .d:nth-child(1) { background: #ff5f57; }
+  .terminal-bar .d:nth-child(2) { background: #febc2e; }
+  .terminal-bar .d:nth-child(3) { background: #28c840; }
+  .terminal-bar .t {
+    margin-left: .6rem;
+    color: var(--dim);
+    font-size: clamp(.68rem, .85vw, .78rem);
+  }
+  .terminal-body {
+    padding: clamp(.9rem, 1.4vw, 1.4rem);
+    font-size: clamp(.78rem, 1.05vw, .95rem);
+    line-height: 1.7;
+    color: var(--ink);
+    min-height: 0;
+    overflow: hidden;
+  }
+  .terminal-body .prompt { color: var(--accent); }
+  .terminal-body .cmd { color: var(--ink); }
+  .terminal-body .out { color: var(--dim); }
+  .terminal-body .ok { color: var(--accent); }
+  .terminal-body .warn { color: var(--hot); }
+  .terminal-body .tag {
+    display: inline-block;
+    padding: .04rem .4rem;
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-radius: 3px;
+    font-size: .88em;
+    margin-right: .35rem;
+    font-weight: 500;
+  }
+  .terminal-body .tag.hot {
+    background: var(--hot-dim);
+    color: var(--hot);
+  }
+  .terminal-body .tag.n {
+    background: rgba(255,255,255,.06);
+    color: var(--dim);
+  }
+  .cursor {
+    display: inline-block;
+    width: .5em;
+    height: .95em;
+    background: var(--accent);
+    vertical-align: text-bottom;
+    animation: blink 1s infinite;
+    margin-left: 2px;
+  }
+
+  /* ------- COMPARE THREE COLUMN ------- */
+  .trio {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2vw, 1.75rem);
+    margin-top: clamp(1.4rem, 2.5vw, 2.25rem);
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: clamp(1.1rem, 1.8vw, 1.75rem);
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    position: relative;
+  }
+  .card.hot { border-left: 3px solid var(--hot); }
+  .card.acc { border-left: 3px solid var(--accent); }
+  .card .label {
+    font-family: var(--font-mono);
+    font-size: clamp(.72rem, .95vw, .85rem);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .card .label.hot { color: var(--hot); }
+  .card .label.acc { color: var(--accent); }
+  .card h3 {
+    font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+    font-weight: 600;
+  }
+  .card p {
+    font-size: clamp(.85rem, 1.1vw, 1rem);
+    color: var(--dim);
+    line-height: 1.5;
+  }
+
+  /* ------- PRIMITIVES 5 COL ------- */
+  .prims {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: clamp(.7rem, 1.1vw, 1.1rem);
+    margin-top: clamp(1.3rem, 2.2vw, 2.25rem);
+  }
+  .prim {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: clamp(.95rem, 1.4vw, 1.4rem);
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .prim::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    opacity: .8;
+  }
+  .prim .idx {
+    font-family: var(--font-mono);
+    font-size: clamp(.7rem, .88vw, .8rem);
+    color: var(--accent);
+    letter-spacing: .14em;
+  }
+  .prim h3 {
+    font-size: clamp(1rem, 1.35vw, 1.25rem);
+    font-weight: 600;
+  }
+  .prim p {
+    font-size: clamp(.78rem, 1vw, .92rem);
+    color: var(--dim);
+    line-height: 1.45;
+  }
+  .prim .ex {
+    margin-top: auto;
+    font-family: var(--font-mono);
+    font-size: clamp(.7rem, .9vw, .82rem);
+    color: var(--faint);
+    letter-spacing: .02em;
+  }
+
+  /* ------- TAG CLOUD ------- */
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem .6rem;
+    margin-top: clamp(.8rem, 1.4vw, 1.4rem);
+    max-width: 95%;
+  }
+  .tag-cloud .t {
+    font-family: var(--font-mono);
+    font-size: clamp(.75rem, .98vw, .9rem);
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    padding: .28rem .65rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .tag-cloud .t.acc {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .tag-cloud .t.hot {
+    border-color: var(--hot);
+    color: var(--hot);
+    background: var(--hot-dim);
+  }
+
+  /* ------- MULTI-TERMINAL (parallel) ------- */
+  .multi-term {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(.7rem, 1.1vw, 1.1rem);
+    margin-top: clamp(1.2rem, 2vw, 1.8rem);
+  }
+  .multi-term .terminal-body {
+    padding: .85rem 1rem;
+    font-size: clamp(.68rem, .85vw, .8rem);
+    line-height: 1.65;
+  }
+
+  /* ------- PIPELINE ------- */
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(.55rem, .9vw, .95rem);
+    margin-top: clamp(1.3rem, 2vw, 2rem);
+    align-items: stretch;
+  }
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: clamp(.85rem, 1.2vw, 1.2rem);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+  }
+  .step::after {
+    content: '→';
+    position: absolute;
+    right: -.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--hot);
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    z-index: 2;
+  }
+  .step:last-child::after { display: none; }
+  .step .n {
+    font-family: var(--font-mono);
+    color: var(--hot);
+    font-size: clamp(.7rem, .9vw, .82rem);
+    letter-spacing: .12em;
+  }
+  .step h3 {
+    font-size: clamp(.95rem, 1.25vw, 1.15rem);
+    font-weight: 600;
+  }
+  .step p {
+    font-size: clamp(.74rem, .95vw, .88rem);
+    color: var(--dim);
+    line-height: 1.45;
+    margin-top: auto;
+  }
+
+  /* ------- TWO COL ------- */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(1.8rem, 4vw, 3.8rem);
+    align-items: center;
+    margin-top: clamp(1.2rem, 2vw, 1.8rem);
+  }
+  .two-col .col p {
+    color: var(--dim);
+    margin-top: .75rem;
+  }
+  .feat-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(.55rem, .9vw, .85rem);
+    margin-top: clamp(.7rem, 1.2vw, 1rem);
+  }
+  .feat-list li {
+    font-size: clamp(.9rem, 1.15vw, 1.05rem);
+    color: var(--ink);
+    padding-left: 1.4rem;
+    position: relative;
+    line-height: 1.45;
+  }
+  .feat-list li::before {
+    content: '▸';
+    position: absolute; left: 0;
+    color: var(--accent);
+    font-family: var(--font-mono);
+  }
+  .feat-list li .dim { display: block; font-size: .92em; color: var(--dim); margin-top: .12rem; }
+
+  /* ------- THESIS ------- */
+  .thesis { justify-content: center; }
+  .thesis h1 {
+    font-size: clamp(2.6rem, 7.5vw, 6.8rem);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+  }
+  .thesis .strike {
+    color: var(--faint);
+    text-decoration: line-through;
+    text-decoration-color: var(--hot);
+    text-decoration-thickness: 3px;
+  }
+  .thesis .glow {
+    color: var(--accent);
+    text-shadow: 0 0 40px var(--accent-glow);
+  }
+
+  /* ------- STATS ------- */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(.8rem, 1.5vw, 1.5rem);
+    margin-top: clamp(1.4rem, 2.5vw, 2.2rem);
+  }
+  .stat {
+    border-left: 2px solid var(--accent);
+    padding-left: clamp(.7rem, 1vw, 1rem);
+  }
+  .stat .num {
+    font-family: var(--font-mono);
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -.02em;
+  }
+  .stat .lbl {
+    margin-top: .3rem;
+    font-size: clamp(.72rem, .9vw, .85rem);
+    color: var(--dim);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  /* ------- HOOK PHASES ------- */
+  .phases {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(.85rem, 1.4vw, 1.3rem);
+    margin-top: clamp(1.2rem, 2vw, 1.8rem);
+  }
+  .phase {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: clamp(1rem, 1.5vw, 1.5rem);
+    position: relative;
+  }
+  .phase .ph {
+    font-family: var(--font-mono);
+    font-size: clamp(.72rem, .95vw, .85rem);
+    color: var(--hot);
+    letter-spacing: .12em;
+    margin-bottom: .5rem;
+  }
+  .phase h3 {
+    font-size: clamp(1rem, 1.3vw, 1.2rem);
+    margin-bottom: .4rem;
+  }
+  .phase p {
+    font-size: clamp(.78rem, 1vw, .92rem);
+    color: var(--dim);
+    line-height: 1.5;
+  }
+
+  /* ------- PROGRESS + HINT ------- */
+  .progress {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--rule);
+    z-index: 10;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--hot));
+    transition: width .4s cubic-bezier(.2,.8,.2,1);
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+  .hint {
+    position: fixed;
+    bottom: .9rem;
+    right: 1.2rem;
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    color: var(--faint);
+    z-index: 10;
+    letter-spacing: .06em;
+  }
+
+  /* ------- REVEAL ------- */
+  .slide.active .reveal {
+    animation: reveal .55s cubic-bezier(.2,.8,.2,1) backwards;
+  }
+  .slide.active .reveal:nth-child(1) { animation-delay: .05s; }
+  .slide.active .reveal:nth-child(2) { animation-delay: .15s; }
+  .slide.active .reveal:nth-child(3) { animation-delay: .25s; }
+  .slide.active .reveal:nth-child(4) { animation-delay: .35s; }
+  .slide.active .reveal:nth-child(5) { animation-delay: .45s; }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+  }
+
+  /* ------- RESPONSIVE FALLBACKS ------- */
+  @media (max-width: 900px) {
+    .prims { grid-template-columns: repeat(2, 1fr); }
+    .prims .prim:nth-child(5) { grid-column: span 2; }
+    .trio, .multi-term, .phases { grid-template-columns: 1fr; }
+    .pipeline { grid-template-columns: 1fr 1fr; }
+    .step::after { display: none; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<main class="deck" id="deck">
+
+<!-- 01 TITLE -->
+<section class="slide title-slide active">
+  <div class="chapter">everything claude code</div>
+  <div class="slide-num">01 / 34</div>
+  <div class="reveal">
+    <div class="kicker">field guide</div>
+  </div>
+  <h1 class="reveal">From <span class="dim">Cursor/ChatGPT</span><br><span class="arrow">→</span> Claude Code</h1>
+  <div class="sub reveal">Not a replacement for your IDE. A partner you can delegate to.<br><span style="font-size:.85em;color:var(--faint);">Everything has good parts &amp; bad parts. It's time to learn the good parts (mostly).</span></div>
+  <div class="meta reveal">
+    <span>migration notes</span>
+    <span class="dot"></span>
+    <span>for engineers rewiring the mental model</span>
+  </div>
+</section>
+
+<!-- 02 MIGRATION BRIDGE -->
+<section class="slide">
+  <div class="chapter">migration notes</div>
+  <div class="slide-num">02 / 34</div>
+  <div class="reveal"><div class="kicker">two things to know before you switch</div></div>
+  <h2 class="reveal">What carries over. What doesn't.</h2>
+  <div class="two-col reveal" style="margin-top: clamp(1.2rem, 2vw, 2rem);">
+    <div class="col">
+      <div class="card acc">
+        <div class="label acc">carries over</div>
+        <h3><span class="mono">.cursorrules</span> → <span class="mono">CLAUDE.md</span></h3>
+        <p>Your Cursor rules file is a direct equivalent. Copy it to <span class="mono accent">CLAUDE.md</span> at the project root. Claude Code loads it on every session automatically.</p>
+        <div class="tag-cloud" style="margin-top: .6rem;">
+          <span class="t mono" style="font-size:clamp(.7rem,.88vw,.82rem);color:var(--dim);">cp .cursorrules CLAUDE.md</span>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card hot">
+        <div class="label hot">doesn't carry over</div>
+        <h3>No codebase index.</h3>
+        <p>Cursor has semantic vector search across your repo. Claude Code doesn't — it reads files explicitly via tools. Use <span class="mono accent">@filename</span> to attach context, or ask the agent to explore first.</p>
+        <div class="tag-cloud" style="margin-top: .6rem;">
+          <span class="t mono" style="font-size:clamp(.7rem,.88vw,.82rem);color:var(--dim);">"explore the billing module before editing"</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 LSP SETUP -->
+<section class="slide">
+  <div class="chapter">migration notes</div>
+  <div class="slide-num">03 / 34</div>
+  <div class="reveal"><div class="kicker">enable this first</div></div>
+  <h2 class="reveal">LSP: semantic intelligence, not grep.</h2>
+  <div class="two-col reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
+    <div class="col">
+      <div class="terminal">
+        <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">setup · 3 steps</span></div>
+        <div class="terminal-body" style="font-size:clamp(.75rem,.95vw,.88rem);">
+          <span class="out"># 1. install the gem for your Ruby version</span><br>
+          <span class="prompt">$</span> <span class="cmd">gem install ruby-lsp</span><br>
+          <span class="prompt">$</span> <span class="cmd">which ruby-lsp</span>  <span class="ok">✓ /Users/you/.gem/ruby/3.3.0/bin/ruby-lsp</span><br><br>
+          <span class="out"># 2. install the official plugin</span><br>
+          <span class="prompt">$</span> <span class="cmd">claude plugin install ruby-lsp@claude-plugins-official</span><br><br>
+          <span class="out"># 3. opt-in in ~/.claude/settings.json</span><br>
+          <span class="out">{  "env": { </span><span class="accent">"ENABLE_LSP_TOOL": "1"</span><span class="out"> }  }</span><br><br>
+          <span class="ok">✓ restart claude · LSP tools active</span>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="mono" style="font-size:clamp(.72rem,.92vw,.82rem);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.75rem;margin-top:clamp(1.5rem,3vw,3rem);">what you get</div>
+      <ul class="feat-list">
+        <li><strong>goToDefinition</strong><span class="dim">~50ms vs 30–60s with grep — jump to source instantly</span></li>
+        <li><strong>findReferences</strong><span class="dim">every usage across the codebase before you rename</span></li>
+        <li><strong>hover</strong><span class="dim">type info and docs without opening the file</span></li>
+        <li><strong>workspaceSymbol</strong><span class="dim">search symbols project-wide in one call</span></li>
+        <li><strong>diagnostics</strong><span class="dim">errors surface immediately — fixed in one turn, not three</span></li>
+      </ul>
+      <div style="margin-top:1rem;">
+        <a href="https://karanbansal.in/blog/claude-code-lsp/" target="_blank" style="font-family:var(--font-mono);font-size:clamp(.75rem,.95vw,.88rem);color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(0,255,156,.3);padding-bottom:.1em;">karanbansal.in/blog/claude-code-lsp →</a>
+        <p style="margin-top:.4rem;font-size:clamp(.72rem,.9vw,.82rem);color:var(--faint);">PHP · TypeScript · JavaScript · Go · Python · Rust</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 GLOBAL CLAUDE.MD -->
+<section class="slide">
+  <div class="chapter">platform</div>
+  <div class="slide-num">04 / 34</div>
+  <div class="reveal"><div class="kicker">what claude code ships with</div></div>
+  <h2 class="reveal">Eight native capabilities.</h2>
+  <div class="prims reveal" style="grid-template-columns: repeat(8,1fr);">
+    <div class="prim">
+      <div class="idx">01</div>
+      <h3>CLAUDE.md</h3>
+      <p>Project instructions that load on every session — automatically.</p>
+      <div class="ex" style="color:var(--faint);font-size:clamp(.6rem,.75vw,.7rem);">~/.claude/CLAUDE.md</div>
+    </div>
+    <div class="prim">
+      <div class="idx">02</div>
+      <h3>Rules</h3>
+      <p>Modular always-follow guidelines. Per language, domain, or workflow.</p>
+      <div class="ex" style="color:var(--faint);font-size:clamp(.6rem,.75vw,.7rem);">~/.claude/rules/</div>
+    </div>
+    <div class="prim">
+      <div class="idx">03</div>
+      <h3>Skills</h3>
+      <p>Knowledge playbooks that auto-load based on context — files, commands, questions.</p>
+      <div class="ex" style="color:var(--faint);font-size:clamp(.6rem,.75vw,.7rem);">~/.claude/skills/</div>
+    </div>
+    <div class="prim">
+      <div class="idx">04</div>
+      <h3>Commands</h3>
+      <p>Slash-invokable workflows. One verb triggers a full agent pipeline.</p>
+      <div class="ex" style="color:var(--faint);font-size:clamp(.6rem,.75vw,.7rem);">~/.claude/commands/</div>
+    </div>
+    <div class="prim">
+      <div class="idx">05</div>
+      <h3>Hooks</h3>
+      <p>Lifecycle events — PreToolUse, PostToolUse, Stop — the harness intercepts.</p>
+      <div class="ex" style="color:var(--faint);font-size:clamp(.6rem,.75vw,.7rem);">~/.claude/settings.json</div>
+    </div>
+    <div class="prim">
+      <div class="idx">06</div>
+      <h3>MCP</h3>
+      <p>External systems exposed as native tool calls inside the agent.</p>
+      <div class="ex" style="color:var(--faint);font-size:clamp(.6rem,.75vw,.7rem);">~/.claude/settings.json</div>
+    </div>
+    <div class="prim">
+      <div class="idx">07</div>
+      <h3>Subagents</h3>
+      <p>Delegate tasks to isolated specialist processes with their own context.</p>
+      <div class="ex" style="color:var(--faint);font-size:clamp(.6rem,.75vw,.7rem);">~/.claude/agents/</div>
+    </div>
+    <div class="prim">
+      <div class="idx">08</div>
+      <h3>Memory</h3>
+      <p>Edit what Claude remembers directly with <span class="mono" style="font-size:.85em;">/memory</span>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 02 THE COLLECTION -->
+<section class="slide">
+  <div class="chapter">migration notes</div>
+  <div class="slide-num">05 / 34</div>
+  <div class="reveal"><div class="kicker">your global claude.md</div></div>
+  <h2 class="reveal">The instructions that load on every project.</h2>
+  <div class="two-col reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
+    <div class="col">
+      <div class="terminal">
+        <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">~/.claude/CLAUDE.md</span></div>
+        <div class="terminal-body" style="font-size:clamp(.68rem,.85vw,.78rem);line-height:1.55;">
+          <span class="accent">### General</span><br>
+          <span class="out">Be terse. Skip pleasantries and hedging.</span><br>
+          <span class="out">Don't invent APIs — check the source.</span><br><br>
+          <span class="accent">### Planning</span><br>
+          <span class="out">&gt; 3 files: state plan first, wait for confirm.</span><br>
+          <span class="out">Small edits: just do it.</span><br><br>
+          <span class="accent">### Code Intelligence</span><br>
+          <span class="out">Prefer LSP over Grep/Glob/Read.</span><br>
+          <span class="out">findReferences before any rename.</span><br><br>
+          <span class="accent">### Scope</span><br>
+          <span class="out">Do what was asked, nothing more.</span><br>
+          <span class="out">No "while I'm here" refactors.</span>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="mono" style="font-size:clamp(.72rem,.92vw,.82rem);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.75rem;">why it matters</div>
+      <ul class="feat-list">
+        <li><strong>Global scope</strong><span class="dim">loads on every project automatically — not per-repo setup</span></li>
+        <li><strong>Overrides defaults</strong><span class="dim">your preferences take precedence over Claude's built-in behaviour</span></li>
+        <li><strong>Composable</strong><span class="dim">project-level <span class="mono">CLAUDE.md</span> extends it — team rules layer on top of personal ones</span></li>
+        <li><strong>Plain text</strong><span class="dim">version-control it, diff it, share it with the team</span></li>
+      </ul>
+      <div style="margin-top:1rem;">
+        <a href="https://everything-claude.illia-tsariuk.workers.dev/CLAUDE.md" target="_blank" style="font-family:var(--font-mono);font-size:clamp(.75rem,.95vw,.88rem);color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(0,255,156,.3);padding-bottom:.1em;">example CLAUDE.md →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 CLAUDE CODE NATIVE -->
+<section class="slide thesis">
+  <div class="chapter">the collection</div>
+  <div class="slide-num">06 / 34</div>
+  <div class="reveal"><div class="kicker">before we start</div></div>
+  <h1 class="reveal" style="font-size:clamp(2rem,5.5vw,4.5rem);">
+    Claude Code alone is powerful.<br>
+    Loaded with <span class="glow">everything-claude-code</span>,<br>
+    it's a different class.
+  </h1>
+  <div class="sub reveal">
+    A curated collection of specialized agents, slash commands, skills, lifecycle hooks,
+    and MCP configs. Mix, chain, extend.
+  </div>
+  <div class="reveal" style="margin-top: clamp(1rem, 1.8vw, 1.6rem);">
+    <div class="tag-cloud">
+      <span class="t acc">48 agents</span>
+      <span class="t acc">79 commands</span>
+      <span class="t acc">183 skills</span>
+      <span class="t acc">lifecycle hooks</span>
+      <span class="t acc">13 MCP integrations</span>
+    </div>
+  </div>
+  <div class="reveal" style="margin-top:clamp(1rem,1.8vw,1.8rem);text-align:center;">
+    <p style="font-family:var(--font-mono);font-size:clamp(.68rem,.85vw,.78rem);color:var(--faint);">I offer you my fork of the collection — verified, improved. install link &amp; instructions at the end of this presentation.</p>
+  </div>
+</section>
+
+<!-- 05 PRIMITIVES -->
+<section class="slide">
+  <div class="chapter">anatomy</div>
+  <div class="slide-num">07 / 34</div>
+  <div class="reveal"><div class="kicker">five primitives</div></div>
+  <h2 class="reveal">Anatomy of everything-claude-code.</h2>
+  <div class="prims reveal">
+    <div class="prim">
+      <div class="idx">01</div>
+      <h3>Skills</h3>
+      <p>Domain playbooks the agent auto-loads by context.</p>
+      <div class="ex" style="color:var(--faint);font-size:clamp(.6rem,.75vw,.7rem);">~/.claude/skills/</div>
+    </div>
+    <div class="prim">
+      <div class="idx">02</div>
+      <h3>Commands</h3>
+      <p>Slash verbs you and the agent both invoke.</p>
+      <div class="ex" style="color:var(--faint);font-size:clamp(.6rem,.75vw,.7rem);">~/.claude/commands/</div>
+    </div>
+    <div class="prim">
+      <div class="idx">03</div>
+      <h3>Agents</h3>
+      <p>Specialists with isolated context and their own tool set.</p>
+      <div class="ex" style="color:var(--faint);font-size:clamp(.6rem,.75vw,.7rem);">~/.claude/agents/</div>
+    </div>
+    <div class="prim">
+      <div class="idx">04</div>
+      <h3>Hooks</h3>
+      <p>Lifecycle shims the harness runs — not the model.</p>
+      <div class="ex" style="color:var(--faint);font-size:clamp(.6rem,.75vw,.7rem);">~/.claude/settings.json</div>
+    </div>
+    <div class="prim">
+      <div class="idx">05</div>
+      <h3>MCP</h3>
+      <p>Pre-wired servers you inherit on clone — no config required.</p>
+      <div class="ex" style="color:var(--faint);font-size:clamp(.6rem,.75vw,.7rem);">~/.claude/settings.json</div>
+    </div>
+  </div>
+</section>
+
+<!-- 01 SKILLS -->
+<section class="slide">
+  <div class="chapter">skills</div>
+  <div class="slide-num">08 / 34</div>
+  <div class="reveal"><div class="kicker">skills</div></div>
+  <h2 class="reveal">Knowledge that loads when it's relevant.</h2>
+  <div class="sub reveal">
+    A skill is a markdown playbook with a trigger clause. The harness decides when to
+    surface it based on the files you touch, the command you run, or the question you ask.
+  </div>
+  <div class="tag-cloud reveal">
+    <span class="t acc">backend-patterns</span>
+    <span class="t acc">security-review</span>
+    <span class="t acc">frontend-patterns</span>
+    <span class="t acc">api-design</span>
+    <span class="t acc">docker-patterns</span>
+    <span class="t">golang-testing</span>
+    <span class="t">django-tdd</span>
+    <span class="t">python-testing</span>
+    <span class="t">database-migrations</span>
+    <span class="t">cost-aware-llm-pipeline</span>
+    <span class="t">iterative-retrieval</span>
+    <span class="t">liquid-glass-design</span>
+    <span class="t hot">+167 more</span>
+  </div>
+</section>
+
+<!-- 01 LIVE: SKILL AUTO-LOAD -->
+<section class="slide">
+  <div class="chapter">skills · live</div>
+  <div class="slide-num">09 / 34</div>
+  <div class="reveal"><div class="kicker">context follows the code</div></div>
+  <h2 class="reveal">Ask about the code. The right playbooks load.</h2>
+  <div class="reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
+    <div class="terminal">
+      <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">claude · VS Code extension · billing/</span></div>
+      <div class="terminal-body">
+        <span class="prompt">you</span> <span class="cmd">add rate limiting to the refund endpoint</span><br>
+        <span class="out">› reading app/controllers/api/v1/refunds_controller.rb</span><br>
+        <span class="out">› detected: ruby · rails · api</span><br>
+        <span class="tag">load</span><span class="accent">rails-patterns</span>  <span class="out">— controllers, service layer, strong params</span><br>
+        <span class="tag">load</span><span class="accent">rails-security</span>  <span class="out">— CSRF, mass assignment, Brakeman</span><br>
+        <span class="tag">load</span><span class="accent">ruby-testing</span>  <span class="out">— RSpec, factory_bot, request specs</span><br>
+        <span class="tag n">avail</span><span class="out">rails-tdd · api-design · security-review</span><br>
+        <span class="prompt">claude</span> <span class="out">drafting throttle concern + request spec…</span><span class="cursor"></span>
+      </div>
+    </div>
+  </div>
+  <div class="sub reveal">You asked a question in plain English. Three relevant playbooks arrived with the answer.</div>
+</section>
+
+<!-- SKILL AUTHORING -->
+<section class="slide">
+  <div class="chapter">skills</div>
+  <div class="slide-num">10 / 34</div>
+  <div class="reveal"><div class="kicker">defining a skill</div></div>
+  <h2 class="reveal">A markdown file. A description. A trigger.</h2>
+  <div class="two-col reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
+    <div class="col">
+      <div class="terminal">
+        <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">skills/rails-patterns/SKILL.md</span></div>
+        <div class="terminal-body" style="font-size: clamp(.75rem, .95vw, .88rem);">
+          <span class="out">---</span><br>
+          <span class="accent">name</span><span class="out">: rails-patterns</span><br>
+          <span class="accent">description</span><span class="out">: Rails 7.1+ architecture —</span><br>
+          <span class="out">  ActiveRecord, controllers, services.</span><br>
+          <span class="out">  Use for all Rails backend work.</span><br>
+          <span class="accent">origin</span><span class="out">: ECC</span><br>
+          <span class="out">---</span><br><br>
+          <span class="out"># When to Activate</span><br>
+          <span class="out">Working on Rails controllers, models,</span><br>
+          <span class="out">service objects, or ActiveRecord queries.</span><br><br>
+          <span class="out"># N+1 Prevention</span><br>
+          <span class="out">Use includes, not joins, when rendering…</span>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="mono" style="font-size:clamp(.72rem,.92vw,.82rem);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.75rem;">how it gets loaded</div>
+      <ul class="feat-list">
+        <li><strong>Auto</strong><span class="dim">Claude detects ruby · rails context from files you touch — skill loads without asking</span></li>
+        <li><strong>Via command</strong><span class="dim">a command like <span class="mono" style="color:var(--ink);">/feature-dev</span> pulls the skill in as part of its workflow</span></li>
+        <li><strong>On demand</strong><span class="dim">reference it explicitly: "use rails-patterns" in your prompt</span></li>
+      </ul>
+      <div style="margin-top:clamp(.8rem,1.2vw,1rem);background:var(--accent-dim);border:1px solid var(--accent);border-radius:6px;padding:.5rem .9rem;">
+        <p style="font-size:clamp(.78rem,1vw,.92rem);color:var(--ink);">Create skills from your sessions: <span class="mono accent">/learn</span> or <span class="mono accent">/skill-create</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 COMMANDS -->
+<section class="slide">
+  <div class="chapter">commands</div>
+  <div class="slide-num">11 / 34</div>
+  <div class="reveal"><div class="kicker">slash commands</div></div>
+  <h2 class="reveal">Verbs you teach your agent.</h2>
+  <div class="sub reveal">
+    Markdown files under <span class="mono accent">commands/</span>. Each one is a named
+    workflow — the agent picks up the prompt, the skill chain, and the guardrails in one call.
+  </div>
+  <div class="reveal" style="margin-top:clamp(.6rem,1vw,.9rem);">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(.6rem,1vw,.9rem);">
+      <div style="background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:clamp(.7rem,1vw,.9rem);">
+        <div class="mono" style="font-size:clamp(.68rem,.85vw,.78rem);color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.3rem;">command</div>
+        <p style="font-size:clamp(.78rem,1vw,.9rem);color:var(--dim);">An explicit entry point. You type <span class="mono" style="color:var(--ink);">/tdd</span> and a workflow runs. <strong style="color:var(--ink);">Verbs.</strong></p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:clamp(.7rem,1vw,.9rem);">
+        <div class="mono" style="font-size:clamp(.68rem,.85vw,.78rem);color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.3rem;">skill</div>
+        <p style="font-size:clamp(.78rem,1vw,.9rem);color:var(--dim);">Knowledge that loads into context — auto or on demand. <strong style="color:var(--ink);">Nouns.</strong> A skill can also <em>be</em> a command: <span class="mono" style="color:var(--ink);">/tdd</span> is a thin shim over the <span class="mono" style="color:var(--ink);">tdd-workflow</span> skill.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tag-cloud reveal">
+    <span class="t acc">/plan</span>
+    <span class="t acc">/tdd</span>
+    <span class="t acc">/feature-dev</span>
+    <span class="t acc">/orchestrate</span>
+    <span class="t acc">/learn</span>
+    <span class="t">/build-fix</span>
+    <span class="t">/verify</span>
+    <span class="t">/review-pr</span>
+    <span class="t">/refactor-clean</span>
+    <span class="t">/test-coverage</span>
+    <span class="t">/docs</span>
+    <span class="t">/checkpoint</span>
+    <span class="t">/evolve</span>
+    <span class="t">/skill-create</span>
+    <span class="t">/multi-plan</span>
+    <span class="t">/prp-prd</span>
+    <span class="t">/prune</span>
+    <span class="t hot">+60 more</span>
+  </div>
+</section>
+
+<!-- 02 LIVE /tdd -->
+<section class="slide">
+  <div class="chapter">commands · live</div>
+  <div class="slide-num">12 / 34</div>
+  <div class="reveal"><div class="kicker">/tdd · red · green · refactor · gate</div></div>
+  <h2 class="reveal">One verb runs the whole loop.</h2>
+  <div class="reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
+    <div class="terminal">
+      <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">~/projects/billing · /tdd add proration</span></div>
+      <div class="terminal-body">
+        <span class="prompt">$</span> <span class="cmd">/tdd add proration to mid-cycle upgrade</span><br>
+        <span class="tag hot">RED</span><span class="out">wrote spec/services/proration_spec.rb — 4 failing</span><br>
+        <span class="tag">GREEN</span><span class="out">minimal impl in app/services/proration.rb — 4 passing</span><br>
+        <span class="tag">REFACTOR</span><span class="out">extracted days_remaining — dedup confirmed</span><br>
+        <span class="tag">GATE</span><span class="ok">coverage 87% ✓ &nbsp; rubocop ✓ &nbsp; brakeman ✓</span><br>
+        <span class="prompt">$</span><span class="cursor"></span>
+      </div>
+    </div>
+  </div>
+  <div class="sub reveal">You didn't write the test file path. The command did.</div>
+</section>
+
+<!-- PLAN MODE -->
+<section class="slide">
+  <div class="chapter">agents</div>
+  <div class="slide-num">13 / 34</div>
+  <div class="reveal"><div class="kicker">plan mode</div></div>
+  <h2 class="reveal">The agent drafts. You approve. No edits until you say so.</h2>
+  <div class="two-col reveal" style="margin-top:clamp(1rem,1.6vw,1.5rem);">
+    <div class="col">
+      <ul class="feat-list">
+        <li><strong>What it is</strong><span class="dim">a mode where Claude proposes a full plan — files to touch, approach, risks — before writing a single line</span></li>
+        <li><strong>How to use it</strong><span class="dim">type <span class="mono" style="color:var(--ink);">shift+tab</span> to toggle, or start any prompt with <span class="mono" style="color:var(--ink);">/plan</span></span></li>
+        <li><strong>What it prevents</strong><span class="dim">the agent diving into 12 files before you've confirmed the approach is right</span></li>
+        <li><strong>When to reach for it</strong><span class="dim">architectural changes, anything touching > 3 files, anything you can't easily undo</span></li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="terminal">
+        <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">plan mode active</span></div>
+        <div class="terminal-body" style="font-size:clamp(.75rem,.95vw,.88rem);">
+          <span class="prompt">you</span> <span class="cmd">refactor the voucher upload flow to use Solid Queue</span><br>
+          <span class="out">── plan ──────────────────────────────</span><br>
+          <span class="out">1. add VoucherUploadJob &lt; ApplicationJob</span><br>
+          <span class="out">2. move processor logic out of controller</span><br>
+          <span class="out">3. update routes + specs</span><br>
+          <span class="out">4 files · ~120 lines · 3 new specs</span><br>
+          <span class="out">──────────────────────────────────────</span><br>
+          <span class="warn">waiting for approval — no edits yet</span><br>
+          <span class="prompt">you</span> <span class="cmd">yes, proceed</span><br>
+          <span class="ok">✓ implementing…</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRP PIPELINE -->
+<section class="slide">
+  <div class="chapter">commands</div>
+  <div class="slide-num">14 / 34</div>
+  <div class="reveal"><div class="kicker">prp · plans in files · tracked across sessions</div></div>
+  <div class="reveal" style="margin-top:clamp(.4rem,.7vw,.6rem);">
+    <p style="font-size:clamp(.8rem,1.05vw,.95rem);color:var(--dim);"><strong style="color:var(--ink);">PRP</strong> — Product Requirement Prompts. A collection of prompts for AI-assisted development with Claude Code.</p>
+  </div>
+  <h2 class="reveal">Spec → plan → implement → ship. All in files.</h2>
+  <div class="pipeline reveal" style="grid-template-columns:repeat(4,1fr);margin-top:clamp(1.2rem,2vw,2rem);">
+    <div class="step">
+      <div class="n">/prp-prd</div>
+      <h3>PRD</h3>
+      <p>Interactive Q&amp;A generates a requirements doc. Saved to a <span class="mono" style="font-size:.85em;">.md</span> file.</p>
+    </div>
+    <div class="step">
+      <div class="n">/prp-plan</div>
+      <h3>Plan</h3>
+      <p>Analyses the codebase, extracts patterns, writes an implementation plan file.</p>
+    </div>
+    <div class="step">
+      <div class="n">/prp-implement</div>
+      <h3>Implement</h3>
+      <p>Reads the plan file. Executes with validation loops. Stops if gates fail.</p>
+    </div>
+    <div class="step">
+      <div class="n">/prp-commit</div>
+      <h3>Commit</h3>
+      <p>Smart commit — describe what to commit in plain English.</p>
+    </div>
+  </div>
+  <div class="sub reveal" style="margin-top:clamp(.8rem,1.2vw,1.2rem);">Plans survive session restarts. Pass <span class="mono accent">path/to/plan.md</span> to a fresh session and it picks up exactly where you left off.</div>
+</section>
+
+<!-- WHY ISOLATED CONTEXT (moved) -->
+<section class="slide">
+  <div class="chapter">context · science</div>
+  <div class="slide-num">15 / 34</div>
+  <div class="reveal"><div class="kicker">why isolation matters · the science</div></div>
+  <h2 class="reveal">Context is finite. Pollution is real.</h2>
+  <div class="two-col reveal" style="margin-top:clamp(1rem,1.6vw,1.5rem);align-items:start;">
+    <div class="col" style="display:flex;flex-direction:column;gap:clamp(.75rem,1.2vw,1.1rem);">
+      <div class="card hot">
+        <div class="label hot">Lost in the Middle · Stanford 2023</div>
+        <p>LLMs perform significantly worse on information placed in the <strong>middle</strong> of long contexts. Relevant facts get buried. A reviewer who watched you debug for 2 hours has worse signal than one who sees only the diff.</p>
+      </div>
+      <div class="card hot">
+        <div class="label hot">context pollution</div>
+        <p>Irrelevant tokens compete with task-relevant ones for model attention. Every prior failed attempt, tangential discussion, and re-explained requirement degrades the quality of the next response.</p>
+      </div>
+      <div class="card hot">
+        <div class="label hot">context grounding</div>
+        <p><strong>Grounding</strong> is the mechanism by which a model anchors its output to the <em>provided context</em> rather than to its training weights. A grounded model generates facts from what it can see — not from what it was taught. Focused, task-specific context maximises grounding: fewer invented facts, higher factual accuracy, outputs that are actually about your code.</p>
+      </div>
+    </div>
+    <div class="col" style="display:flex;flex-direction:column;gap:clamp(.75rem,1.2vw,1.1rem);">
+      <div class="card acc">
+        <div class="label acc">the isolated agent advantage</div>
+        <h3>Each specialist starts clean.</h3>
+        <p>The <strong>code-reviewer</strong> sees only the diff.<br>
+        The <strong>security-reviewer</strong> sees only the changed files.<br>
+        The <strong>planner</strong> sees only the requirements.<br><br>
+        No shared baggage. No accumulated bias. No middle-of-context blind spots.</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:clamp(.85rem,1.2vw,1.2rem);">
+        <div class="mono" style="font-size:clamp(.7rem,.88vw,.8rem);color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.4rem;">why this is one of your highest-leverage tools</div>
+        <p style="font-size:clamp(.8rem,1vw,.92rem);color:var(--dim);">You can't make the model smarter. You can control what it sees. Isolated context is the architectural lever that makes every agent sharper — without touching a single model weight.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 AGENTS -->
+<section class="slide">
+  <div class="chapter">agents</div>
+  <div class="slide-num">16 / 34</div>
+  <div class="reveal"><div class="kicker">subagents</div></div>
+  <h2 class="reveal">Specialists. Parallel. Isolated context.</h2>
+  <div class="sub reveal">
+    Each agent has its own system prompt, tool set, and model. It doesn't pollute your main
+    context — it reports back a summary.
+  </div>
+  <div class="tag-cloud reveal">
+    <span class="t acc">planner</span>
+    <span class="t acc">code-reviewer</span>
+    <span class="t acc">security-reviewer</span>
+    <span class="t acc">tdd-guide</span>
+    <span class="t acc">e2e-runner</span>
+    <span class="t">architect</span>
+    <span class="t">build-error-resolver</span>
+    <span class="t">refactor-cleaner</span>
+    <span class="t">doc-updater</span>
+    <span class="t">performance-optimizer</span>
+    <span class="t">silent-failure-hunter</span>
+    <span class="t">python-reviewer</span>
+    <span class="t">go-reviewer</span>
+    <span class="t">rails-reviewer</span>
+    <span class="t">typescript-reviewer</span>
+    <span class="t">database-reviewer</span>
+    <span class="t">chief-of-staff</span>
+    <span class="t">harness-optimizer</span>
+    <span class="t hot">+30 more</span>
+  </div>
+</section>
+
+<!-- CONTEXT GAP -->
+<section class="slide">
+  <div class="chapter">agents · advanced</div>
+  <div class="slide-num">17 / 34</div>
+  <div class="reveal"><div class="kicker">the context gap</div></div>
+  <h2 class="reveal">Sub-agents lack the orchestrator's context.</h2>
+  <div class="sub reveal">The orchestrator knows the purpose. The sub-agent only knows the literal query. Summaries miss what matters.</div>
+  <div class="two-col reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
+    <div class="col">
+      <ul class="feat-list">
+        <li><strong>Evaluate every return</strong><span class="dim">does the summary actually answer the need? Don't accept it blind.</span></li>
+        <li><strong>Send follow-ups</strong><span class="dim">sub-agent fetches more, returns again. Max 3 cycles to prevent loops.</span></li>
+        <li><strong>Pass objective, not just query</strong><span class="dim">include the why alongside the what when dispatching.</span></li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="terminal">
+        <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">iterative retrieval</span></div>
+        <div class="terminal-body" style="font-size: clamp(.72rem, .88vw, .82rem);">
+          <span class="tag">dispatch</span><span class="out">query + objective context</span><br>
+          <span class="out">› sub-agent returns summary</span><br>
+          <span class="tag n">eval</span><span class="out">sufficient?</span><br>
+          <span class="warn">↪ no — send follow-up</span><br>
+          <span class="out">› sub-agent fetches again</span><br>
+          <span class="ok">✓ accepted · cycle 2 / 3</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARALLEL -->
+<section class="slide">
+  <div class="chapter">performance</div>
+  <div class="slide-num">18 / 34</div>
+  <div class="reveal"><div class="kicker">parallel when it counts</div></div>
+  <h2 class="reveal">N tool calls per turn, not N turns per tool.</h2>
+  <div class="trio reveal" style="margin-top: clamp(1.2rem, 2vw, 2rem);">
+    <div class="card acc" style="grid-column: span 2;">
+      <div class="label acc">one assistant turn</div>
+      <h3>Fan out. Collect. Continue.</h3>
+      <p>Read A · Read B · Grep X · Glob Y · WebFetch Z — dispatched in a single turn. Results return together. Five tools, one round-trip, one thinking pass.</p>
+      <div class="tag-cloud" style="margin-top: .8rem;">
+        <span class="t acc">Read</span><span class="t acc">Grep</span><span class="t acc">Glob</span><span class="t acc">Bash</span><span class="t acc">Agent</span><span class="t acc">WebFetch</span>
+      </div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:.75rem;">
+      <div>
+        <div class="mono" style="font-size:clamp(.72rem,.9vw,.82rem);color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;">/fork</div>
+        <p style="font-size:clamp(.8rem,1vw,.92rem);color:var(--dim);">Branch the conversation. Run a parallel task with no overlapping edits.</p>
+      </div>
+      <div>
+        <div class="mono" style="font-size:clamp(.72rem,.9vw,.82rem);color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;">git worktrees</div>
+        <p style="font-size:clamp(.8rem,1vw,.92rem);color:var(--dim);">Multiple Claude instances, zero git conflicts. Each worktree is an independent checkout.</p>
+      </div>
+    </div>
+  </div>
+  <div class="sub reveal">Round-trips dominate wall-clock time. Fewer round-trips, faster loop.</div>
+</section>
+
+<!-- WORKFLOW DIAGRAM -->
+<section class="slide">
+  <div class="chapter">agents · live</div>
+  <div class="slide-num">19 / 34</div>
+  <div class="reveal"><div class="kicker">/feature-dev · from everything-claude-code</div></div>
+  <h2 class="reveal">One command. Four specialists. One approval gate.</h2>
+  <div class="reveal" style="margin-top: clamp(1.4rem, 2.5vw, 2.5rem);">
+    <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:0;align-items:center;">
+
+      <div style="background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--accent);border-radius:8px;padding:clamp(.85rem,1.3vw,1.3rem);text-align:center;">
+        <div style="font-family:var(--font-mono);font-size:clamp(.68rem,.85vw,.78rem);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.4rem;">01 · explore</div>
+        <div style="font-size:clamp(.9rem,1.2vw,1.1rem);font-weight:600;margin-bottom:.3rem;">code-explorer</div>
+        <div style="font-size:clamp(.72rem,.92vw,.85rem);color:var(--dim);">reads the codebase, traces paths, maps conventions</div>
+      </div>
+
+      <div style="font-family:var(--font-mono);color:var(--hot);font-size:1.4rem;padding:0 .5rem;text-align:center;">→</div>
+
+      <div style="background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--accent);border-radius:8px;padding:clamp(.85rem,1.3vw,1.3rem);text-align:center;">
+        <div style="font-family:var(--font-mono);font-size:clamp(.68rem,.85vw,.78rem);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.4rem;">02 · design</div>
+        <div style="font-size:clamp(.9rem,1.2vw,1.1rem);font-weight:600;margin-bottom:.3rem;">code-architect</div>
+        <div style="font-size:clamp(.72rem,.92vw,.85rem);color:var(--dim);">drafts blueprint, surfaces edge cases</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;padding:0 .5rem;gap:.25rem;">
+        <div style="font-family:var(--font-mono);color:var(--hot);font-size:1.4rem;">→</div>
+        <div style="background:var(--hot-dim);border:1px solid var(--hot);border-radius:20px;padding:.2rem .6rem;font-family:var(--font-mono);font-size:clamp(.62rem,.78vw,.72rem);color:var(--hot);white-space:nowrap;">you approve</div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--accent);border-radius:8px;padding:clamp(.85rem,1.3vw,1.3rem);text-align:center;">
+        <div style="font-family:var(--font-mono);font-size:clamp(.68rem,.85vw,.78rem);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.4rem;">03 · build</div>
+        <div style="font-size:clamp(.9rem,1.2vw,1.1rem);font-weight:600;margin-bottom:.3rem;">implement</div>
+        <div style="font-size:clamp(.72rem,.92vw,.85rem);color:var(--dim);">TDD preferred, small commits</div>
+      </div>
+
+      <div style="font-family:var(--font-mono);color:var(--hot);font-size:1.4rem;padding:0 .5rem;text-align:center;">→</div>
+
+      <div style="background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--accent);border-radius:8px;padding:clamp(.85rem,1.3vw,1.3rem);text-align:center;">
+        <div style="font-family:var(--font-mono);font-size:clamp(.68rem,.85vw,.78rem);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.4rem;">04 · review</div>
+        <div style="font-size:clamp(.9rem,1.2vw,1.1rem);font-weight:600;margin-bottom:.3rem;">code-reviewer</div>
+        <div style="font-size:clamp(.72rem,.92vw,.85rem);color:var(--dim);">diff review, coverage check, summary</div>
+      </div>
+
+    </div>
+  </div>
+  <div class="sub reveal" style="margin-top:clamp(1rem,1.6vw,1.5rem);">Each phase has its own specialist. You stay in the loop at the one gate that matters.</div>
+</section>
+
+<!-- ORCHESTRATE DIAGRAM -->
+<section class="slide">
+  <div class="chapter">agents · live</div>
+  <div class="slide-num">20 / 34</div>
+  <div class="reveal"><div class="kicker">/orchestrate · from everything-claude-code</div></div>
+  <h2 class="reveal">One prompt. Multiple agents. One decision.</h2>
+  <div class="reveal" style="margin-top: clamp(1.2rem, 2.2vw, 2.2rem); display:flex; flex-direction:column; align-items:center; gap:clamp(.65rem,1.1vw,1rem);">
+
+    <!-- trigger node -->
+    <div style="background:var(--elevated);border:1px solid var(--accent);border-radius:8px;padding:.5rem clamp(1rem,2vw,2rem);font-family:var(--font-mono);font-size:clamp(.8rem,1.05vw,.95rem);color:var(--accent);">
+      /orchestrate security review the auth module
+    </div>
+
+    <!-- fan-out label -->
+    <div style="display:flex;align-items:center;gap:.5rem;color:var(--faint);font-family:var(--font-mono);font-size:clamp(.7rem,.88vw,.8rem);">
+      <span style="width:clamp(4rem,8vw,8rem);height:1px;background:var(--rule);display:inline-block;"></span>
+      fan out · same turn
+      <span style="width:clamp(4rem,8vw,8rem);height:1px;background:var(--rule);display:inline-block;"></span>
+    </div>
+
+    <!-- parallel agents -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(.75rem,1.2vw,1.2rem);width:100%;">
+      <div style="background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--accent);border-radius:8px;padding:clamp(.8rem,1.2vw,1.2rem);text-align:center;">
+        <div style="font-family:var(--font-mono);font-size:clamp(.68rem,.85vw,.78rem);color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.35rem;">agent 01</div>
+        <div style="font-size:clamp(.88rem,1.15vw,1.05rem);font-weight:600;margin-bottom:.3rem;">code-reviewer</div>
+        <div style="font-size:clamp(.72rem,.9vw,.85rem);color:var(--dim);">quality · patterns · complexity</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--hot);border-radius:8px;padding:clamp(.8rem,1.2vw,1.2rem);text-align:center;">
+        <div style="font-family:var(--font-mono);font-size:clamp(.68rem,.85vw,.78rem);color:var(--hot);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.35rem;">agent 02</div>
+        <div style="font-size:clamp(.88rem,1.15vw,1.05rem);font-weight:600;margin-bottom:.3rem;">security-reviewer</div>
+        <div style="font-size:clamp(.72rem,.9vw,.85rem);color:var(--dim);">OWASP · vulns · secrets</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--accent);border-radius:8px;padding:clamp(.8rem,1.2vw,1.2rem);text-align:center;">
+        <div style="font-family:var(--font-mono);font-size:clamp(.68rem,.85vw,.78rem);color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.35rem;">agent 03</div>
+        <div style="font-size:clamp(.88rem,1.15vw,1.05rem);font-weight:600;margin-bottom:.3rem;">architect</div>
+        <div style="font-size:clamp(.72rem,.9vw,.85rem);color:var(--dim);">design · scalability · coupling</div>
+      </div>
+    </div>
+
+    <!-- merge label -->
+    <div style="display:flex;align-items:center;gap:.5rem;color:var(--faint);font-family:var(--font-mono);font-size:clamp(.7rem,.88vw,.8rem);">
+      <span style="width:clamp(4rem,8vw,8rem);height:1px;background:var(--rule);display:inline-block;"></span>
+      merge · single response
+      <span style="width:clamp(4rem,8vw,8rem);height:1px;background:var(--rule);display:inline-block;"></span>
+    </div>
+
+    <!-- result node -->
+    <div style="background:var(--elevated);border:1px solid var(--rule);border-radius:8px;padding:.5rem clamp(1.5rem,3vw,3rem);font-size:clamp(.82rem,1.05vw,.95rem);color:var(--dim);">
+      unified report · <span style="color:var(--ink);">you decide</span> what to act on
+    </div>
+
+  </div>
+  <div class="sub reveal" style="margin-top:clamp(.8rem,1.2vw,1.2rem);">Three isolated contexts. No cross-contamination. All results back in one turn.</div>
+</section>
+
+<!-- 03 AGENT AUTHORING -->
+<section class="slide">
+  <div class="chapter">agents</div>
+  <div class="slide-num">21 / 34</div>
+  <div class="reveal"><div class="kicker">defining an agent</div></div>
+  <h2 class="reveal">A markdown file. A model choice. A tool list.</h2>
+  <div class="two-col reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
+    <div class="col">
+      <div class="terminal">
+        <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">agents/rails-reviewer.md</span></div>
+        <div class="terminal-body" style="font-size: clamp(.75rem, .95vw, .88rem);">
+          <span class="out">---</span><br>
+          <span class="accent">name</span><span class="out">: rails-reviewer</span><br>
+          <span class="accent">description</span><span class="out">: Reviews Rails code for N+1,</span><br>
+          <span class="out">  mass assignment, strong params.</span><br>
+          <span class="out">  MUST BE USED for Ruby projects.</span><br>
+          <span class="accent">tools</span><span class="out">: Read, Grep, Glob, Bash</span><br>
+          <span class="accent">model</span><span class="out">: </span><span class="ok">sonnet</span><br>
+          <span class="out">---</span><br>
+          <span class="out">Review the Rails code for…</span>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="mono" style="font-size:clamp(.72rem,.92vw,.82rem);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.75rem;">model per agent</div>
+      <ul class="feat-list">
+        <li><strong class="mono accent">haiku</strong><span class="dim">cheap, fast — worker agents, repetitive loops, file search</span></li>
+        <li><strong class="mono" style="color:var(--ink);">sonnet</strong><span class="dim">balanced — code review, security analysis, main work</span></li>
+        <li><strong class="mono hot">opus</strong><span class="dim">deep reasoning — architecture decisions, complex debugging</span></li>
+      </ul>
+      <div class="mono" style="font-size:clamp(.72rem,.92vw,.82rem);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-top:1rem;margin-bottom:.5rem;">tool scoping</div>
+      <p style="font-size:clamp(.82rem,1.05vw,.95rem);color:var(--dim);">Each agent declares exactly which tools it can use. A reviewer that can't write. A builder that can't call outbound APIs.</p>
+      <div style="margin-top:clamp(.8rem,1.2vw,1rem);background:var(--accent-dim);border:1px solid var(--accent);border-radius:6px;padding:.5rem .9rem;">
+        <p style="font-size:clamp(.78rem,1vw,.92rem);color:var(--ink);">Fastest way to create an agent: <span class="mono accent">/agents</span> — interactive builder in one command.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COLLECTION GROWS (moved from 10) -->
+<section class="slide">
+  <div class="chapter">living system</div>
+  <div class="slide-num">22 / 34</div>
+  <div class="reveal"><div class="kicker">living system</div></div>
+  <h2 class="reveal">The collection grows with your team.</h2>
+  <div class="sub reveal">
+    Every session can teach the agent your conventions. The next dev who clones the repo inherits them.
+  </div>
+  <div class="reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
+    <div class="terminal">
+      <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">extracting patterns from session</span></div>
+      <div class="terminal-body">
+        <span class="prompt">$</span> <span class="cmd">/learn</span><br>
+        <span class="out">› analysing session — 12 patterns found</span><br>
+        <span class="tag">save</span><span class="accent">rails-service-objects</span>  <span class="out">— extract business logic from controllers</span><br>
+        <span class="tag">save</span><span class="accent">mysql-index-first</span>  <span class="out">— add index before adding the query</span><br>
+        <span class="prompt">$</span> <span class="cmd">/skill-create rails-patterns</span><br>
+        <span class="ok">✓ skills/rails-patterns/SKILL.md written</span><br>
+        <span class="ok">✓ available to every agent from the next session</span><br>
+        <span class="prompt">$</span><span class="cursor"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 HOOKS -->
+<section class="slide">
+  <div class="chapter">hooks</div>
+  <div class="slide-num">23 / 34</div>
+  <div class="reveal"><div class="kicker">hooks</div></div>
+  <h2 class="reveal">Lifecycle enforcement. Not guidance.</h2>
+  <div class="sub reveal">
+    Hooks run in the harness, not the model. The agent can't forget them, skip them,
+    or talk its way out of them. They're the reason "please remember to" prompts stop being necessary.
+  </div>
+  <div class="phases reveal">
+    <div class="phase">
+      <div class="ph">PreToolUse</div>
+      <h3>Before it happens</h3>
+      <p>Validate, redact, or block. Secret scan before commit. Permission gate before <span class="mono">rm&nbsp;-rf</span>.</p>
+    </div>
+    <div class="phase">
+      <div class="ph">PostToolUse</div>
+      <h3>After it happens</h3>
+      <p>Format, lint, index. Prettier on the diff. Re-run the type checker. Write to the codemap.</p>
+    </div>
+    <div class="phase">
+      <div class="ph">Stop</div>
+      <h3>At the end</h3>
+      <p>Final verification. Run the test gate, write a session summary, checkpoint state — whatever you wire in.</p>
+    </div>
+  </div>
+  <div class="reveal" style="margin-top: clamp(.75rem, 1.2vw, 1rem); font-family: var(--font-mono); font-size: clamp(.7rem, .9vw, .82rem); color: var(--faint); letter-spacing: .06em;">
+    also: <span style="color: var(--dim);">UserPromptSubmit</span> · <span style="color: var(--dim);">PreCompact</span> · <span style="color: var(--dim);">SessionStart</span>
+  </div>
+</section>
+
+<!-- 12 LIVE: HOOK PIPELINE -->
+<section class="slide">
+  <div class="chapter">hooks · live</div>
+  <div class="slide-num">24 / 34</div>
+  <div class="reveal"><div class="kicker">three phases · no escape</div></div>
+  <h2 class="reveal">The harness runs these. Every time.</h2>
+  <div class="multi-term reveal">
+    <div class="terminal">
+      <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">PreToolUse · Bash</span></div>
+      <div class="terminal-body">
+        <span class="tag hot">pre</span><span class="out">Bash(git commit --no-verify)</span><br>
+        <span class="warn">✗ --no-verify blocked</span><br>
+        <span class="out">agent can't skip pre-commit hooks</span><br>
+        <span class="tag hot">pre</span><span class="out">Edit(rubocop.yml)</span><br>
+        <span class="warn">✗ linter config locked</span><br>
+        <span class="out">fix the code, not the rules</span>
+      </div>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">SessionStart · PreCompact</span></div>
+      <div class="terminal-body">
+        <span class="tag">start</span><span class="out">loading previous context</span><br>
+        <span class="out">› detected: ruby · rails · pnpm</span><br>
+        <span class="ok">✓ session state restored</span><br>
+        <span class="tag">compact</span><span class="out">saving state before compaction</span><br>
+        <span class="ok">✓ checkpoint → memory/</span>
+      </div>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">Stop</span></div>
+      <div class="terminal-body">
+        <span class="tag">stop</span><span class="out">batch format + typecheck</span><br>
+        <span class="ok">✓ 6 files · rubocop ✓</span><br>
+        <span class="out">› extracting session patterns</span><br>
+        <span class="ok">✓ 2 skills saved</span><br>
+        <span class="out">› desktop notification sent</span>
+      </div>
+    </div>
+  </div>
+  <div class="sub reveal">Deterministic guardrails around a non-deterministic agent.</div>
+</section>
+
+<!-- 13 MCP -->
+<section class="slide">
+  <div class="chapter">mcp</div>
+  <div class="slide-num">25 / 34</div>
+  <div class="reveal"><div class="kicker">model context protocol</div></div>
+  <h2 class="reveal">13 servers pre-wired. Day one, no setup.</h2>
+  <div class="sub reveal">
+    Any modern agent editor — Cursor included — can speak MCP. The difference here:
+    this collection ships 13 integrations already wired. Git clone, authenticate, work across systems on day one.
+  </div>
+  <div class="reveal" style="margin-top: clamp(.8rem, 1.3vw, 1.3rem);">
+    <div class="mono" style="font-size: clamp(.72rem, .92vw, .82rem); color: var(--accent); letter-spacing: .14em; text-transform: uppercase;">shipped in <span class="mono" style="color: var(--ink);">mcp-configs/</span></div>
+    <div class="tag-cloud" style="margin-top: .5rem;">
+      <span class="t acc">Jira</span>
+      <span class="t acc">GitHub</span>
+      <span class="t acc">Confluence</span>
+      <span class="t acc">Context7&nbsp;Docs</span>
+      <span class="t acc">Playwright</span>
+      <span class="t acc">Filesystem</span>
+      <span class="t acc">Memory</span>
+      <span class="t acc">Sequential&nbsp;Thinking</span>
+      <span class="t acc">Cloudflare&nbsp;×4</span>
+      <span class="t acc">Exa&nbsp;Search</span>
+      <span class="t acc">laraplugins</span>
+      <span class="t acc">magic</span>
+      <span class="t acc">evalview</span>
+    </div>
+  </div>
+</section>
+
+<!-- 14 LIVE: MCP WORKFLOW -->
+<section class="slide">
+  <div class="chapter">mcp · live</div>
+  <div class="slide-num">26 / 34</div>
+  <div class="reveal"><div class="kicker">one prompt · three systems</div></div>
+  <h2 class="reveal">Cross-system work. One prompt.</h2>
+  <div class="reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
+    <div class="terminal">
+      <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">claude — investigate N+1 in voucher reports</span></div>
+      <div class="terminal-body">
+        <span class="prompt">&gt;</span> <span class="cmd">close INFRA-88, check the Bullet log for N+1s in the report endpoint, post findings in #backend</span><br>
+        <span class="tag">jira</span><span class="out">getIssue(INFRA-88) · voucher report N+1 query</span><br>
+        <span class="tag">github</span><span class="out">getFile(app/controllers/reports_controller.rb)</span><br>
+        <span class="out">› 3 N+1 queries detected via Bullet log</span><br>
+        <span class="tag">jira</span><span class="out">transitionIssue(INFRA-88 → In Review)</span><br>
+        <span class="tag">github</span><span class="out">postComment(PR#241, "N+1 fixed with includes(:vouchers)")</span><br>
+        <span class="ok">✓ closed · findings posted · PR updated</span><br>
+        <span class="prompt">&gt;</span><span class="cursor"></span>
+      </div>
+    </div>
+  </div>
+  <div class="sub reveal">The agent is the connective tissue between tools you already pay for.</div>
+</section>
+
+<!-- NEW: NON-OBVIOUS MCPS -->
+<section class="slide">
+  <div class="chapter">mcp</div>
+  <div class="slide-num">27 / 34</div>
+  <div class="reveal"><div class="kicker">the non-obvious ones</div></div>
+  <h2 class="reveal">Three MCPs that change how the agent thinks.</h2>
+  <div class="trio reveal" style="margin-top: clamp(1.2rem, 2vw, 2rem);">
+    <div class="card acc">
+      <div class="label acc">context7</div>
+      <h3>Live docs, not stale training.</h3>
+      <p>Fetches current documentation from the source. Ask about a library and the agent reads the real docs — not what it learned at training cutoff.</p>
+      <div class="tag-cloud" style="margin-top: .6rem;">
+        <span class="t mono" style="font-size:clamp(.7rem,.88vw,.82rem);color:var(--dim);">"use context7 for Rails 8 strong params"</span>
+      </div>
+    </div>
+    <div class="card acc">
+      <div class="label acc">memory</div>
+      <h3>Knowledge graph across sessions.</h3>
+      <p>Stores entities and relations that persist. Recall architectural decisions, team conventions, or why a choice was made — weeks later, different session.</p>
+      <div class="tag-cloud" style="margin-top: .6rem;">
+        <span class="t mono" style="font-size:clamp(.7rem,.88vw,.82rem);color:var(--dim);">"what did we decide on the auth approach?"</span>
+      </div>
+    </div>
+    <div class="card acc">
+      <div class="label acc">sequential-thinking</div>
+      <h3>Think before acting.</h3>
+      <p>Forces structured chain-of-thought before the first tool call. For architectural decisions or complex debugging — slows down to avoid wrong turns.</p>
+      <div class="tag-cloud" style="margin-top: .6rem;">
+        <span class="t mono" style="font-size:clamp(.7rem,.88vw,.82rem);color:var(--dim);">"use sequential thinking to plan the migration"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEW: CONTEXT WINDOW MANAGEMENT -->
+<section class="slide">
+  <div class="chapter">memory</div>
+  <div class="slide-num">28 / 34</div>
+  <div class="reveal"><div class="kicker">memory</div></div>
+  <div class="two-col" style="margin-top:clamp(.8rem,1.3vw,1.3rem);">
+    <div class="col reveal" style="display:flex;flex-direction:column;gap:clamp(.6rem,1vw,.9rem);">
+      <div>
+        <h2>State that survives the window.</h2>
+        <p style="margin-top:.5rem;">Just tell Claude. It writes the right file automatically.</p>
+      </div>
+      <div class="terminal">
+        <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">saving decisions to memory</span></div>
+        <div class="terminal-body" style="font-size:clamp(.72rem,.9vw,.82rem);line-height:1.7;">
+          <span class="prompt">you</span> <span class="cmd">remember: we use Solid Queue, not Sidekiq.<br>      no Redis dependency in this project.</span><br>
+          <span class="ok">✓ saved → memory/project_queue_decision.md</span><br><br>
+          <span class="prompt">you</span> <span class="cmd">remember: don't suggest GraphQL.<br>      REST only, team decision from 2024.</span><br>
+          <span class="ok">✓ saved → memory/feedback_no_graphql.md</span><br><br>
+          <span class="prompt">you</span> <span class="cmd">remember: PE-sprint ends April 25.<br>      freeze non-critical merges after that.</span><br>
+          <span class="ok">✓ saved → memory/project_sprint_freeze.md</span>
+        </div>
+      </div>
+    </div>
+    <div class="col reveal">
+      <div class="mono" style="font-size: clamp(.72rem, .92vw, .82rem); color: var(--accent); letter-spacing: .14em; text-transform: uppercase; margin-bottom: .6rem;">the taxonomy</div>
+      <ul class="feat-list">
+        <li><strong>user</strong> — <span class="dim">who you are, how you like to work</span></li>
+        <li><strong>feedback</strong> — <span class="dim">rules and corrections, with the why preserved</span></li>
+        <li><strong>project</strong> — <span class="dim">ongoing initiatives, deadlines, decisions</span></li>
+        <li><strong>reference</strong> — <span class="dim">pointers into Jira, Grafana, Slack channels</span></li>
+      </ul>
+      <div style="margin-top:clamp(.8rem,1.2vw,1.1rem);background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:clamp(.7rem,1vw,.95rem);">
+        <div class="mono" style="font-size:clamp(.68rem,.85vw,.78rem);color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.4rem;">loads automatically</div>
+        <p style="font-size:clamp(.78rem,1vw,.9rem);color:var(--dim);">Every memory file is read at session start. Claude knows your decisions before you type the first word.</p>
+      </div>
+    </div>
+  </div>
+  <div class="sub reveal">Plain-text files. Human-readable. Version-controllable. No opaque embeddings.</div>
+</section>
+
+<!-- CONTROLLING YOUR AGENT -->
+<section class="slide">
+  <div class="chapter">mcp</div>
+  <div class="slide-num">29 / 34</div>
+  <div class="reveal"><div class="kicker">context is a resource</div></div>
+  <h2 class="reveal">1M context. Still worth being surgical.</h2>
+  <div class="sub reveal">Every enabled MCP loads tools into the active window. More tools = more noise, slower turns, higher cost. The window is large — don't fill it with tools you're not using.</div>
+  <div class="trio reveal" style="margin-top: clamp(1.2rem, 2vw, 2rem);">
+    <div class="card hot">
+      <div class="label hot">the problem</div>
+      <h3>Tool bloat</h3>
+      <p>20+ MCPs all enabled = 80+ active tools loading on every turn. More noise, slower inference, higher cost per message.</p>
+    </div>
+    <div class="card acc">
+      <div class="label acc">the rule</div>
+      <h3>20–30 configured.<br>Under 10 active.</h3>
+      <p>Keep a full roster in config. Enable only what today's task needs. Disable the rest per project.</p>
+    </div>
+    <div class="card acc">
+      <div class="label acc">compact</div>
+      <h3>Compact strategically.</h3>
+      <p>Auto-compact hits at arbitrary points. Use <span class="mono accent">/compact</span> at phase boundaries — after exploration, before execution.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 17 MEMORY -->
+<section class="slide">
+  <div class="chapter">day-to-day</div>
+  <div class="slide-num">30 / 34</div>
+  <div class="reveal"><div class="kicker">undo · escape · control</div></div>
+  <h2 class="reveal">Controlling your agent.</h2>
+  <div class="two-col reveal" style="margin-top:clamp(1rem,1.6vw,1.5rem);">
+    <div class="col">
+      <div class="mono" style="font-size:clamp(.72rem,.92vw,.82rem);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.6rem;">stop · pause · undo</div>
+      <ul class="feat-list">
+        <li><strong class="mono">Esc Esc</strong><span class="dim">interrupt Claude mid-run immediately</span></li>
+        <li><strong class="mono">/rewind</strong><span class="dim">go back to a previous conversation state — undo the last exchange</span></li>
+        <li><strong class="mono">/checkpoints</strong><span class="dim">file-level undo points created automatically as Claude edits — restore any file to an earlier state</span></li>
+        <li><strong>Plan Mode</strong><span class="dim">the safest option — no edits happen until you approve the plan</span></li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="mono" style="font-size:clamp(.72rem,.92vw,.82rem);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.6rem;">the real backstop</div>
+      <div class="card acc">
+        <div class="label acc">git</div>
+        <h3>Your safety net hasn't changed.</h3>
+        <p>Claude Code edits tracked files. Git shows you exactly what changed. You can always revert parts or everything. Commit before risky sessions — the same discipline you already have.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KEYBOARD SHORTCUTS (moved) -->
+<section class="slide">
+  <div class="chapter">day-to-day</div>
+  <div class="slide-num">31 / 34</div>
+  <div class="reveal"><div class="kicker">shortcuts worth memorising</div></div>
+  <h2 class="reveal">A few keystrokes worth knowing.</h2>
+  <div class="two-col reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
+    <div class="col">
+      <div class="mono" style="font-size:clamp(.72rem,.92vw,.82rem);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.6rem;">in the prompt</div>
+      <ul class="feat-list">
+        <li><strong class="mono">!</strong><span class="dim">quick bash prefix — run a shell command without leaving the chat</span></li>
+        <li><strong class="mono">@</strong><span class="dim">search and attach a file by name</span></li>
+        <li><strong class="mono">Shift+Enter</strong><span class="dim">multi-line input</span></li>
+        <li><strong class="mono">Ctrl+U</strong><span class="dim">delete entire line — faster than holding backspace</span></li>
+        <li><strong class="mono">Esc Esc</strong><span class="dim">interrupt Claude mid-run / restore code</span></li>
+        <li><strong class="mono">Tab</strong><span class="dim">toggle extended thinking display</span></li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="mono" style="font-size:clamp(.72rem,.92vw,.82rem);color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.6rem;">commands worth knowing</div>
+      <ul class="feat-list">
+        <li><strong class="mono">/fork</strong><span class="dim">branch the conversation — run a parallel, non-overlapping task</span></li>
+        <li><strong class="mono">/compact</strong><span class="dim">manually trigger compaction at a logical phase boundary</span></li>
+        <li><strong class="mono">/checkpoints</strong><span class="dim">file-level undo points</span></li>
+        <li><strong class="mono">/rewind</strong><span class="dim">go back to a previous conversation state</span></li>
+        <li><strong class="mono">/statusline</strong><span class="dim">customise: branch, context %, model, todo count</span></li>
+        <li><strong class="mono">/simplify</strong><span class="dim">review changed code for reuse, quality, and efficiency — then fix</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- DRY YOUR WORKFLOW (moved) -->
+<section class="slide">
+  <div class="chapter">reflect</div>
+  <div class="slide-num">32 / 34</div>
+  <div class="reveal"><div class="kicker">a question for you</div></div>
+  <div class="two-col reveal" style="margin-top:clamp(.8rem,1.4vw,1.4rem);align-items:start;">
+    <div class="col">
+      <h2 style="font-size:clamp(1.5rem,3vw,2.6rem);">Look at your last long session with Cursor or ChatGPT.</h2>
+      <div class="sub" style="margin-top:clamp(.8rem,1.2vw,1.2rem);font-size:clamp(.9rem,1.15vw,1.05rem);">
+        What decisions were repeated?<br>
+        What context did you re-explain?<br>
+        What patterns did you manually enforce every time?
+      </div>
+      <div class="card acc" style="margin-top:clamp(1rem,1.6vw,1.5rem);">
+        <div class="label acc">the shift</div>
+        <h3>Apply DRY to your workflow.</h3>
+        <p style="font-size:clamp(.78rem,1vw,.92rem);">Repeated prompts → <span style="color:var(--ink);">skills.</span> &nbsp; Repeated decisions → <span style="color:var(--ink);">agents.</span> &nbsp; Repeated workflows → <span style="color:var(--ink);">commands.</span></p>
+      </div>
+      <div style="margin-top:clamp(.75rem,1.2vw,1.1rem);display:flex;flex-direction:column;gap:.4rem;">
+        <div class="mono" style="font-size:clamp(.68rem,.85vw,.78rem);color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.2rem;">how to do it</div>
+        <p style="font-size:clamp(.78rem,1vw,.9rem);color:var(--dim);">① Spot the repetition &nbsp; ② Run <span class="mono" style="color:var(--ink);">/learn</span> or type <span class="mono" style="color:var(--ink);">remember: ...</span> &nbsp; ③ It loads automatically next session</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="terminal" style="height:100%;">
+        <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">voucher_tool · /learn after auth refactor session</span></div>
+        <div class="terminal-body" style="font-size:clamp(.7rem,.88vw,.8rem);line-height:1.6;">
+          <span class="prompt">$</span> <span class="cmd">/learn</span><br>
+          <span class="out">› 3 patterns extracted from session</span><br><br>
+          <span class="tag">save</span><span class="accent">permission-guard-pattern</span><br>
+          <span class="out">  every controller uses check_permission!</span><br>
+          <span class="out">  and check_agency_access! before actions</span><br><br>
+          <span class="tag">save</span><span class="accent">service-error-wrapping</span><br>
+          <span class="out">  Error &lt; StandardError per service class</span><br>
+          <span class="out">  rescue → re-raise with context message</span><br><br>
+          <span class="tag">save</span><span class="accent">authorizable-concern</span><br>
+          <span class="out">  JWT decode + require_authorization</span><br>
+          <span class="out">  rescue_from on every controller</span><br><br>
+          <span class="ok">✓ saved to skills/learned/</span><br>
+          <span class="ok">✓ active from next session</span><br>
+          <span class="prompt">$</span><span class="cursor"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 19 THESIS -->
+<section class="slide thesis">
+  <div class="chapter">thesis</div>
+  <div class="slide-num">33 / 34</div>
+  <div class="reveal"><div class="kicker">why this matters</div></div>
+  <h1 class="reveal">
+    You stop <span class="strike">prompting</span>.<br>
+    You start <span class="glow">orchestrating</span>.
+  </h1>
+  <div class="sub reveal">
+    Claude Code is the system your team builds —
+    it enforces your rules, learns from your sessions, and gets more capable the longer your team uses it.
+  </div>
+</section>
+
+<!-- 20 GET STARTED -->
+<section class="slide">
+  <div class="chapter">day one</div>
+  <div class="slide-num">34 / 34</div>
+  <div class="reveal"><div class="kicker">get started</div></div>
+  <h2 class="reveal">Three commands and you're wired.</h2>
+  <div class="reveal" style="margin-top: clamp(1rem, 1.6vw, 1.5rem);">
+    <div class="terminal">
+      <div class="terminal-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">~ · install everything-claude-code</span></div>
+      <div class="terminal-body">
+        <span class="out"># 1. install claude code</span><br>
+        <span class="prompt">$</span> <span class="cmd">npm install -g @anthropic-ai/claude-code</span><br><br>
+        <span class="out"># 2. install the collection  (ECC_HOOK_PROFILE=strict enables all safety hooks)</span><br>
+        <span class="prompt">$</span> <span class="cmd">git clone https://github.com/itsariuk/everything-claude-verified</span><br>
+        <span class="prompt">$</span> <span class="cmd">cd everything-claude-verified && ECC_HOOK_PROFILE=strict ./install.sh ruby php</span><br>
+        <span class="out">› 48 agents · 79 commands · 183 skills · hooks active</span><br><br>
+        <span class="out"># 3. first session on-ramp</span><br>
+        <span class="prompt">$</span> <span class="cmd">claude</span><br>
+        <span class="out">› write your CLAUDE.md  →  enable LSP (slide 3)  →  run </span><span class="accent">/learn</span><span class="out"> after first session</span><br>
+        <span class="prompt">$</span><span class="cursor"></span>
+      </div>
+    </div>
+  </div>
+  <div class="sub reveal">Welcome to the harness.</div>
+</section>
+
+</main>
+
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+<div class="hint">← → · space · wheel · touch</div>
+
+<script>
+  class Deck {
+    constructor() {
+      this.slides = Array.from(document.querySelectorAll('.slide'));
+      this.i = 0;
+      this.total = this.slides.length;
+      this.bar = document.getElementById('progressBar');
+      this.bind();
+      this.show(0);
+    }
+    bind() {
+      document.addEventListener('keydown', e => {
+        if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); this.next(); }
+        else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); this.prev(); }
+        else if (e.key === 'Home') { e.preventDefault(); this.show(0); }
+        else if (e.key === 'End') { e.preventDefault(); this.show(this.total - 1); }
+      });
+      let wheelLock = false;
+      window.addEventListener('wheel', e => {
+        if (wheelLock) return;
+        if (Math.abs(e.deltaY) < 28) return;
+        wheelLock = true;
+        e.deltaY > 0 ? this.next() : this.prev();
+        setTimeout(() => wheelLock = false, 650);
+      }, { passive: true });
+      let tx = 0;
+      window.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+      window.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - tx;
+        if (Math.abs(dx) > 50) dx < 0 ? this.next() : this.prev();
+      });
+    }
+    next() { if (this.i < this.total - 1) this.show(this.i + 1); }
+    prev() { if (this.i > 0) this.show(this.i - 1); }
+    show(n) {
+      this.slides.forEach((s, j) => s.classList.toggle('active', j === n));
+      this.i = n;
+      this.bar.style.width = `${((n + 1) / this.total) * 100}%`;
+    }
+  }
+  document.addEventListener('DOMContentLoaded', () => new Deck());
+</script>
+
+</body>
+</html>

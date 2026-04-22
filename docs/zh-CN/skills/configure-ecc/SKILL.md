@@ -30,7 +30,7 @@ origin: ECC
 
 ```bash
 rm -rf /tmp/everything-claude-code
-git clone https://github.com/affaan-m/everything-claude-code.git /tmp/everything-claude-code
+git clone https://github.com/itsariuk/everything-claude-verified.git /tmp/everything-claude-code
 ```
 
 将 `ECC_ROOT=/tmp/everything-claude-code` 设置为所有后续复制操作的源。

@@ -59,7 +59,7 @@
 
 ```bash
 # 1. Fork and clone
-gh repo fork affaan-m/everything-claude-code --clone
+gh repo fork itsariuk/everything-claude-verified --clone
 cd everything-claude-code
 
 # 2. Create a branch
@@ -457,7 +457,7 @@ docs: 完善贡献指南
 
 ## 有问题吗？
 
-* **问题：** [github.com/affaan-m/everything-claude-code/issues](https://github.com/affaan-m/everything-claude-code/issues)
+* **问题：** [github.com/itsariuk/everything-claude-verified/issues](https://github.com/itsariuk/everything-claude-verified/issues)
 * **X/Twitter：** [@affaanmustafa](https://x.com/affaanmustafa)
 
 ***

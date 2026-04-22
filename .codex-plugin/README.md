@@ -22,7 +22,7 @@ Codex plugin support is currently in preview. Once generally available:
 
 ```bash
 # Install from Codex CLI
-codex plugin install affaan-m/everything-claude-code
+codex plugin install itsariuk/everything-claude-verified
 
 # Or reference locally during development
 codex plugin install ./

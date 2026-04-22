@@ -2,9 +2,9 @@
 
 # Everything Claude Code
 
-[![Stars](https://img.shields.io/github/stars/affaan-m/everything-claude-code?style=flat)](https://github.com/affaan-m/everything-claude-code/stargazers)
-[![Forks](https://img.shields.io/github/forks/affaan-m/everything-claude-code?style=flat)](https://github.com/affaan-m/everything-claude-code/network/members)
-[![Contributors](https://img.shields.io/github/contributors/affaan-m/everything-claude-code?style=flat)](https://github.com/affaan-m/everything-claude-code/graphs/contributors)
+[![Stars](https://img.shields.io/github/stars/itsariuk/everything-claude-verified?style=flat)](https://github.com/itsariuk/everything-claude-verified/stargazers)
+[![Forks](https://img.shields.io/github/forks/itsariuk/everything-claude-verified?style=flat)](https://github.com/itsariuk/everything-claude-verified/network/members)
+[![Contributors](https://img.shields.io/github/contributors/itsariuk/everything-claude-verified?style=flat)](https://github.com/itsariuk/everything-claude-verified/graphs/contributors)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Shell](https://img.shields.io/badge/-Shell-4EAA25?logo=gnu-bash&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
@@ -71,7 +71,7 @@
 
 ### v1.4.1 — バグ修正（2026年2月）
 
-- **instinctインポート時のコンテンツ喪失を修正** — `/instinct-import`実行時に`parse_instinct_file()`がfrontmatter後のすべてのコンテンツ（Action、Evidence、Examplesセクション）を暗黙的に削除していた問題を修正。コミュニティ貢献者@ericcai0814により解決されました（[#148](https://github.com/affaan-m/everything-claude-code/issues/148), [#161](https://github.com/affaan-m/everything-claude-code/pull/161)）
+- **instinctインポート時のコンテンツ喪失を修正** — `/instinct-import`実行時に`parse_instinct_file()`がfrontmatter後のすべてのコンテンツ（Action、Evidence、Examplesセクション）を暗黙的に削除していた問題を修正。コミュニティ貢献者@ericcai0814により解決されました（[#148](https://github.com/itsariuk/everything-claude-verified/issues/148), [#161](https://github.com/itsariuk/everything-claude-verified/pull/161)）
 
 ### v1.4.0 — マルチ言語ルール、インストールウィザード & PM2（2026年2月）
 
@@ -95,7 +95,7 @@
 - **セッション管理** — セッション履歴用の`/sessions`コマンド
 - **継続的学習 v2** — 信頼度スコアリング、インポート/エクスポート、進化を伴うinstinctベースの学習
 
-完全なチェンジログは[Releases](https://github.com/affaan-m/everything-claude-code/releases)を参照してください。
+完全なチェンジログは[Releases](https://github.com/itsariuk/everything-claude-verified/releases)を参照してください。
 
 ---
 
@@ -107,7 +107,7 @@
 
 ```bash
 # マーケットプレイスを追加
-/plugin marketplace add https://github.com/affaan-m/everything-claude-code
+/plugin marketplace add https://github.com/itsariuk/everything-claude-verified
 
 # プラグインをインストール
 /plugin install ecc@ecc
@@ -119,7 +119,7 @@
 
 ```bash
 # まずリポジトリをクローン
-git clone https://github.com/affaan-m/everything-claude-code.git
+git clone https://github.com/itsariuk/everything-claude-verified.git
 
 # 共通ルールをインストール（必須）
 cp -r everything-claude-code/rules/common/* ~/.claude/rules/
@@ -412,7 +412,7 @@ Claude Code v2.1+は、インストール済みプラグインの`hooks/hooks.js
 Duplicate hook file detected: ./hooks/hooks.json is already resolved to a loaded file
 ```
 
-**背景:** これは本リポジトリで複数の修正/リバート循環を引き起こしました（[#29](https://github.com/affaan-m/everything-claude-code/issues/29), [#52](https://github.com/affaan-m/everything-claude-code/issues/52), [#103](https://github.com/affaan-m/everything-claude-code/issues/103)）。Claude Codeバージョン間で動作が変わったため混乱がありました。今後を防ぐため回帰テストがあります。
+**背景:** これは本リポジトリで複数の修正/リバート循環を引き起こしました（[#29](https://github.com/itsariuk/everything-claude-verified/issues/29), [#52](https://github.com/itsariuk/everything-claude-verified/issues/52), [#103](https://github.com/itsariuk/everything-claude-verified/issues/103)）。Claude Codeバージョン間で動作が変わったため混乱がありました。今後を防ぐため回帰テストがあります。
 
 ---
 
@@ -424,7 +424,7 @@ Duplicate hook file detected: ./hooks/hooks.json is already resolved to a loaded
 
 ```bash
 # このリポジトリをマーケットプレイスとして追加
-/plugin marketplace add https://github.com/affaan-m/everything-claude-code
+/plugin marketplace add https://github.com/itsariuk/everything-claude-verified
 
 # プラグインをインストール
 /plugin install ecc@ecc
@@ -438,7 +438,7 @@ Duplicate hook file detected: ./hooks/hooks.json is already resolved to a loaded
     "ecc": {
       "source": {
         "source": "github",
-        "repo": "affaan-m/everything-claude-code"
+        "repo": "itsariuk/everything-claude-verified"
       }
     }
   },
@@ -454,7 +454,7 @@ Duplicate hook file detected: ./hooks/hooks.json is already resolved to a loaded
 >
 > ```bash
 > # まずリポジトリをクローン
-> git clone https://github.com/affaan-m/everything-claude-code.git
+> git clone https://github.com/itsariuk/everything-claude-verified.git
 >
 > # オプション A：ユーザーレベルルール（すべてのプロジェクトに適用）
 > mkdir -p ~/.claude/rules
@@ -477,7 +477,7 @@ Duplicate hook file detected: ./hooks/hooks.json is already resolved to a loaded
 
 ```bash
 # リポジトリをクローン
-git clone https://github.com/affaan-m/everything-claude-code.git
+git clone https://github.com/itsariuk/everything-claude-verified.git
 
 # エージェントを Claude 設定にコピー
 cp everything-claude-code/agents/*.md ~/.claude/agents/
@@ -772,7 +772,7 @@ npm install ecc-universal
 
 ## Star 履歴
 
-[![Star History Chart](https://api.star-history.com/svg?repos=affaan-m/everything-claude-code&type=Date)](https://star-history.com/#affaan-m/everything-claude-code&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=itsariuk/everything-claude-verified&type=Date)](https://star-history.com/#itsariuk/everything-claude-verified&Date)
 
 ---
 

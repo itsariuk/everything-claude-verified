@@ -28,15 +28,15 @@ curl -s https://api.npmjs.org/downloads/point/last-month/ecc-agentshield
 ### GitHub repository adoption
 
 ```bash
-gh api repos/affaan-m/everything-claude-code \
+gh api repos/itsariuk/everything-claude-verified \
   --jq '{stars:.stargazers_count,forks:.forks_count,contributors_url:.contributors_url,open_issues:.open_issues_count}'
 ```
 
 ### GitHub traffic (maintainer access required)
 
 ```bash
-gh api repos/affaan-m/everything-claude-code/traffic/views
-gh api repos/affaan-m/everything-claude-code/traffic/clones
+gh api repos/itsariuk/everything-claude-verified/traffic/views
+gh api repos/itsariuk/everything-claude-verified/traffic/clones
 ```
 
 ### GitHub App installs

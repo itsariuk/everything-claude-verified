@@ -26,7 +26,7 @@
  *
  * Option 2: Clone and use directly
  * ```bash
- * git clone https://github.com/affaan-m/everything-claude-code
+ * git clone https://github.com/itsariuk/everything-claude-verified
  * cd everything-claude-code
  * opencode
  * ```

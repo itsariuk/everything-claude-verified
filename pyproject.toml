@@ -34,8 +34,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/affaan-m/everything-claude-code"
-Repository = "https://github.com/affaan-m/everything-claude-code"
+Homepage = "https://github.com/itsariuk/everything-claude-verified"
+Repository = "https://github.com/itsariuk/everything-claude-verified"
 
 [project.scripts]
 llm-select = "llm.cli.selector:main"

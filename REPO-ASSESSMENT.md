@@ -8,7 +8,7 @@
 
 ### Repo: `Infiniteyieldai/everything-claude-code`
 
-This is a **fork of `affaan-m/everything-claude-code`** (the upstream project with 50K+ stars, 6K+ forks).
+This is a **fork of `itsariuk/everything-claude-verified`** (the upstream project with 50K+ stars, 6K+ forks).
 
 | Attribute | Value |
 |-----------|-------|
@@ -142,7 +142,7 @@ The `rules/common/` directory provides baseline guidelines that fire on every se
 ## What to Do With the Fork
 
 ### Option A: Use as upstream tracker (current state)
-Keep the fork synced with `affaan-m/everything-claude-code` upstream. Periodically merge upstream changes:
+Keep the fork synced with `itsariuk/everything-claude-verified` upstream. Periodically merge upstream changes:
 ```bash
 git fetch upstream
 git merge upstream/main
@@ -190,7 +190,7 @@ No need to clone the repo. This is the recommended install method for most users
 | Question | Answer |
 |----------|--------|
 | Is the fork healthy? | Yes — fully synced with upstream v1.9.0 |
-| Other forks to consider? | None visible in this environment; upstream `affaan-m/everything-claude-code` is the source of truth |
+| Other forks to consider? | None visible in this environment; upstream `itsariuk/everything-claude-verified` is the source of truth |
 | Best install profile? | `developer` for day-to-day dev work |
 | Biggest gap in current setup? | 0 agents installed — add at minimum: planner, code-reviewer, tdd-guide, security-reviewer |
 | Quickest win? | Run `node scripts/install-plan.js --profile core && node scripts/install-apply.js` |

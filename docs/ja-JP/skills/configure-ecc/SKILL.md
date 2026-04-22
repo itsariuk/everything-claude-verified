@@ -28,7 +28,7 @@ Everything Claude Code プロジェクトのインタラクティブなステッ
 
 ```bash
 rm -rf /tmp/everything-claude-code
-git clone https://github.com/affaan-m/everything-claude-code.git /tmp/everything-claude-code
+git clone https://github.com/itsariuk/everything-claude-verified.git /tmp/everything-claude-code
 ```
 
 以降のすべてのコピー操作のソースとして `ECC_ROOT=/tmp/everything-claude-code` を設定します。

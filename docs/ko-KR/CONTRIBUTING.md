@@ -49,7 +49,7 @@
 
 ```bash
 # 1. 포크 및 클론
-gh repo fork affaan-m/everything-claude-code --clone
+gh repo fork itsariuk/everything-claude-verified --clone
 cd everything-claude-code
 
 # 2. 브랜치 생성
@@ -445,7 +445,7 @@ docs: improve contributing guide
 
 ## 질문이 있으신가요?
 
-- **이슈:** [github.com/affaan-m/everything-claude-code/issues](https://github.com/affaan-m/everything-claude-code/issues)
+- **이슈:** [github.com/itsariuk/everything-claude-verified/issues](https://github.com/itsariuk/everything-claude-verified/issues)
 - **X/Twitter:** [@affaanmustafa](https://x.com/affaanmustafa)
 
 ---

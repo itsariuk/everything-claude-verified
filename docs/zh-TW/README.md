@@ -1,6 +1,6 @@
 # Everything Claude Code
 
-[![Stars](https://img.shields.io/github/stars/affaan-m/everything-claude-code?style=flat)](https://github.com/affaan-m/everything-claude-code/stargazers)
+[![Stars](https://img.shields.io/github/stars/itsariuk/everything-claude-verified?style=flat)](https://github.com/itsariuk/everything-claude-verified/stargazers)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Shell](https://img.shields.io/badge/-Shell-4EAA25?logo=gnu-bash&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
@@ -67,7 +67,7 @@
 
 ```bash
 # 新增市集
-/plugin marketplace add https://github.com/affaan-m/everything-claude-code
+/plugin marketplace add https://github.com/itsariuk/everything-claude-verified
 
 # 安裝外掛程式
 /plugin install ecc@ecc
@@ -79,7 +79,7 @@
 
 ```bash
 # 首先複製儲存庫
-git clone https://github.com/affaan-m/everything-claude-code.git
+git clone https://github.com/itsariuk/everything-claude-verified.git
 
 # 複製規則（應用於所有專案）
 cp -r everything-claude-code/rules/* ~/.claude/rules/
@@ -267,7 +267,7 @@ everything-claude-code/
 
 ```bash
 # 將此儲存庫新增為市集
-/plugin marketplace add https://github.com/affaan-m/everything-claude-code
+/plugin marketplace add https://github.com/itsariuk/everything-claude-verified
 
 # 安裝外掛程式
 /plugin install ecc@ecc
@@ -281,7 +281,7 @@ everything-claude-code/
     "ecc": {
       "source": {
         "source": "github",
-        "repo": "affaan-m/everything-claude-code"
+        "repo": "itsariuk/everything-claude-verified"
       }
     }
   },
@@ -301,7 +301,7 @@ everything-claude-code/
 
 ```bash
 # 複製儲存庫
-git clone https://github.com/affaan-m/everything-claude-code.git
+git clone https://github.com/itsariuk/everything-claude-verified.git
 
 # 將代理程式複製到您的 Claude 設定
 cp everything-claude-code/agents/*.md ~/.claude/agents/
@@ -459,7 +459,7 @@ node tests/hooks/hooks.test.js
 
 ## Star 歷史
 
-[![Star History Chart](https://api.star-history.com/svg?repos=affaan-m/everything-claude-code&type=Date)](https://star-history.com/#affaan-m/everything-claude-code&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=itsariuk/everything-claude-verified&type=Date)](https://star-history.com/#itsariuk/everything-claude-verified&Date)
 
 ---
 

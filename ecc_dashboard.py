@@ -775,7 +775,7 @@ A cross-platform desktop application for
 managing and exploring ECC components.
 
 Version: 1.10.0
-Project: github.com/affaan-m/everything-claude-code"""
+Project: github.com/itsariuk/everything-claude-verified"""
         
         ttk.Label(about_frame, text=about_text, justify=tk.LEFT).pack(anchor=tk.W)
     

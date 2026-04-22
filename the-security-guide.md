@@ -451,5 +451,5 @@ If you haven't read the previous guides, start here:
 > [The Longform Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2014040193557471352)
 
 go do that and also save these repos:
-- [github.com/affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code)
+- [github.com/itsariuk/everything-claude-verified](https://github.com/itsariuk/everything-claude-verified)
 - [github.com/affaan-m/agentshield](https://github.com/affaan-m/agentshield)
