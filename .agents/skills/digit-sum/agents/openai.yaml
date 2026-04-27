@@ -1,0 +1,7 @@
+interface:
+  display_name: "Digit Sum Calculator"
+  short_description: "Sum two single digits with validation and formatted output"
+  brand_color: "#3B82F6"
+  default_prompt: "Sum two digits (0-9) and display the result in format: digit1 + digit2 = result"
+policy:
+  allow_implicit_invocation: true
